@@ -15,8 +15,9 @@ function Page_Load()
     $message      = file_get_contents($notify);
     $unpacked     = simplexml_load_string($message);
 
-    rename ($notify, QUEUE_DATA . "/{$unpacked->id}.pend");
- 
+    echo "\n\n{$message}\n\n";
+
+    rename ($notify, QUEUE_DATA . "/{$unpacked->id}.pend"); 
 
     $command  = "php " . QUEUE_PATH . "/{$unpacked->endpoint}.php {$unpacked->id}";
     echo "{$command}\n";

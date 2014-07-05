@@ -1,11 +1,12 @@
 <? 
 
-define ("HOME_PATH", "/home/milton/netshade-2/");
+require("queue.progress.php");   
+
+# define ("HOME_PATH", "/home/milton/netshade-2/");
 define ('DATA_PATH', HOME_PATH . 'temp/data');
 define ('QUEUE_PATH', HOME_PATH . 'shadow.net/client'); 
 define ('YENC_PATH', "ydec5"); 
 
-require("queue.progress.php");   
 require("../webnews/nntp.php");   
 
 
