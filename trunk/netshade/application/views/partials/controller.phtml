@@ -1,0 +1,41 @@
+<?
+
+?>
+
+<div class="controller">
+
+    <div>
+   
+	<div class="article-menu"><span class="ui-icon ui-icon-circle-triangle-s"></span></div>  
+
+    <select id="article-select">
+        <? foreach ($this-> items as $article): ?> 
+         <option value="<?= $article -> uuid ?>"
+            <? if ($article -> uuid == $this -> uuid ): ?>
+                selected 
+            <? endif ?>
+           >
+           <?= $this->unrar == "" ? trunc($article -> subject, 50) : $article -> filename ?>
+         </option>
+        <? endforeach ?> 
+    </select>
+
+ &nbsp;
+    <a class="a-next -1">Prev</a> &nbsp; <a class="a-ps">Play</a> &nbsp; <a class="a-next 1">Next</a>   &nbsp; <a class="a-hi">Hilo</a>  
+      
+   </div>
+
+    <div style="padding: 0px 0px 0px 24px">
+
+     &nbsp;
+
+     <? for ($n=-3;$n<4;$n++): ?>
+        
+	<div class="article-tiny <?= $this->unrar?>" id="<?= $n ?>">...</div>    
+
+     <? endfor ?>
+
+    </div> 
+  <p>
+</p>
+</div>

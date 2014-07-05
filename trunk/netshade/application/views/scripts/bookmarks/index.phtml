@@ -1,0 +1,20 @@
+ 
+ <?
+    $subscribed = $this->url (array ('action'=>'display', 'controller'=>'index') );
+    $groups     = $this->url (array ('action'=>'groups', 'controller'=>'index') );
+ ?>
+ 
+
+                 <div id="div-stat">
+                     <a href="<?= $subscribed ?>">Subscribed Groups</a> | Bookmarks | <a href="<?= $groups ?>">All Groups</a>
+                        <br/><?= $this -> pages ?></div> 
+
+                   <ul class="rounded">
+
+		 <? foreach ($this->List as $article):  ?>
+		     
+			<li class="arrow article-picture" id="<?= $article ['Articlekey'] ?>"><?= $article ['address'] ?> (<?= $article ['countof']  ?>)</li>
+		   
+		 <? endforeach ?>
+
+                    </ul>    

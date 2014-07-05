@@ -1,0 +1,18 @@
+ 
+
+   <input type="hidden" id="text-suffix" value="name/<?= $this->article->groupname ?>/user/<?= $this->article->username ?>"/>
+
+
+    <div class="a-next 1 article-scale" id="<?= $this -> id ?>" title="name/<?= $this->article->groupname ?>/user/<?= $this->article->username ?>"
+     ><?= $this -> chosen -> subject ?></div>
+
+ 
+   <?php echo $this->partial('controller.phtml', 
+       array ( 
+               items => $this->article->items
+             , uuid => $this->  id
+             , unrar => ""
+   ) ); ?>
+
+
+

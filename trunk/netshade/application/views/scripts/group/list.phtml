@@ -1,0 +1,102 @@
+ <?
+  $action = $this -> saved ? "Unsubscribe from {$this->group->Name}" : "Subscribe to {$this->group->Name}";
+  $amount = 50000;
+  $lowid  = $this->group->LowID - $amount;
+
+  if ($lowid < $this->group->MinID)
+  {
+      $lowid = $this->group->MinID;
+      $amount = $this->group->LowID - $lowid;
+  }
+  $data = array (
+           
+    $this->group->LowID,
+    $this->group->HighID, 
+    $this->group->MinID,
+    $this->group->MaxID  
+
+     );
+
+
+?> 
+
+   <input type="hidden" id="text-user" value="<?= $this->user ?>"/>   
+ 
+  
+ 
+                    <div id="div-stat"><?= $this -> pages ?>
+
+<? if (isset($this->search)): ?>
+      <br/>  <a href="<?= $this->url (array('search'=>NULL, 'page' => 1)) ?>">Clear</a>
+<? endif ?>
+                    </div>
+
+                    <ul class="rounded">
+
+		 <? foreach ($this->articles as $article):
+                            $css    = $article -> cache ? "cache" : "";
+                            $bk     = $article -> bookmarked ? "** " : "";
+                            $count  = $article -> count;
+
+                       $parts  = sizeof ( explode("-", $article -> id) );
+                       if (preg_match('/\((\d+)\/(\d+)\)/', $article -> subject, $x))
+                       {
+                           $countof = $x[2];
+                           $hue = $countof == $parts ? "#000" : "#900";
+                       }
+
+                            ?>
+		     
+			<li style="color:<?= $hue ?>" class="<?= $count ?> arrow article-<?= $article -> type ?> <?= $css?>" id="<?= $article -> uuid ?>" 
+			    ><?= $article->date ?>, <?= $article -> subject ?><?= $parts ?>, <?= $countof ?></li> 
+			
+		   
+		<? endforeach ?>
+
+                    </ul> 
+  
+
+ 
+
+<div id="dialog" title="<?= $this->group->Name ?> options">
+
+  <ul>
+    <li>
+  <div class="span-of" id="<?= implode ('x', $data) ?>">loading...</div></li> 
+    <li><a class="bookmark" id="/rpc/subscribe/id/<?= $this->group->Key ?>/user/<?= $this->user ?>"><?= $action ?></a></li>
+
+<? if ($amount > 0): ?>
+    <li><a class="group-join <?= $this->group->LowID ?> <?= $amount ?>" id="<?= $this->group->Name ?>">Get the previous <?= $amount ?> items starting at <?= $this->group->LowID ?>...</a></li> 
+<? endif ?>
+
+    <li><a class="group-renew" id="<?= $this->group->Name ?>">Clear all articles and reload...</a></li> 
+    <li>Show only items with at least 
+       <select id="drop-count">
+<? for ($x=0;$x<100;$x+=5): ?>
+     <option value="<?= $x ?>"
+             <?if ($x==$this->most): ?>
+                 selected 
+             <? endif ?>
+         ><?= $x ?></option>
+<? endfor?>
+       </select>
+         sub-articles</li> 
+
+
+
+
+    <li>
+       <select id="drop-group">
+<option>Open related group</option>
+<? while (list($name,$val) = each ($this->refs) ): ?>
+     <option value="<?= $name ?>" 
+         ><?= $name ?></option>
+<? endwhile ?>
+       </select></li> 
+
+
+</ul>
+ 
+
+</div> 
+

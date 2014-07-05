@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<projectProfile type="default" version="1.11.11">
+  <projectDirectory>
+    <projectProfileFile filesystemName=".zfproject.xml"/>
+    <applicationDirectory classNamePrefix="Application_">
+      <apisDirectory enabled="false"/>
+      <configsDirectory>
+        <applicationConfigFile type="ini"/>
+      </configsDirectory>
+      <controllersDirectory>
+        <controllerFile controllerName="Index">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="display"/>
+          <actionMethod actionName="bookmarks"/>
+          <actionMethod actionName="groups"/>
+        </controllerFile>
+        <controllerFile controllerName="Error"/>
+        <controllerFile controllerName="Group">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="list"/>
+          <actionMethod actionName="join"/>
+        </controllerFile>
+        <controllerFile controllerName="Rpc">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="receive"/>
+          <actionMethod actionName="thumb"/>
+          <actionMethod actionName="picture"/>
+          <actionMethod actionName="bookmark"/>
+          <actionMethod actionName="getArticles"/>
+          <actionMethod actionName="small"/>
+          <actionMethod actionName="getKeys"/>
+          <actionMethod actionName="groups"/>
+          <actionMethod actionName="subscribe"/>
+          <actionMethod actionName="find"/>
+          <actionMethod actionName="rar"/>
+          <actionMethod actionName="randomof"/>
+        </controllerFile>
+        <controllerFile controllerName="Article">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="list"/>
+          <actionMethod actionName="rar"/>
+          <actionMethod actionName="unrar"/>
+          <actionMethod actionName="onrar"/>
+        </controllerFile>
+        <controllerFile controllerName="Bookmarks">
+          <actionMethod actionName="index"/>
+          <actionMethod actionName="list"/>
+          <actionMethod actionName="show"/>
+          <actionMethod actionName="display"/>
+        </controllerFile>
+        <controllerFile controllerName="Boss">
+          <actionMethod actionName="index"/>
+        </controllerFile>
+      </controllersDirectory>
+      <formsDirectory enabled="false"/>
+      <layoutsDirectory>
+        <layoutScriptsDirectory>
+          <layoutScriptFile layoutName="layout"/>
+        </layoutScriptsDirectory>
+      </layoutsDirectory>
+      <modelsDirectory>
+        <modelFile modelName="ShadeUser"/>
+        <modelFile modelName="ShadeDb"/>
+        <modelFile modelName="Newsgroup"/>
+        <modelFile modelName="QMessage"/>
+        <modelFile modelName="Articleset"/>
+        <modelFile modelName="Paginator"/>
+        <modelFile modelName="Articlerar"/>
+        <modelFile modelName="SearchResult"/>
+        <modelFile modelName="Link"/>
+      </modelsDirectory>
+      <modulesDirectory enabled="false"/>
+      <viewsDirectory>
+        <viewScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Index">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Error">
+            <viewScriptFile forActionName="error"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Index">
+            <viewScriptFile forActionName="display"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Group">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Group">
+            <viewScriptFile forActionName="list"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Group">
+            <viewScriptFile forActionName="join"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="receive"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="thumb"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="picture"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Article">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Article">
+            <viewScriptFile forActionName="list"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="bookmark"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="getArticles"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Index">
+            <viewScriptFile forActionName="bookmarks"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Index">
+            <viewScriptFile forActionName="groups"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="small"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="getKeys"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="groups"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="subscribe"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="find"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Article">
+            <viewScriptFile forActionName="rar"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="rar"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Article">
+            <viewScriptFile forActionName="unrar"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Article">
+            <viewScriptFile forActionName="onrar"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Bookmarks">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Bookmarks">
+            <viewScriptFile forActionName="list"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Bookmarks">
+            <viewScriptFile forActionName="show"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Bookmarks">
+            <viewScriptFile forActionName="display"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Boss">
+            <viewScriptFile forActionName="index"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="randomof"/>
+          </viewControllerScriptsDirectory>
+        </viewScriptsDirectory>
+        <viewHelpersDirectory/>
+        <viewFiltersDirectory enabled="false"/>
+      </viewsDirectory>
+      <bootstrapFile filesystemName="Bootstrap.php"/>
+    </applicationDirectory>
+    <dataDirectory enabled="false">
+      <cacheDirectory enabled="false"/>
+      <searchIndexesDirectory enabled="false"/>
+      <localesDirectory enabled="false"/>
+      <logsDirectory enabled="false"/>
+      <sessionsDirectory enabled="false"/>
+      <uploadsDirectory enabled="false"/>
+    </dataDirectory>
+    <docsDirectory>
+      <file filesystemName="README.txt"/>
+    </docsDirectory>
+    <libraryDirectory>
+      <zfStandardLibraryDirectory enabled="false"/>
+    </libraryDirectory>
+    <publicDirectory>
+      <publicStylesheetsDirectory enabled="false"/>
+      <publicScriptsDirectory enabled="false"/>
+      <publicImagesDirectory enabled="false"/>
+      <publicIndexFile filesystemName="index.php"/>
+      <htaccessFile filesystemName=".htaccess"/>
+    </publicDirectory>
+    <projectProvidersDirectory enabled="false"/>
+    <temporaryDirectory enabled="false"/>
+    <testsDirectory>
+      <testPHPUnitConfigFile filesystemName="phpunit.xml"/>
+      <testPHPUnitBootstrapFile filesystemName="bootstrap.php"/>
+      <testApplicationDirectory>
+        <testApplicationControllerDirectory>
+          <testApplicationControllerFile forControllerName="Index"/>
+        </testApplicationControllerDirectory>
+      </testApplicationDirectory>
+      <testLibraryDirectory/>
+    </testsDirectory>
+  </projectDirectory>
+</projectProfile>

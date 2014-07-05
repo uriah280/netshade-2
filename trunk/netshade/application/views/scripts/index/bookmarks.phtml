@@ -1,0 +1,37 @@
+
+
+ 
+   <input id="text-page" value="/article/index/on/1/id/"/>
+   <input id="text-suffix" value="name/<?= $this->group->Name ?>/user/<?= $this->User->Userkey ?>"/>
+ 
+
+            <div id="ajax" class="current">
+                <div class="toolbar">
+                    <h1>Bookmarks</h1>
+                    <a class="back" href="/index/display/user/<?= $this->User->Userkey ?>">Home</a>
+                </div>
+                <div class="scroll">
+ 
+<div id="div-stat"> 
+
+                     <a href="/index/display/user/<?= $this->User->Username ?>">Subscribed Groups</a> | Bookmarks | <a href="/index/groups/user/<?= $this->User->Username ?>">All Groups</a>
+<?= $this -> pages ?>
+</div>
+                    <ul class="rounded">
+
+		 <? foreach ($this->User->Bookmarks as $article):
+                            $css = $article->cache ? "cache" : "";
+                            $bk = $article->bookmarked ? "** " : ""; ?>
+		     
+			<li class="arrow article-picture" id="<?= $article -> uuid ?>" title="user/<?= $this->User->Username ?>"
+			    
+><?= $article->groupname . "\r\n" ?><?= $article -> subject ?></li>
+		   
+		<? endforeach ?>
+
+                    </ul>
+
+ 
+                </div>
+            </div>
+ 

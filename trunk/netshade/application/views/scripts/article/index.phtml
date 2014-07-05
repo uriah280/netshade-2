@@ -1,0 +1,39 @@
+ <?
+    $action = $this->article->bookmarked ? "Unbookmark" : "Bookmark";  
+    $item = $this-> counter-> Rangefrom( $this -> start ); 
+    $sortas  = strlen($this->sort) > 0 ? "subject" : "filename";
+ 
+?>
+
+         <div id="div-stat"><?= $this -> pages ?></div> 
+          <ul class="rounded">
+
+		 <? foreach ($this->article->items as $article):
+                            $css = $article->cache ? "cache" : ""; ?>
+		     
+			<li class="arrow article-picture <?= $css ?>" id="<?= $article -> uuid ?>" title="name/<?= $this->article->groupname ?>/user/<?= $this->article->username ?>"
+                              ><?= $article -> subject ?></a></li>
+		   
+		<? endforeach ?>
+
+                    </ul>  
+
+ 
+   <?php echo $this->partial('hilo.phtml', 
+       array ( 
+               "item" => $item
+             , "page" => $this-> page 
+             , "label" => "page"
+   ) ); ?>
+
+
+  
+ 
+
+
+<div id="dialog" title="<?= $this->article->subject ?> options">
+  <p>
+    <li class="li-sortas">Sort by <?= $sortas ?></li> 
+    <li><a class="bookmark" id="/rpc/bookmark/id/<?= $this->article -> uuid ?>/user/<?= $this->article->username ?>"><?= $action ?></a></li>
+</p>
+</div>
