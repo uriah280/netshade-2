@@ -1,6 +1,9 @@
 <? 
-define ('DATA_PATH', '/var/www/temp/data');
-define ('QUEUE_PATH', '/var/www/shadow.net/client'); 
+
+define ("HOME_PATH", "/home/milton/netshade-2/");
+define ('DATA_PATH', HOME_PATH . 'temp/data');
+define ('QUEUE_PATH', HOME_PATH . 'shadow.net/client'); 
+define ('YENC_PATH', "ydec5"); 
 
 require("queue.progress.php");   
 require("../webnews/nntp.php");   
@@ -207,7 +210,7 @@ class Application_Model_NewsServer
 
     function CreateThumb ($data, $_articleKey)
     {
-        $path = "/var/www/temp/{$_articleKey}.png";
+        $path = HOME_PATH . "temp/{$_articleKey}.png";
         if ($this -> type == "wmv" || $this -> type == "m4v" ) {
             file_put_contents("{$path}.tmp", $data);
             $im = $this->QuikPic("{$path}.tmp"); 
@@ -278,7 +281,7 @@ echo "\nCreated preview {$filename}.jpeg\n";
         $filename = trim($header[1]);  
         $tmp = implode ("\n", $body);
         file_put_contents ("{$key}", $tmp);
-        $command = "./ydec4 {$key}";
+        $command = "./" . YENC_PATH . " {$key}";
         passthru ($command);
         unlink ($key); 
         $data = "";

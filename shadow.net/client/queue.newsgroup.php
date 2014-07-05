@@ -1,9 +1,12 @@
 <?php
+
+define ("HOME_PATH", "/home/milton/netshade-2/"); 
+define ('QUEUE_PATH', HOME_PATH . 'shadow.net/client'); 
+
 define ('TYPE_IMAGE', '1');
 define ('TYPE_MOVIE', '2');
 define ('TYPE_RAR', '3');
-define ('TYPE_AUDIO', '4');
-define ('DATA_PATH', '/var/www/shadow.net/client');
+define ('TYPE_AUDIO', '4'); 
 define ('DEFAULT_KEY', 'a9d420f4-070c-4b7c-a933-6f8dacf4d5b3');
 
 require("queue.progress.php");   

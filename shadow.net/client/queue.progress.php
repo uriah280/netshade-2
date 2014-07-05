@@ -1,8 +1,13 @@
 <?
 
 require ("usenet.db.php");
-define('QUEUE_DATA', '/var/www/temp/queue');
-define('ARTICLE_MAX', 15000);
+
+
+define ("HOME_PATH", "/home/milton/netshade-2/");
+define ('QUEUE_DATA', HOME_PATH . "temp/queue");
+define ('ARTICLE_MAX', 15000);
+
+
 function gen_uuid() {
     return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
         // 32 bits for "time_low"

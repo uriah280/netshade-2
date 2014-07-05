@@ -1,45 +1,5 @@
-php /var/www/shadow.net/client/queue.article.php f7b6e266-40c6-4d9c-bac9-29072099d6b9
-
-/var/www/temp/queue/f7b6e266-40c6-4d9c-bac9-29072099d6b9.pend
-<QMessage>
-  <userkey><![CDATA[647895f4-070c-4b7c-a933-6f8dacf4d5b3]]></userkey>
-  <groupname><![CDATA[alt.binaries.newstar]]></groupname>
-  <article><![CDATA[fef96b90-a097-46e6-b08e-805a931780ab]]></article>
-  <endpoint><![CDATA[queue.article]]></endpoint>
-  <uuid><![CDATA[fef96b90-a097-46e6-b08e-805a931780ab]]></uuid>
-<id>f7b6e266-40c6-4d9c-bac9-29072099d6b9</id>
-</QMessage>
-
-alt.binaries.newstar, fef96b90-a097-46e6-b08e-805a931780ab, f7b6e266-40c6-4d9c-bac9-29072099d6b9
-
- ** OPEN: Connecting to news.giganews.com
--- 0 Looking up fef96b90-a097-46e6-b08e-805a931780ab data...: 1 of 1
-PHP Warning:  mysql_fetch_assoc() expects parameter 1 to be resource, null given in /var/www/shadow.net/client/queue.article.php on line 201
-
- ------------ [203613-203610] -----------
-
- ------------ [Beginning download] -----------
-Downloading article [203613]...
--- 1 Downloading article 1 of 2 [Newstar Diana as Tinymodel Amber 057 - File 44 of 65 - yEnc "amber-057-044.jpg" 296126 bytes (2/2)]...: 1 of 2
-
------------------unreadable response -----------------
-
-Downloading article [203610]...
--- 2 Downloading article 2 of 2 [Newstar Diana as Tinymodel Amber 057 - File 44 of 65 - yEnc "amber-057-044.jpg" 296126 bytes (2/2)]...: 2 of 2
-
------------------unreadable response -----------------
-
--- 3 Building 2-part image Newstar Diana as Tinymodel Amber 057 - File 44 of 65 - yEnc "amber-057-044.jpg" 296126 bytes (2/2)...: 1 of 1
--- 4 Decoding Newstar Diana as Tinymodel Amber 057 - File 44 of 65 - yEnc "amber-057-044.jpg" 296126 bytes (2/2)...: 1 of 1
-CRC mismatch (infile: 'fef96b90-a097-46e6-b08e-805a931780ab', line: 1982, outfile: '/var/www/shadow.net/client/ydec/amber-057-044.jpg', part: 1)
-CRC mismatch (infile: 'fef96b90-a097-46e6-b08e-805a931780ab', line: 2354, outfile: '/var/www/shadow.net/client/ydec/amber-057-044.jpg', part: 2)
-296126 bytes yencing...-- 4 Saving 296126 bytes in Newstar Diana as Tinymodel Amber 057 - File 44 of 65 - yEnc "amber-057-044.jpg" 296126 bytes (2/2)...: 1 of 1
-296126 bytes saved
-Saving fef96b90-a097-46e6-b08e-805a931780ab...
-
-
- ** END: Quitting news.giganews.com
-
-
-PHP Warning:  mysql_close(): no MySQL-Link resource supplied in /var/www/shadow.net/client/usenet.db.php on line 121
--- : 1 of 1
+PHP Notice:  Trying to get property of non-object in /home/milton/netshade-2/shadow.net/client/queue.poll.php on line 18
+PHP Notice:  Trying to get property of non-object in /home/milton/netshade-2/shadow.net/client/queue.poll.php on line 21
+PHP Notice:  Trying to get property of non-object in /home/milton/netshade-2/shadow.net/client/queue.poll.php on line 21
+php /home/milton/netshade-2/shadow.net/client/.php 
+Could not open input file: /home/milton/netshade-2/shadow.net/client/.php

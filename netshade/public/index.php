@@ -43,13 +43,13 @@ function trunc($a, $b=50) {
 function cmp($a, $b) { 
     return (nameOf($a->subject) < nameOf($b->subject)) ? -1 : 1;
 }
-
+define ("HOME_PATH", "/home/milton/netshade-2/");
 define ('PAGE_PATTERN', "<a href='%s%s'>%s</a>");
-define ('LOGFILE', "/var/www/netshade/ShadeDb.log");
+define ('LOGFILE', HOME_PATH . "netshade/ShadeDb.log");
 define ('PAGE_MAX', 10);
 define ('PAGE_SIZE', 8);
-define ('QUEUE_SEND', '/var/www/temp/queue/notify');
-define ('QUEUE_RECEIVE', '/var/www/temp/queue');
+define ('QUEUE_SEND', HOME_PATH . 'temp/queue/notify');
+define ('QUEUE_RECEIVE', HOME_PATH . 'temp/queue');
 
 // Define path to application directory
 defined('APPLICATION_PATH')
