@@ -30,7 +30,7 @@ class Usenet_Connector
         $delta = time() - $this->Start;
         $data  = "{$this -> Source}/{$this -> Id}/{$delta}: {$line}\n"; 
 
-        file_put_contents ( "/var/www/netshade/ShadeDb.log" , $data , FILE_APPEND );
+       // file_put_contents ( "/var/www/netshade/ShadeDb.log" , $data , FILE_APPEND );
     }
 
 

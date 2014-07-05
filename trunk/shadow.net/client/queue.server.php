@@ -1,6 +1,9 @@
 <? 
-define ('DATA_PATH', '/var/www/temp/data');
-define ('QUEUE_PATH', '/var/www/shadow.net/client'); 
+
+
+define ("HOME_PATH", "/home/milton/netshade-2/");
+define ('DATA_PATH', HOME_PATH . 'temp/data');
+define ('QUEUE_PATH', HOME_PATH . 'shadow.net/client'); 
 
 require("queue.progress.php");   
 require("../webnews/nntp.php");   

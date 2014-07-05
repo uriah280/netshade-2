@@ -1,6 +1,11 @@
 <?
-define ('QUEUE_PATH', '/var/www/shadow.net/client');
-define ('QUEUE_DATA', '/var/www/temp/queue');
+
+
+define ("HOME_PATH", "/home/milton/netshade-2/");
+define ('QUEUE_DATA', HOME_PATH . 'temp/queue');
+define ('QUEUE_PATH', HOME_PATH . 'shadow.net/client'); 
+
+ 
 
 function Page_Load()
 { 
