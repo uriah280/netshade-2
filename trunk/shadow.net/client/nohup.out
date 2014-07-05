@@ -1,5 +1,9 @@
-PHP Notice:  Trying to get property of non-object in /home/milton/netshade-2/shadow.net/client/queue.poll.php on line 18
-PHP Notice:  Trying to get property of non-object in /home/milton/netshade-2/shadow.net/client/queue.poll.php on line 21
-PHP Notice:  Trying to get property of non-object in /home/milton/netshade-2/shadow.net/client/queue.poll.php on line 21
+
+
+
+
+PHP Notice:  Trying to get property of non-object in /home/milton/netshade-2/shadow.net/client/queue.poll.php on line 20
+PHP Notice:  Trying to get property of non-object in /home/milton/netshade-2/shadow.net/client/queue.poll.php on line 22
+PHP Notice:  Trying to get property of non-object in /home/milton/netshade-2/shadow.net/client/queue.poll.php on line 22
 php /home/milton/netshade-2/shadow.net/client/.php 
 Could not open input file: /home/milton/netshade-2/shadow.net/client/.php
