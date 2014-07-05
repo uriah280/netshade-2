@@ -1,0 +1,21 @@
+ <?
+$item = $this->item; 
+
+?>
+
+<div style="padding: 0px 8px 0px 14px">
+     <?
+     $was = true;
+     for ($n=0;$n<sizeof ($item)&&$n<15;$n++):
+         $uri = $this->url (array ($this->label => $item[$n]['page'] ) ); 
+         $is  = $item[$n]['page'] == $this->page && $was;
+         $css = $is ? "border:solid 1px #900;margin:0px" : ""; 
+         if ($is) $was = false; ?>
+        
+	<div style="<?= $css ?>" class="article-hilo <?= $this->unrar ?>" title="<?= $item[$n]['article']->uuid ?>" id="<?= $uri ?>"> p#<?= $item[$n]['page'] ?></div>    
+   
+     <? endfor ?>
+</div>
+            
+ 
+

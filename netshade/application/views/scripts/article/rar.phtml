@@ -1,0 +1,52 @@
+<?
+
+       $css = $this -> article ->cache ? "cache" : ""; 
+       $count  = sizeof ( explode("-", $this -> article -> id) );//$this -> article -> count; 
+
+  if (preg_match('/\((\d+)\/(\d+)\)/', $this -> article -> subject, $x))
+  {
+      $countof = $x[2];
+           $hue = $countof == $count ? "#000" : "#900";
+  }
+
+
+?>
+
+
+         <div id="div-stat"><?= $this -> pages ?></div> 
+
+          <ul class="rounded">
+<!--
+ <li style="color:<?= $hue ?>"  class="<?= $this -> article -> count ?> arrow article-<?= $this -> article -> type ?> <?= $css ?>" id="<?= $this -> article -> uuid ?>"><?= $this -> article -> subject ?>, <?= $count ?>  of <?= $countof ?> parts found.
+</li>
+-->
+ 
+  <? foreach ($this -> article -> items as $i ):
+       $css = $i->cache ? "cache" : ""; 
+       $count  = sizeof ( explode("-", $i -> id) );//$i -> count;
+
+       if (preg_match('/\((\d+)\/(\d+)\)/', $i -> subject, $x))
+       {
+           $countof = $x[2];
+           $hue = $countof == $count ? "#000" : "#900";
+       }
+
+ ?>
+
+    <li style="color:<?= $hue ?>" class="<?= $i->count ?> arrow article-<?= $this -> article -> type ?> <?= $css ?>" id="<?= $i -> uuid ?>"><?= $i -> subject ?>, <?= $count ?>  of <?= $countof ?> parts found.</li>
+
+  <? endforeach ?>
+
+                    </ul>  
+  
+
+
+<div id="dialog" title="<?= $this->article->subject ?> options">
+  <p>
+
+  <? if (sizeof($this -> article -> items) > 1 ): ?>
+[<a class="article-all" id="<?= $this -> article -> uuid ?>">Download all</a>]
+  <? endif ?>
+</p>
+</div>
+ 

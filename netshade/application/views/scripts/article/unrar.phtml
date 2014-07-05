@@ -1,0 +1,40 @@
+  <? 
+    $action = $this->article->bookmarked ? "Unbookmark" : "Bookmark"; 
+
+    $item= $this->counter->Rangefrom ($this->start);
+    $howmany = sizeof ($item); 
+?>
+
+
+<div id="div-stat"><?= $this -> pages ?></div>
+
+                    <ul class="rounded">
+
+		 <? foreach ($this->article->items as $article):  ?>
+		     
+			<li class="arrow article-unrar" id="<?= $article -> uuid ?>" 
+			    ><?= $bk ?><?= $article -> filename ?></li> 
+			
+		   
+		<? endforeach ?>
+
+                    </ul>
+  
+
+
+   <?php echo $this->partial('hilo.phtml', 
+       array ( 
+               "item"  => $item
+             , "page"  => $this-> page 
+             , "label" => "p"
+             , "unrar" => "unrar"
+   ) ); ?>
+
+ 
+
+<div id="dialog" title="<?= $this->article->subject ?> options">
+  <p> 
+    <li><a class="bookmark" id="/rpc/bookmark/id/<?= $this->article -> uuid ?>/user/<?= $this->article->username ?>"><?= $action ?></a></li>
+</p>
+</div>
+

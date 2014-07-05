@@ -1,0 +1,31 @@
+ <?
+    $subscribed = $this->url (array ('action'=>'display') );
+    $bookmarks  = $this->url (array ('controller'=>'bookmarks', 'action'=>'index') );
+ ?>
+
+<input type="hidden" id="text-user" value="<?= $this->User ?>"/>
+
+
+
+
+                    <div id="div-stat">
+                     <a href="<?= $subscribed ?>">Subscribed Groups</a> | <a href="<?= $bookmarks ?>">Bookmarks</a> | All Groups
+<br/>
+<?= $this->pages ?>
+                    </div>
+
+                    <ul class="rounded">
+
+		 <? foreach ($this->Groups as $group): ?>
+		     
+			<li class="group-name" id="<?= $group -> Name ?>">
+<a class="list-item">
+			    <span class="link"><?= $group -> Name ?></span>
+                            <span class="column1"><?= $group -> Count ?><span>
+                            <span class="column2"><?= $group -> Tally ?><span>
+</a>
+			</li>
+		   
+		<? endforeach ?>
+
+                    </ul>

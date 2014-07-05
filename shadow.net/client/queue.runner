@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# get the current path
+CURPATH=`pwd`
+
+inotifywait -mr --timefmt '%d/%m/%y %H:%M' --format '%T %w %f' -e close_write /var/www/temp/queue/notify | while read date time dir file; do
+
+    FILECHANGE=${dir}${file}
+# convert absolute path to relative
+    FILECHANGEREL=`echo "$FILECHANGE" | sed 's_'$CURPATH'/__'`
+
+    rm nohup.out
+
+    nohup php /var/www/shadow.net/client/queue.poll.php $FILECHANGE & # > /dev/null & echo $!
+
+    echo "At ${time} on ${date}, file $FILECHANGE was changed"
+done
+

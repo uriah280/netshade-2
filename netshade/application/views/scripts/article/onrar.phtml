@@ -1,0 +1,14 @@
+ 
+
+    <div class="article-scale unrar a-next" id="<?= $this -> key ?>" 
+     ><?= $this -> article -> subject ?></div> 
+ 
+   <?php echo $this->partial('controller.phtml', 
+       array ( 
+               items => $this->article->items
+             , uuid => $this->key
+             , unrar => "unrar"
+   ) ); ?>
+
+
+ 

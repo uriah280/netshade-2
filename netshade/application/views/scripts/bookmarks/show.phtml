@@ -1,0 +1,28 @@
+  <? 
+    $item = $this-> counter-> Rangefrom( $this -> start ); 
+?>     
+
+                  <div id="div-stat"><?= $this -> pages ?></div> 
+
+                    <ul class="rounded">
+
+		 <? foreach ($this->article->items as $article):
+                            $css = $article->cache ? "cache" : ""; ?>
+		     
+			<li class="arrow article-picture <?= $css ?> <?= $this->unrar ?>" id="<?= $article -> uuid ?>"
+                              ><?= $article -> subject ?></a></li>
+		   
+		<? endforeach ?>
+
+                    </ul>  
+ 
+
+   <?php echo $this->partial('hilo.phtml', 
+       array ( 
+               "item"  => $item
+             , "label" => "page"
+             , "page"  => $this-> page 
+             , "unrar" => $this-> unrar 
+   ) ); ?>
+
+

@@ -1,0 +1,16 @@
+<?
+  $key = str_replace ("-", "_", $this -> key);
+  $uri = $this->url (array (
+                         'controller' => 'group'
+                        , 'action'    => 'list'
+                        , 'user'      => $this -> user
+                        , 'page'      => 1 
+                        , 'param'     => NULL
+                        , 'most'      => NULL
+                        , 'find'      => NULL
+                        , 'search'    => $this->param
+                        )); 
+?>
+
+ 
+<div class="msmq-id" id="<?= $uri ?>"><?= $this -> key ?></div> 

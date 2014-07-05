@@ -1,0 +1,38 @@
+ <?
+    $groups     = $this->url (array ('action'=>'groups') );
+    $bookmarks  = $this->url (array ('controller'=>'bookmarks', 'action'=>'index') );
+    $next       = $this->url (array ('controller'=>'article', 'action'=>'index', 'on' => 1) );
+//http://localhost/article/index/user/milton/name/alt.binaries.full.post.verified.playboy/most/30/on/4/id/7eb45b4b-2e6d-43b9-8b87-bbd808c8403c
+ ?>
+
+
+<input type="hidden" id="text-user" value="<?= $this->User ?>"/>
+<input type="hidden" id="text-page" value="<?= $next ?>"/>
+
+
+           <header>Loading...</header>  
+
+                    <div id="div-stat">
+                     Subscribed Groups | <a href="<?= $bookmarks ?>">Bookmarks</a> | <a href="<?= $groups ?>">All Groups</a>
+                    </div>
+                    <ul class="rounded">
+
+		 <? foreach ($this->Groups as $group): ?>
+		     
+			<li class="group-name" id="<?= $group -> Name ?>">
+                           <a class="list-item">
+			    <span class="link" id="/index/"><?= $group -> Name ?></span>
+                            <span class="column1"><?= $group -> Count ?><span>
+                            <span class="column2"><?= $group -> Tally ?><span>
+                           </a>
+			</li>
+		   
+		<? endforeach ?>
+
+                    </ul>
+
+<script language="javascript">
+var PICTURE_DATA = <?= json_encode  ($this->Pics) ?>;
+</script>
+
+ 
