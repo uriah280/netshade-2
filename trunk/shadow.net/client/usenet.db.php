@@ -90,16 +90,17 @@ class Usenet_Connector
 
     function Execute ($Query)
     {
+            $this->Log ("Query {$Query} starting...");
+
         $this->Error = NULL;
 
-         if (!$this->State) $this->Open ();
+        # if (!$this->State) 
+            $this->Open ();
 
         if (!mysql_ping ()) { 
             $this->Close ();
             $this->Open ();
         }
-
-
 
         # MYSQL_CONNECT($this->Server, $this->Username, $this->Password) or die ( "Server '{$this->Server}' unreachable" );
         # MYSQL_SELECT_DB($this->Database) or die ( "Database '{$this->Database}' unreachable" ); 
@@ -109,7 +110,7 @@ class Usenet_Connector
 
         if ($result) 
         {
-            $this->Log ("Query complete!");
+            $this->Log ("Query {$Query} complete!");
             return $result;
         }
 

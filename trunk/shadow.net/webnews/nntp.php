@@ -429,12 +429,16 @@ echo $debug;
                 $buf = fgets($this->nntp, 4096);                                      
                 $bytes += strlen($buf);                                     
                 while (!preg_match("/^\.\s*$/", $buf)) {                                                                                       
-                    list($group, $last, $first, $post) = preg_split("/\s+/", $buf, 4);                                      
-                    $result[] = $group;                                      
+                    list($group, $last, $first, $post) = preg_split("/\s+/", $buf, 4); 
+                    $size = $last - $first;
+                    if ($size > 10000)         
+                    {                            
+                        $result[] = array($group, $last, $first, $size); #$group;     
+                    }                                 
                     $buf = fgets($this->nntp, 4096);                              
                     $bytes+=strlen($buf);                                  
                 }                           
-                add_loaded_bytes($bytes);                                          
+               # add_loaded_bytes($bytes);                                          
                 return $result;                                      
             }                                      
                                                                                    
