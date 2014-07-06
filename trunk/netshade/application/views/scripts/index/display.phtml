@@ -31,8 +31,10 @@
 
                     </ul>
 
+
+<? if (sizeof ($this->Pics) > 0): ?>
 <script language="javascript">
 var PICTURE_DATA = <?= json_encode  ($this->Pics) ?>;
 </script>
-
+<? endif?>
  
