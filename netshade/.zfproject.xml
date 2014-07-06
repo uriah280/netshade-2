@@ -34,6 +34,7 @@
           <actionMethod actionName="find"/>
           <actionMethod actionName="rar"/>
           <actionMethod actionName="randomof"/>
+          <actionMethod actionName="connect"/>
         </controllerFile>
         <controllerFile controllerName="Article">
           <actionMethod actionName="index"/>
@@ -164,6 +165,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Rpc">
             <viewScriptFile forActionName="randomof"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="connect"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

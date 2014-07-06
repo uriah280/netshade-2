@@ -200,8 +200,34 @@ class RpcController extends Zend_Controller_Action
         echo $article->Randomof();
     }
 
+    public function connectAction()
+    {
+        $request    = $this->getRequest();  
+        $user       = $request->getParam('user');  
+        $test       = new Application_Model_ShadeUser($user);
+
+
+        $data = array (
+              "userkey" => $test -> Serverkey 
+             , "renew" => "connect"
+             , "endpoint" => "queue.newsgroup"
+         );
+
+
+            $this->_helper->layout->setLayout('device');
+         $key = Application_Model_QMessage::Send ($data);
+
+            echo "<div class='msmq-id' id='/index/groups/user/{$user}'>{$key}</div>";
+ 
+
+
+
+    }
+
 
 }
+
+
 
 
 
