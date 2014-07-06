@@ -3,8 +3,8 @@
 require("queue.progress.php");   
 
 # define ("HOME_PATH", "/home/milton/netshade-2/");
+# define ('QUEUE_DATA', HOME_PATH . 'temp/queue');
 
-define ('QUEUE_DATA', HOME_PATH . 'temp/queue');
 define ('QUEUE_PATH', HOME_PATH . 'shadow.net/client'); 
 
  
