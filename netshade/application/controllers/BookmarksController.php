@@ -6,7 +6,7 @@ class BookmarksController extends Zend_Controller_Action
     public function init()
     {
        $this->_helper->layout->setLayout('device');
-       $this->view->addScriptPath("/var/www/netshade/application/views/partials");
+       $this->view->addScriptPath(HOME_PATH . "netshade/application/views/partials");
        
         $home = array ('action' => 'display', 'controller' => 'index');   
         $self = array ('action' => 'index', 'controller' => 'bookmarks', 'article' => NULL);   
