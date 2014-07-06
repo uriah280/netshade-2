@@ -41,6 +41,13 @@ mysql --user=root --password=sa < shadow.sql
 cd ..
 
 
+sudo cp asset/apache-php.ini /etc/php5/apache2/php.ini
+sudo cp asset/cli-php.ini /etc/php5/cli/php.ini
+sudo cp asset/my.cnf /etc/mysql/my.cnf
+sudo cp default /etc/apache2/sites-available/000-default.conf
+
+sudo service apache2 restart
+sudo service mysql restart
 
 
 
