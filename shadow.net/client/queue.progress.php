@@ -3,7 +3,7 @@
 require ("usenet.db.php");
 
 
-define ("HOME_PATH", "/home/milton/netshade-2/");
+define ("HOME_PATH", "/home/milton/netshade-4/");
 define ('QUEUE_DATA', HOME_PATH . "temp/queue");
 define ('ARTICLE_MAX', 15000);
 
