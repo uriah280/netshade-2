@@ -1,5 +1,5 @@
 AuthName "Authorisation Required"
-AuthUserFile "/home/sa/webroot/netshade/public/.htpwd"
+AuthUserFile "/home/ubuntu/webroot/netshade/public/.htpwd"
 AuthType Basic
 require valid-user
 ErrorDocument 401 "Authorisation Required"

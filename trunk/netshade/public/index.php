@@ -43,7 +43,7 @@ function trunc($a, $b=50) {
 function cmp($a, $b) { 
     return (nameOf($a->subject) < nameOf($b->subject)) ? -1 : 1;
 }
-define ("HOME_PATH", "/home/sa/webroot/");
+define ("HOME_PATH", "/home/ubuntu/webroot/");
 define ('PAGE_PATTERN', "<a href='%s%s'>%s</a>");
 define ('LOGFILE', HOME_PATH . "netshade/ShadeDb.log");
 define ('PAGE_MAX', 10);

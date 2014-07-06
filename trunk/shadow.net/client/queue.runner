@@ -3,7 +3,7 @@
 # get the current path
 CURPATH=`pwd`
 
-inotifywait -mr --timefmt '%d/%m/%y %H:%M' --format '%T %w %f' -e close_write /home/sa/webroot/temp/queue/notify | while read date time dir file; do
+inotifywait -mr --timefmt '%d/%m/%y %H:%M' --format '%T %w %f' -e close_write /home/ubuntu/webroot/temp/queue/notify | while read date time dir file; do
 
     FILECHANGE=${dir}${file}
 # convert absolute path to relative
@@ -11,7 +11,7 @@ inotifywait -mr --timefmt '%d/%m/%y %H:%M' --format '%T %w %f' -e close_write /h
 
     rm nohup.out
 
-    nohup php /home/sa/webroot/shadow.net/client/queue.poll.php $FILECHANGE & # > /dev/null & echo $!
+    nohup php /home/ubuntu/webroot/shadow.net/client/queue.poll.php $FILECHANGE & # > /dev/null & echo $!
 
     echo "At ${time} on ${date}, file $FILECHANGE was changed"
 done
