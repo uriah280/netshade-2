@@ -205,7 +205,7 @@ class News_Usenet_Server
             $MaxID = $temp[1]; #$att['endat'];
             $Count = $temp[3]; #$att['count'];
             $line = "{$uuid}\t{$key}\t{$Name}\t{$MinID}\t{$MaxID}\t{$Count}";
-            echo "{$line}\r\n";
+    #        echo "{$line}\r\n";
             $this -> Db -> AddBatch ($line);
         } 
         $this -> Db -> Send("Ns_Group", true); 
