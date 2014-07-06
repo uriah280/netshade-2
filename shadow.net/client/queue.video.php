@@ -1,4 +1,4 @@
-<? 
+<?php 
 
 define ('DATA_PATH', '/var/www/temp/data');
 define ('QUEUE_PATH', '/var/www/shadow.net/client');
