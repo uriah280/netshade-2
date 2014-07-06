@@ -2,6 +2,9 @@
 
 require("queue.progress.php");   
 
+ini_set("memory_limit","500M");
+
+
 # define ("HOME_PATH", "/home/milton/netshade-2/");
 define ('QUEUE_PATH', HOME_PATH . 'shadow.net/client'); 
 
@@ -208,7 +211,7 @@ class News_Usenet_Server
     #        echo "{$line}\r\n";
             $this -> Db -> AddBatch ($line);
         } 
-        $this -> Db -> Send("Ns_Group", true); 
+        $this -> Db -> Send("Ns_Group"); 
     }
 
     function LoadNewsGroup ($groupName, $groupStart, $numOfArticles, $messageKey, $Renew=NULL)
