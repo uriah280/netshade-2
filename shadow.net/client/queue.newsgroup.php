@@ -26,17 +26,24 @@ function Page_Load ()
     
     $bRenew     = strlen ($groupRenew) > 0;
 
-    SetProgress($messageKey, 1, 0, "IN PROGRESS", "Opening {$groupName}..."); 
-
     $Credential = new Credential($userKey);  
     $newsserver = new News_Usenet_Server ($Credential);   
-    if (strlen($groupParam) > 0)
+
+    if ($groupRenew == "connect")
     {
-
-        $newsserver->SearchNewsGroup ($groupName, $groupParam, NULL, NULL, $messageKey);
-
-    } else $database   = $newsserver->LoadNewsGroup($groupName, $groupStart, $groupCount, $messageKey, $bRenew);
-     
+        SetProgress($messageKey, 1, 0, "IN PROGRESS", "Looking up groups in {$newsserver -> NNTP -> server}..."); 
+        $newsserver -> AddGroups2Server ();
+    } 
+    else if (strlen($groupParam) > 0)
+    {
+        SetProgress($messageKey, 1, 0, "IN PROGRESS", "Searching {$groupName}..."); 
+        $newsserver -> SearchNewsGroup ($groupName, $groupParam, NULL, NULL, $messageKey);
+    } 
+    else 
+    {
+        SetProgress($messageKey, 1, 0, "IN PROGRESS", "Opening {$groupName}..."); 
+        $database = $newsserver -> LoadNewsGroup($groupName, $groupStart, $groupCount, $messageKey, $bRenew);
+    }
     SetProgress($messageKey, 1, 1, 'COMPLETE', ""); 
 }
 
@@ -82,9 +89,9 @@ function LoadGroupstoDb()
             $MaxID = $att['endat'];
             $Count = $att['count'];
        $line = "{$uuid}\t{$key}\t{$Name}\t{$MinID}\t{$MaxID}\t{$Count}";
-        
-                   $Db -> AddBatch ($line);
+       $Db -> AddBatch ($line);
     }
+
     $Db -> Send("Ns_Group", true); 
 
 
@@ -155,6 +162,53 @@ class News_Usenet_Server
             return true;
         }
         return false;
+    }
+
+    function ServerPopulated ()
+    {
+         $sql  = "SELECT COUNT(1) as C FROM Ns_Group WHERE Serverkey = '{$this->Credential->Key}'; "; 
+         $ask = $this->Db->Execute ($sql); 
+        if ($row = mysql_fetch_array($ask))  
+        {   
+             echo $row[0] . "!!!!\n\n";
+             return $row[0] > 0;
+        } 
+        echo "ERROR IN SQL: " . $sql . "!!!!\n\n";
+        var_dump ($this->Db->Error);
+    }            
+
+
+    function AddGroups2Server ()
+    {
+
+        if ($this->ServerPopulated ()) return;
+
+        $nntp = $this->NNTP;
+        if (!$nntp->connect())                                                
+        {                                                
+            header("Content-Error: " . $nntp->get_error_message());                                               
+            echo "<b>".$messages_ini["error"]["nntp_fail"]."</b><br>";                                                
+            echo $nntp->get_error_message().$nntp_server."<br>";                                                
+            return;                                               
+        }  
+        echo "Getting groups...\n";
+        $gi = $nntp->get_group_list("alt.*");     
+        $nntp->quit();                                    
+                   
+        $key = $this->Credential->Key;
+
+        foreach ($gi as $temp)
+        {
+            $uuid  = gen_uuid(); 
+            $Name  = $temp[0]; #"{$att->name}"; 
+            $MinID = $temp[2]; #$att['beginat'];
+            $MaxID = $temp[1]; #$att['endat'];
+            $Count = $temp[3]; #$att['count'];
+            $line = "{$uuid}\t{$key}\t{$Name}\t{$MinID}\t{$MaxID}\t{$Count}";
+            echo "{$line}\r\n";
+            $this -> Db -> AddBatch ($line);
+        } 
+        $this -> Db -> Send("Ns_Group", true); 
     }
 
     function LoadNewsGroup ($groupName, $groupStart, $numOfArticles, $messageKey, $Renew=NULL)

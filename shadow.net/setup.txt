@@ -10,7 +10,7 @@ sudo apt-get -y install vim
 
 # 2. LAMP (optional)
 
-# sudo apt-get -y install lamp-server^
+sudo apt-get -y install lamp-server^
 sudo a2enmod rewrite
 sudo service apache2 restart
 
