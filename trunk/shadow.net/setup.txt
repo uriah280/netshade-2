@@ -1,0 +1,8 @@
+# 1. Setup SSH
+# 2. LAMP
+# 3. Zend
+# 4. Subversion
+# 5. Checkout Code
+# 6. Update conf
+# 7. Run Startup script
+
