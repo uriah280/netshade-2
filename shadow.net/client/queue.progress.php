@@ -3,7 +3,7 @@
 require ("usenet.db.php");
 
 
-define ("HOME_PATH", "/home/sa/webroot/");
+define ("HOME_PATH", "/home/ubuntu/webroot/");
 define ('QUEUE_DATA', HOME_PATH . "temp/queue");
 define ('ARTICLE_MAX', 15000);
 

@@ -1,13 +1,13 @@
 <VirtualHost *:80>
 	ServerAdmin webmaster@localhost
 
-	DocumentRoot /home/milton/netshade-4/netshade/public
+	DocumentRoot /home/ubuntu/webroot/netshade/public
 
         <Directory />
             Options FollowSymLinks
             AllowOverride All
         </Directory>
-	<Directory /home/milton/netshade-4/netshade/public/>
+	<Directory /home/ubuntu/webroot/netshade/public/>
 		Options Indexes FollowSymLinks MultiViews
 		AllowOverride All
 		Order allow,deny
