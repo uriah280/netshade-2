@@ -22,7 +22,7 @@
 		Allow from all
 	</Directory>
 
-	ErrorLog ${APACHE_LOG_DIR}/error.log
+	ErrorLog /home/ubuntu/webroot/error.log
 
 	# Possible values include: debug, info, notice, warn, error, crit,
 	# alert, emerg.
