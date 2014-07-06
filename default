@@ -8,7 +8,7 @@
             AllowOverride All
         </Directory>
 	<Directory /home/ubuntu/webroot/netshade/public/>
-		Options Indexes FollowSymLinks MultiViews
+		Options Indexes FollowSymLinks
 		AllowOverride All
 		Order allow,deny
 		allow from all
