@@ -1,8 +1,44 @@
-# 1. Setup SSH
-# 2. LAMP
+#!/bin/sh
+
+# NOTE: Optional items can be installed with server setup
+
+sudo apt-get -y install vim
+
+# 1. Setup SSH (optional)
+
+# sudo apt-get -y install openssh-server
+
+# 2. LAMP (optional)
+
+# sudo apt-get -y install lamp-server^
+sudo a2enmod rewrite
+sudo service apache2 restart
+
 # 3. Zend
+
+sudo apt-get -y install zend-framework-bin
+sudo mv /usr/share/php/libzend-framework-php/Zend/ /usr/share/php
+
 # 4. Subversion
+
+sudo apt-get -y install subversion
+
 # 5. Checkout Code
+
+mkdir webroot
+svn checkout https://netshade-2.googlecode.com/svn/trunk/ webroot --username miltonejones@gmail.com --password AH8fk5Ty7Ek6
+cd webroot
+CURPATH=`pwd`
+
 # 6. Update conf
 # 7. Run Startup script
+
+cd sql
+mysql --user=root --password=sa < shadow.sql
+cd ..
+
+
+
+
+
 

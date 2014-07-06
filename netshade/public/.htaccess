@@ -1,8 +1,10 @@
 AuthName "Authorisation Required"
-AuthUserFile "/var/www/netshade/public/.htpwd"
+AuthUserFile "/home/sa/webroot/netshade/public/.htpwd"
 AuthType Basic
 require valid-user
 ErrorDocument 401 "Authorisation Required"
+
+php_value short_open_tag 1
 
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} -s [OR]
