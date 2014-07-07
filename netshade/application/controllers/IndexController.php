@@ -20,11 +20,11 @@ class IndexController extends Zend_Controller_Action
         $this->view->Groups   = $test -> SubscribedGroups;    
         $this->view->User     = $user;
         $this->view->title    = "Subscribed groups";
-$a=array();
-foreach ($this->view->Groups as $g)
-{
-    $a[$g->Name] = $g->GetPictures ();
-} 
+        $a=array();
+        foreach ($this->view->Groups as $g)
+        {
+            $a[$g->Name] = $g->GetPictures ();
+        } 
         $this->view->Pics     = $a;
         $this->view->css      = "float";
 
