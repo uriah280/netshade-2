@@ -85,16 +85,71 @@ var
         return o;
     },
     Fancy = {
+
+        loading : [],
         x       : -PANE_SIZE,  
         index   : -1,  
+        limit   : -1,  
         span    : PANE_SIZE / 4,  
         items   : [],  
         pics    : { stale : undefined, fresh : undefined },  
         peek    : function () { 
             this.index++;
-            if (this.index>=this.items.length) this.index = 0;
+            if (this.index>=this.limit) this.index = 0;
             return this.items[this.index];
         },  
+
+        init : function (arr) {
+            Fancy.loading = arr;
+            Fancy.limit = arr.length; 
+            Fancy.go ();
+        },  
+
+        init_ : function () {
+ 
+            
+            var groupname = Fancy.loading.pop (), url = "/rpc/picsof/user/milton/name/" + groupname;
+ document.title = Fancy.limit + ". "+groupname+"...";
+            $.get(url, function (data) {
+                  
+                   try {
+
+                        var xmlDoc = $.parseXML( data ),
+                             xml = $( xmlDoc ), list = [];
+
+
+                        $(xml).find('item').each(function(){ 
+				var uuid = $(this).find('uuid').text();
+				var subject = $(this).find('subject').text();
+				var groupname = $(this).find('groupname').text();
+				var count = $(this).find('count').text();
+				var username = $(this).find('username').text();
+				var ref = $(this).find('ref').text();
+			list.push  ( {
+                                  uuid : uuid,
+                                  subject : subject,
+                                  ref : ref,
+                                  username : username,
+                                  count : count,
+                                  groupname : groupname 
+                               } )
+	 
+			});
+ 
+ 
+                        Fancy.add (groupname, list);
+                        Fancy.proceed_ ();
+
+                   } catch (ex) 
+                   { 
+                        Fancy.limit --;
+                        Fancy.proceed ();
+                   }
+
+		});
+
+        },
+
         add : function (name, list) {
             if (list.length < 5) return alert (name + " list only has " + list.length + " items"); 
             var id=this.items.length, object = {
@@ -156,7 +211,7 @@ var
 
              });
  
-             setTimeout (Fancy.proceed, 5000);
+             setTimeout (Fancy.proceed, Fancy.loading.length > 0 ? 500 : 5000);
 
         },
 
@@ -210,6 +265,11 @@ var
         },
         proceed : function () {
 
+            if (Fancy.loading.length > 0) return Fancy.init_();
+            Fancy.proceed_ ();
+        },
+        proceed_ : function () {
+ 
             var group=Fancy.peek(), article = group.peek(), 
                   command = "/rpc/randomof/id/" + article.uuid, 
                src = '/rpc/picture/id/' + article.uuid, tiny = '/rpc/small/id/' + article.uuid; 

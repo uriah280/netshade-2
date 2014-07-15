@@ -20,16 +20,86 @@
 
 ?> 
 
+  <ul class="my-menu">
+
+
+    <li><a class="bookmark" id="/rpc/subscribe/id/<?= $this->group->Key ?>/user/<?= $this->user ?>"><?= $action ?></a></li>
+
+<? if ($amount > 0): ?>
+    <li><a class="group-join <?= $this->group->LowID ?> <?= $amount ?>" id="<?= $this->group->Name ?>">Get the previous <?= $amount ?> items starting at <?= $this->group->LowID ?>...</a></li> 
+<? endif ?>
+
+    <li><a class="group-renew" id="<?= $this->group->Name ?>">Clear all articles and reload...</a></li> 
+
+
+    <li><a>Show only items with at least</a>
+
+      <ul>
+
+<? for ($x=0;$x<100;$x+=5): ?>
+     <li 
+             <?if ($x==$this->most): ?>
+                 class="selected" 
+             <? endif ?>
+         ><a class="a-count" id="<?= $x ?>"><?= $x ?> items</a>
+
+         </li>
+<? endfor?> 
+
+      </ul>
+ 
+      </li> 
+
+
+
+
+    <li>
+ <a>Open related group </a>
+      <ul>
+<? while (list($name,$val) = each ($this->refs) ): ?>
+
+       <?if (strlen($name) > 10): ?>
+      <li 
+         ><a id="<?= $name ?>" class="a-group"><?= $name ?></a></li>
+        <?endif?>
+
+<? endwhile ?>
+      </ul>
+
+      </li> 
+
+
+<? if (sizeof($this->searches) > 0): ?> 
+    <li>
+        <a>Saved searches</a>
+
+      <ul>
+
+<? foreach ($this->searches as $search): ?>
+     <li 
+             <?if ($search==$this->search): ?>
+                 class="selected" 
+             <? endif ?>
+         ><a href='<?= $this->url(array("search" => $search, "page" => 1, "most" => NULL)) ?>'><?= $search ?></a>
+
+         </li>
+<? endforeach?> 
+
+      </ul>
+ 
+
+     
+   </li>
+
+<? endif ?>
+
+</ul>
+ 
    <input type="hidden" id="text-user" value="<?= $this->user ?>"/>   
  
   
  
-                    <div id="div-stat"><?= $this -> pages ?>
-
-<? if (isset($this->search)): ?>
-      <br/>  <a href="<?= $this->url (array('search'=>NULL, 'page' => 1)) ?>">Clear</a>
-<? endif ?>
-                    </div>
+                    <div id="div-stat"><?= $this -> pages ?></div>
 
                     <ul class="rounded">
 
@@ -55,48 +125,11 @@
 
                     </ul> 
   
-
  
-
 <div id="dialog" title="<?= $this->group->Name ?> options">
 
-  <ul>
-    <li>
-  <div class="span-of" id="<?= implode ('x', $data) ?>">loading...</div></li> 
-    <li><a class="bookmark" id="/rpc/subscribe/id/<?= $this->group->Key ?>/user/<?= $this->user ?>"><?= $action ?></a></li>
+    <li> <div class="span-of" id="<?= implode ('x', $data) ?>">loading...</div></li> 
 
-<? if ($amount > 0): ?>
-    <li><a class="group-join <?= $this->group->LowID ?> <?= $amount ?>" id="<?= $this->group->Name ?>">Get the previous <?= $amount ?> items starting at <?= $this->group->LowID ?>...</a></li> 
-<? endif ?>
-
-    <li><a class="group-renew" id="<?= $this->group->Name ?>">Clear all articles and reload...</a></li> 
-    <li>Show only items with at least 
-       <select id="drop-count">
-<? for ($x=0;$x<100;$x+=5): ?>
-     <option value="<?= $x ?>"
-             <?if ($x==$this->most): ?>
-                 selected 
-             <? endif ?>
-         ><?= $x ?></option>
-<? endfor?>
-       </select>
-         sub-articles</li> 
-
-
-
-
-    <li>
-       <select id="drop-group">
-<option>Open related group</option>
-<? while (list($name,$val) = each ($this->refs) ): ?>
-     <option value="<?= $name ?>" 
-         ><?= $name ?></option>
-<? endwhile ?>
-       </select></li> 
-
-
-</ul>
- 
 
 </div> 
 

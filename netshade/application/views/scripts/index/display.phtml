@@ -19,7 +19,7 @@
 
 		 <? foreach ($this->Groups as $group): ?>
 		     
-			<li class="group-name" id="<?= $group -> Name ?>">
+			<li class="group-name carousel" id="<?= $group -> Name ?>">
                            <a class="list-item">
 			    <span class="link" id="/index/"><?= $group -> Name ?></span>
                             <span class="column1"><?= $group -> Count ?><span>
@@ -31,14 +31,4 @@
 
                     </ul>
 
-
-<? if (sizeof ($this->Pics) > 0): ?>
-<script language="javascript">
-
-/*
-<? var_dump ($this->Pics); ?>
-*/
-var PICTURE_DATA = <?= json_encode  ($this->Pics) ?>;
-</script>
-<? endif?>
  
