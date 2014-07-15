@@ -1,4 +1,12 @@
+ <?
+    $action = $this->article->bookmarked ? "Unbookmark" : "Bookmark";    
  
+?>
+
+  <ul class="my-menu"> 
+    <li><a class="bookmark" id="/rpc/bookmark/id/<?= $this->article -> uuid ?>/user/<?= $this->article->username ?>"><?= $action ?></a></li>
+ 
+</ul> 
 
    <input type="hidden" id="text-suffix" value="name/<?= $this->article->groupname ?>/user/<?= $this->article->username ?>"/>
 

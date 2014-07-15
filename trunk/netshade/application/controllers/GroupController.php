@@ -115,7 +115,7 @@ $this->view->option  = "Settings";
          $this -> view -> searches = $params; 
 
          var_dump ($ms);
-         var_dump ($params);
+         var_dump ($group->Metrics); 
     }
 
     public function joinAction()

@@ -73,6 +73,7 @@ $this->view->title   = "Bookmarks in {$_article -> groupname}";
         $this->crumb[] = new Application_Model_Link ($_article -> groupname) ;
         $this -> view -> nav     = $this->crumb;
 
+        $this->view->user =  $user ;
         $this->view->group =  $_article -> groupname ;
 
         $this -> view -> pages  = Application_Model_Paginator::Pages ($this-> view-> User -> count, $page, 
