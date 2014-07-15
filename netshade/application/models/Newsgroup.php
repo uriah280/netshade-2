@@ -14,10 +14,16 @@ class Application_Model_Newsgroup
     public $Tally; 
     public $Refs; 
     public $Articles; 
+    public $Metrics; 
+    public $startat; 
 
 
     function __construct($row=NULL, $ref=NULL)
     {
+        $this->Metrics = array();
+        $this->startat = time();
+        $this->Metrics['start'] = time() - $this->startat;
+ 
         if ($row) { 
             $this->Key    = $row["uuid"]; 
             $this->Server = $row["Serverkey"]; 
@@ -26,6 +32,7 @@ class Application_Model_Newsgroup
             $this->MaxID  = $row["Endat"]; 
             $this->Count  = $row["Countof"];  
             if ($ref) $this->GetRefs();
+            $this->Metrics['refs'] = time() - $this->startat;
         }
         $this->Db = new Application_Model_ShadeDb; 
     } 
@@ -122,27 +129,14 @@ class Application_Model_Newsgroup
 
     function GetArticles ($startat = 0, $filter = "", $limit = "", $table = "Ns_Articleset")
     {
+            $this->Metrics['GetArticles-start'] = time() - $this->startat;
         $where  = strlen ($filter) > 0 ? " AND subject LIKE '%{$filter}%'" : "";
         $and    = strlen($limit) == 0 ? "" : "children > {$limit} AND";
         $query  = "SELECT * FROM {$table} WHERE {$and} group_uuid = '{$this->Key}' AND CHAR_LENGTH(parent_uuid) < 36 AND CHAR_LENGTH(message_key) > 5 {$where}"; 
         $data   = Application_Model_Articleset::ArticlesbySql($query, $startat);
         $this -> Articles = $data['articles'];
         $this -> Tally = $data['tally']; 
-        return;
-
-  
-
-        $count  = 0;
-        $Db     = new Application_Model_ShadeDb;  
-        $this -> Articles = array();
-        $this -> Tally = mysql_num_rows($result); 
-        mysql_data_seek($result, $startat);
-        while($row = mysql_fetch_assoc($result))  
-        {  
-            $this -> Articles[] = new Application_Model_Articleset($row);
-            $count ++;
-            if ($count >= 8) break;
-        } 
+            $this->Metrics['GetArticles-end'] = time() - $this->startat;
     }
 
 }

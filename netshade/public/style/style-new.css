@@ -7,6 +7,9 @@ body {
     margin : 1px;
 }
 
+a {
+    cursor : pointer;
+}
 
 header {
     display:block;
@@ -62,6 +65,7 @@ header {
 .rounded { 
     padding : 0px 0px 0px 12px; 
     margin : 2px;  
+   max-width: 1024px;
 }
 
 
@@ -84,6 +88,15 @@ header {
     height    : 52px;
 }
 
+.for-canvas {
+   /*  display : none; */
+}
+
+#canvas-teeny {
+    width     : 322px;
+    height    : 52px;
+    display : none;
+}
 
 .article-menu {
     cursor:pointer;

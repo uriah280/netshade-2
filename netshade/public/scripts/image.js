@@ -109,8 +109,8 @@ var
  
             
             var groupname = Fancy.loading.pop (), url = "/rpc/picsof/user/milton/name/" + groupname;
- document.title = Fancy.limit + ". "+groupname+"...";
-            $.get(url, function (data) {
+              document.title = Fancy.limit + ". "+groupname+"...";
+            $ajax(url, function (data) {
                   
                    try {
 
@@ -211,7 +211,7 @@ var
 
              });
  
-             setTimeout (Fancy.proceed, Fancy.loading.length > 0 ? 500 : 5000);
+             setTimeout (Fancy.proceed, Fancy.loading.length > 0 ? 1500 : 5000);
 
         },
 
@@ -274,7 +274,16 @@ var
                   command = "/rpc/randomof/id/" + article.uuid, 
                src = '/rpc/picture/id/' + article.uuid, tiny = '/rpc/small/id/' + article.uuid; 
  
-            $.get( command, function( uuids ) { 
+                    var params = {  uri : command };
+                     var worker = new Worker('/scripts/async.js?' + new Date().getTime());
+                     worker.onmessage = function(e) {
+                          var msg = e.data.content; 
+                          // confirm(msg);
+                       }
+                       worker.onerror = function (e) { confirm("Err:" + typeof(e.message)); }
+                     worker.postMessage (params);
+
+            $ajax( command, function( uuids ) { 
                 var picture = new Image(), kids = uuids.split (",");  
                 picture.onerror = Fancy.proceed;
                 picture.onload = function () {  
@@ -310,6 +319,19 @@ var
                 Fancy.proceed();
             });
         }
+    },
+
+    $ajax = function (uri, callback) {
+
+                    var onload = callback, params = {  uri : uri };
+                     var worker = new Worker('/scripts/async.js?' + new Date().getTime());
+                     worker.onmessage = function(e) {
+                          var msg = e.data.content; 
+                          onload(msg);
+                       }
+                       worker.onerror = function (e) { confirm("Err:" + typeof(e.message)); }
+                     worker.postMessage (params);
+
     },
 
     Runit = {
@@ -396,6 +418,7 @@ var
                 },
               
                 attach : function () {
+ 
                     var palette = document.createElement("canvas"), canvas = this.context.canvas, image = document.createElement("IMG"),
                          article = this.source.article, text = this.caption, picture = this.picture, size = this.source.size; 
 
@@ -421,17 +444,8 @@ var
                        ServiceBus.Subscribe ("OnPageResize", image);
                    }
 
-                    canvas.parentNode.replaceChild(image, canvas);
+                   canvas.parentNode.replaceChild(image, canvas);
                      
-                   $(image).click (function() {
-                       // alert (article);
-                   })
-                   $(image).on ("mousemove", function() {
-                      //  Runit.display (this, article, text);
-                   })
-                   $(image).on ("mouseout", function() {
-                      //  ServiceBus.Mouser (this, "");
-                   })
                 },
 
 
@@ -465,6 +479,7 @@ var
                     {
                         Y = 24; 
                     }
+                         context.clearRect(0,0,this.w,this.h);
 
                     api.imagecopyresized (context, this.picture, 0, 0, this.picture.width, this.picture.height, this.x, this.y, this.w, this.h);
 
@@ -477,7 +492,13 @@ var
                 },
 
                 writeFrame : function () {
-                    this.image.src = this.source.size < 1 ? this.picture.src : this.staticFrame(); 
+                    if (this.source.size > 0) this.image.src = this.staticFrame(); 
+                    else {
+                       return this.image.src = this.picture.src;
+                       this.canvas = this.context.canvas; 
+                       this.staticFrame(); 
+                    }
+                   // this.image.src = this.source.size < 1 ? this.picture.src : this.staticFrame(); 
                      ServiceBus.FrameLoaded (this, this.source)
                 } 
             }
@@ -496,21 +517,34 @@ var
         suffix : undefined , 
         table  : "" , 
         cache  : { },
+        old    : { },
         items  : [], 
         oncomplete : undefined,
         check  : function () { 
-            if (!this.oncomplete) return;
             this.items.pop(); 
-            if (this.items.length == 0) this.oncomplete(); 
+            if (this.items.length == 0) { 
+                if (!this.oncomplete) return;
+                this.oncomplete(); 
+            }
         },
         create : function (element, article, caption, size, preview, css, rar) {
               
+            var old;
+            if (old = Thumbpane.old[element.id]) {
+                old.article = article;
+                old.caption = caption; 
+            //   old.load ();
+             //   return old;
+            }
 
+          
             var object = {
                 element : element,
                 article : article,
                 caption : caption,
                 preview : preview,
+                source  : undefined,
+                target  : undefined,
                 count   : -1,
                 css     : css,
                 size    : size,
@@ -542,21 +576,49 @@ var
                                           } 
                                           pic.onerror = function () { 
 
-                                              api.imagestring (context, "9pt Lato", 9, 36, "Image did not load", "#900", null,
+                                              api.imagestring (context, "9pt Lato", 9, 36, caption + " did not load", "#900", null,
                                                      200, 14, 5); 
                                               if (preview) { Controller.preview (); }
                                               Thumbpane.check();
                                           } 
                                           api.imagestring (context, "9pt Lato", 8, 18, "Drawing...", "#090"); 
-                                          pic.src = that.className; 
+ 
+                                          pic.src = my.source; 
                                           Thumbpane.cache [key] = key;
                                           ServiceBus.OnPageResize();
                                }, 
                                ondone = function () {
-                                     var src  = "/rpc/" + my.type + "/id/" + my.article + after + Thumbpane.table, key = "I" + Math.floor( Math.random() * 1000000 ); 
-                                     var img  = "<canvas id='" + key + "' class='" + src + "'></canvas>";   
-                                     $(target).html (img);
-                                     $("#" + key).each (showpic);  
+                                     my.source  = "/rpc/" + my.type + "/id/" + my.article + after + Thumbpane.table, key = "I" + Math.floor( Math.random() * 1000000 ); 
+                                     var img  = "<canvas id='" + key + "' class='" + my.source + "'></canvas>", tiny = target.className.indexOf ("for-canvas"); 
+ 
+                                     if (false) //(my.target && my.size < 0) 
+                                     { 
+                                          var api = CanvasAPI, that=document.createElement("canvas"), context = that.getContext('2d'), pic = new Image(), 
+                                               index = target.id - (-3); 
+
+                                              that.style.width = "52px"; 
+                                              that.style.height = "52px";
+                                              that.width = 52; 
+                                              that.height = 52;    
+
+
+                                          pic.onload = function () {
+                                              var s = Sizer.fit (this, 52);
+ 
+                                                api.imagecopyresized (context, this, 0, 0, this.width, this.height, s.x, s.y, s.w, s.h);
+                                              $("#canvas-teeny").each (function(){
+                                                   var ctx = this.getContext('2d');
+                                                   ctx.drawImage(that, (index * 52) + 1, 0);
+                                              })
+                                          }
+                                          pic.src = my.source;
+                                     }
+                                     else 
+                                     { 
+                                         $(target).html (img);
+                                         my.target = "#" + key;
+                                         $(my.target).each (showpic);  
+                                     }  
                                },
                                onrespond = function () {
                                    var text=this.response.caption, p = "#prog" + key, t = "#text" + key;
@@ -584,17 +646,21 @@ var
                      if (Thumbpane.cache [key] || target.className.indexOf ('cache') > 0) { 
                          return ondone();
                      }
+                     
+                     if (object.size > 0)
+                     {
+                         var bar = "<div id='text" + key + "'></div><div id='prog" + key + "'></div>";
+                         $(target).html (bar);
+                     }
 
-                     var bar = "<div id='text" + key + "'></div><div id='prog" + key + "'></div>";
-                     $(target).html (bar);
-
-                     $.get( command, function( uuid ) { 
+                     $ajax( command, function( uuid ) { 
                           if (uuid == "-1") return ondone() ;
                           var q = Q.Message.create ("/rpc/receive/id/" + uuid, onrespond, ondone);
                           q.send(); 
                      }); 
                 }
             }
+          //  Thumbpane.old[element.id] = object;
             Thumbpane.items.push(object);
             object.load ();
             return object;
@@ -634,7 +700,7 @@ var
             if (!h1) 
             {
                 w1 = $(window).width() - 16
-                H = $(window).height() - 16
+                H = $(window).height() - 116
                 W = H * r 
             }
 
@@ -696,11 +762,40 @@ var
                     command    : command,
                     onprogress : onprogress,
                     oncomplete : oncomplete,
+                    worker     : new Worker('/scripts/async.js?' + new Date().getTime()),
 		    id         : id, 
 		    response   : Q.Response.create(),
 
                     send       : function () {
                         var my = Q.queue[id]; 
+
+ 
+                     my.worker.onmessage = function(e) {
+                          var data = e.data.content, xmlDoc = $.parseXML( data ),
+                             xml = $( xmlDoc ), tmp = { state : "PENDING" }; 
+
+		                $(xml).find ('Request').each (function (){ 
+		                   $(this).children().each(function() {   
+		                       tmp[this.tagName]=$(this).text();
+		                    });
+		                }); 
+                                if (! (my.response.state != "PENDING"  && tmp.state == "PENDING") ) {
+                                    my.response = tmp;
+				    if (my.response.state == "COMPLETE") { 
+			                return my.oncomplete(); 
+			            } 
+                                    my.onprogress ();  
+                                } 
+			        setTimeout (my.send, 750);
+                       }
+                       my.worker.onerror = function (e) { confirm("Err:" + typeof(e.message)); }
+                     return my.worker.postMessage ({uri:my.command});
+
+ 
+
+
+
+
                         $.ajax({
 			    type: "GET",
 			    url: my.command,
