@@ -64,7 +64,7 @@ class Application_Model_SearchResult
         $Db     = new Application_Model_ShadeDb; 
         $query  = "SELECT Parameter FROM Ns_Search WHERE GroupKey = '{$group}'";
         $result = $Db -> Execute ($query);
-        if ($row = mysql_fetch_array($result))  
+        while ($row = mysql_fetch_array($result))  
         {  
             $ret[] = $row[0];
         } 

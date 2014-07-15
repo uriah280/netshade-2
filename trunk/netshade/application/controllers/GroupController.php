@@ -41,7 +41,7 @@ class GroupController extends Zend_Controller_Action
         $group = Application_Model_Newsgroup::byName ($user, $groupname);
         $ms['group_got'] = time() - $s;
 
-$back = array ('controller' => 'index', 'action' => 'display', 'user' => $user, 'name' => NULL, 'page' => NULL, 'find' => NULL);  
+$back = array ('controller' => 'index', 'action' => 'display', 'user' => $user, 'name' => NULL, 'page' => NULL, 'search' => NULL, 'find' => NULL, 'most' => NULL);  
 $next = array ('controller' => 'article', 'action' => 'index', 'on' => $page, 'page' => NULL, 'id' => NULL);  
 $this->view->back    = $this->view->url ($back);
 $this->view->next    = $this->view->url ($next) . "/id/";
@@ -110,6 +110,9 @@ $this->view->option  = "Settings";
          $this -> view -> articles  = $articles; 
          $this -> view -> pages  = Application_Model_Paginator::Pages ($tally, $page, 
                                      $this->view->url(array('page'=>NULL)) . "/page/");
+
+
+         $this -> view -> searches = $params; 
 
          var_dump ($ms);
          var_dump ($params);

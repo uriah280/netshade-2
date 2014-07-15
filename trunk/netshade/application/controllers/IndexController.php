@@ -23,7 +23,7 @@ class IndexController extends Zend_Controller_Action
         $a=array();
         foreach ($this->view->Groups as $g)
         {
-            $a[$g->Name] = $g->GetPictures ();
+      #      $a[$g->Name] = $g->GetPictures ();
         } 
         $this->view->Pics     = $a;
         $this->view->css      = "float";

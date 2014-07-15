@@ -9,7 +9,7 @@ class BookmarksController extends Zend_Controller_Action
        $this->view->addScriptPath(HOME_PATH . "netshade/application/views/partials");
        
         $home = array ('action' => 'display', 'controller' => 'index');   
-        $self = array ('action' => 'index', 'controller' => 'bookmarks', 'article' => NULL);   
+        $self = array ('action' => 'index', 'controller' => 'bookmarks', 'article' => NULL, 'id' => NULL, 'page' => NULL, 'pg' => NULL);   
 
        $this->crumb = array (
                   new Application_Model_Link ("Home", $this->view->url ($home)) 
@@ -106,7 +106,7 @@ $this->view->title   = "Bookmarks in {$_article -> groupname}";
         }
 
 
-$back = array ('action' => 'list', 'id' => NULL, 'page' => NULL);   
+$back = array ('action' => 'list', 'id' => NULL, 'page' => NULL, 'sort' => NULL);   
 $next = array ('action' => 'display');  
  
 $this->view->next    = $this->view->url ($next) . "/key/"; 

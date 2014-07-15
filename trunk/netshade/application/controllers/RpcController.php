@@ -224,8 +224,33 @@ class RpcController extends Zend_Controller_Action
 
     }
 
+    public function picsofAction()
+    {
+        $request    = $this->getRequest(); 
+        $groupname  = $request->getParam('name');  
+        $user       = $request->getParam('user');  
+        $group = Application_Model_Newsgroup::byName ($user, $groupname);
+        $pics = $group->GetPictures ();
+         $ret = array();
+
+         foreach ($pics as $pic)
+         {
+              $ret[] = " <item>
+   <uuid><![CDATA[{$pic -> uuid}]]></uuid>
+   <subject><![CDATA[{$pic -> subject}]]></subject>
+   <groupname><![CDATA[{$pic -> groupname}]]></groupname>
+   <ref><![CDATA[{$pic -> ref}]]></ref>
+   <count><![CDATA[{$pic -> count}]]></count>
+   <username><![CDATA[{$pic -> username}]]></username></item>";
+         }
+            $ret = implode ("\n", $ret);
+         echo "<list> {$ret} </list>" ; 
+    }
+
 
 }
+
+
 
 
 

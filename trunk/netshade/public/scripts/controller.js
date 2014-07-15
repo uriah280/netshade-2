@@ -145,14 +145,6 @@ var
 
              this.orient();
 
-             if (window['PICTURE_DATA'])
-             {
-                 for (var n in PICTURE_DATA)
-                 {
-                     Fancy.add (n, PICTURE_DATA[n]); 
-                 }
-                 Fancy.go();
-             }
 
              $(".a-hi").attr ("href", "javascript:void(0)");
              $(".a-hi").click (function (){
@@ -174,6 +166,23 @@ var
                  }
                  ServiceBus.Subscribe ("OnDyntext", this);
              });
+
+            $(".my-menu").mouseleave (function(){
+                $(".my-menu").hide(); 
+            });
+
+             $(".settings-button").click (function(){
+ 
+                  
+			$( ".my-menu" ).css ("width", "450px");
+			$( ".my-menu" ).css ("display", "block");
+			$( ".my-menu" ).position({
+			  my: "left top",
+			  at: "right bottom",
+			  of: ".settings-button"
+			});
+	             $(".my-menu").menu();
+              });
 
 
              $(".controller").each (function (){
@@ -268,9 +277,9 @@ var
                   });
              });  
 
-             $("#drop-count").change (function (){
+             $(".a-count").click (function (){
                   var old = location.href;
-                  old = old.replace (/\/most\/\d+/, "") + "/most/" + $(this).val();
+                  old = old.replace (/\/most\/\d+/, "") + "/most/" + this.id;
                   old = old.replace (/\/page\/\d+/, "") + "/page/1";
                   location.href = old;
              });
@@ -336,8 +345,8 @@ var
                //  return window.open (href);
                  location.href = href;
              });
-             $("#drop-group").change (function () {
-                 var name=$("#text-user").val(), href = "/group/join/user/" + name + "/name/" + $(this).val(); 
+             $(".a-group").click (function () {
+                 var name=$("#text-user").val(), href = "/group/join/user/" + name + "/name/" + this.id; 
                  location.href = href;
              });
              $(".msmq-id").each (function () { 
@@ -360,8 +369,14 @@ var
                    Thumbpane.create (this, this.id, $(this).html(), -1, true);
               });
  
- 
- 
+
+              var tmp_c = [];
+              $(".carousel").each (function (){
+                  tmp_c.push (this.id);
+              })
+              if (tmp_c.length) {  
+                 Fancy.init (tmp_c);  
+              }
 
 
              $(".article-unrar").each (function () {   

@@ -12,7 +12,9 @@ $css = isset ($this->css) ? $this->css : "scroll";
 <meta id="meta-v" name="viewport" content="width=device-width, user-scalable=no, minimal-ui, initial-scale=1.0">
 	 <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
      <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-     <link rel="stylesheet" href="/style/style.css">
+
+     <link rel="stylesheet" href="/style/style-new.css">
+
      <script src="//code.jquery.com/jquery-1.9.1.js"></script>
      <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script> 
 
@@ -50,6 +52,7 @@ $css = isset ($this->css) ? $this->css : "scroll";
                     <? if (isset($this->nav)): ?>
                     
                        <div class="navigator">
+
                       <? foreach ($this->nav as $nav): ?> 
 
                         <? if ($nav->Href) :?> 
@@ -60,7 +63,9 @@ $css = isset ($this->css) ? $this->css : "scroll";
 
                       <? endforeach ?>
      
-                       <div>          
+                           <div class="settings-button"></div>
+
+                       </div>          
                     <? endif ?>
 
                     <?php echo $this->layout()->content; ?>
