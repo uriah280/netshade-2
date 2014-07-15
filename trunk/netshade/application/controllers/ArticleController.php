@@ -63,8 +63,7 @@ $this->view->title   = $article -> subject;
 $this->view->option  = "Settings"; 
 
 
-        $this->crumb[] = new Application_Model_Link ($article -> groupname, $this->view->back) ;
-
+        $this->crumb[] = new Application_Model_Link ($article -> groupname, $this->view->back) ; 
         $this->crumb[] = new Application_Model_Link ($article -> subject) ;
         $this -> view -> nav     = $this->crumb;
 
@@ -105,6 +104,7 @@ $this->view->css     = "float";
         $id         = $request->getParam('id');   
         $from = $request->getParam('from');  
         $page = $request->getParam('page');    
+        $on   = $request->getParam('on');    
 
         $article = Application_Model_Articleset::byId ($from);
         $chosen  = Application_Model_Articleset::byId ($id);
