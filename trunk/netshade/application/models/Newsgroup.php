@@ -46,6 +46,7 @@ class Application_Model_Newsgroup
             $this->LowID = $row['lo'];
             $this->HighID = $row['hi'];
         } 
+        mysql_free_result ($result );
     }
  
     public static function byName ($user, $name)
@@ -55,22 +56,31 @@ class Application_Model_Newsgroup
                   " g.Serverkey = s.uuid INNER JOIN Ns_Users As u ON " . 
                   " s.UserKey = u.uuid" . 
                   " WHERE u.Username = '{$user}' AND g.Address = '{$name}'";
+
+           
+
         $result = $Db -> Execute ($query);
+ 
+
         if ($row = mysql_fetch_assoc($result))  
         {  
+            mysql_free_result ($result );
             return new Application_Model_Newsgroup ($row, true);
         } 
     } 
 
     public static function Refsof ($uuid, $name)
     {  
-        $query = " select na.message_ref " . 
+        $query = " select DISTINCT na.message_ref " . 
                  " from Ns_Articleset na " .  
-                 " where char_length (message_ref) > 0 " .  
+                 " where char_length (na.message_ref) > 10 " .  
                  "   AND na.group_uuid = '{$uuid}' " . 
-                 " group by message_ref " . 
-                 " order by message_ref;";
-        $Refs = array();
+                 ";" ;
+                # " group by message_ref " . 
+                # " order by message_ref;";
+        $Refs = array(); 
+     #   return $Refs;
+
         $Db     = new Application_Model_ShadeDb;  
         $result = $Db -> Execute ($query);
          
@@ -83,9 +93,24 @@ class Application_Model_Newsgroup
                     $Refs[$s] = $s; 
             }
         } 
+        mysql_free_result ($result );
         return $Refs;
     } 
+/*
 
+DELIMITER //
+CREATE PROCEDURE GetGroupReferences(IN groupUUID VARCHAR(36))
+    BEGIN
+         select na.message_ref 
+         from Ns_Articleset na  
+         where char_length (message_ref) > 0  
+           AND na.group_uuid = groupUUID
+               group by message_ref 
+               order by message_ref;
+    END //
+DELIMITER ;
+
+*/
     public static function byId ($uuid)
     {  
         $Db     = new Application_Model_ShadeDb; 
@@ -93,6 +118,7 @@ class Application_Model_Newsgroup
         $result = $Db -> Execute ($query);
         if ($row = mysql_fetch_assoc($result))  
         {  
+            mysql_free_result ($result );
             return new Application_Model_Newsgroup ($row);
         } 
     } 
@@ -118,6 +144,7 @@ class Application_Model_Newsgroup
             $articles[] = new Application_Model_Articleset($row); 
             if (sizeof($articles) >= 50) break;
         } 
+        mysql_free_result ($result );
         shuffle($articles);
         return array_slice ($articles, 0, 50);
     } 
@@ -129,10 +156,14 @@ class Application_Model_Newsgroup
 
     function GetArticles ($startat = 0, $filter = "", $limit = "", $table = "Ns_Articleset")
     {
-            $this->Metrics['GetArticles-start'] = time() - $this->startat;
+         $this->Metrics['GetArticles-start'] = time() - $this->startat;
+
         $where  = strlen ($filter) > 0 ? " AND subject LIKE '%{$filter}%'" : "";
         $and    = strlen($limit) == 0 ? "" : "children > {$limit} AND";
+
         $query  = "SELECT * FROM {$table} WHERE {$and} group_uuid = '{$this->Key}' AND CHAR_LENGTH(parent_uuid) < 36 AND CHAR_LENGTH(message_key) > 5 {$where}"; 
+
+
         $data   = Application_Model_Articleset::ArticlesbySql($query, $startat);
         $this -> Articles = $data['articles'];
         $this -> Tally = $data['tally']; 

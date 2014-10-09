@@ -1,7 +1,12 @@
   <? 
     $item = $this-> counter-> Rangefrom( $this -> start ); 
+    $sortas  = strlen($this->sort) > 0 ? "subject" : "filename";
 ?>     
 
+  <ul class="my-menu"> 
+    <li class="li-sortas"><a>Sort by <?= $sortas ?></a></li>  
+ 
+</ul> 
                   <div id="div-stat"><?= $this -> pages ?></div> 
 
                     <ul class="rounded">

@@ -1,6 +1,6 @@
 body {
      
-    background-color: #ddd; /* Background color */
+    background-color: #fff; /* Background color */
     color: #222; /* Foreground color used for text */ 
     font-size: 14px; 
     font-family:Lato,Arial; 
@@ -12,8 +12,7 @@ a {
 }
 
 header {
-    display:block;
-   max-width: 1024px;
+    display:block; 
 }
 
 
@@ -47,6 +46,12 @@ header {
 }
 
 
+.article-scale {
+    width : 100%;
+    text-align : center;
+}
+
+
 .article-tiny, .article-hilo {
     font-size : 8pt;
     width     : 64px;
@@ -59,7 +64,8 @@ header {
 }
 
 .hilo-panel {
-    padding: 0px 0px 0px 14px
+    padding: 0px 0px 0px 14px;
+    display : block;
 }
 
 .rounded { 
@@ -71,12 +77,13 @@ header {
 
 .splash{
     float:left;
+   margin: 0px 1px 1px 0px;
 }
 
 .info {
    width: 250px;
    height: 140px;
-   background : #ffc;
+   background : #ffe
    margin: 0px 1px 1px 0px;
    padding : 0px;
    overflow: hidden;
@@ -93,7 +100,7 @@ header {
 }
 
 #canvas-teeny {
-    width     : 322px;
+    width     : 372px;
     height    : 52px;
     display : none;
 }
@@ -140,6 +147,75 @@ header {
     font-weight : bold;
     color : #f00;
 }
+
+
+
+.link {
+    width : 200px; 
+    overflow: hidden;
+    text-overflow:ellipsis;
+}
+
+.column1 {
+    position : absolute;
+    text-align:right;
+    width : 120px;
+    left : 35%;
+}
+
+.column2 {
+    position : absolute;
+    left : 55%;
+}
+.group-join {
+    color : #00f;
+    text-decoration:underline;
+    cursor : pointer;
+}
+
+.group-name {
+    cursor : pointer;
+    color : #00f;
+    list-style-type: none; 
+    width : 98%;
+}
+#dialog ul
+{
+    padding : 0px;
+    margin  : 0px;
+}
+
+.group-name a.list-item, #dialog li {
+    background-color: #FFFFFF;
+    border: 1px solid #999999;
+    color: #222222;
+    display: block;
+    font-size: 12pt; 
+    margin-bottom: -1px;
+    padding: 4px 10px;
+    text-decoration: none;
+}  
+
+li.group-name:first-child a.list-item, #dialog li:first-child {
+    -webkit-border-top-left-radius: 8px;
+    -webkit-border-top-right-radius: 8px;
+}
+
+li.group-name:last-child a.list-item, #dialog li:last-child {
+    -webkit-border-bottom-left-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 .settings-button {
    float : right;

@@ -1,0 +1,6 @@
+wget http://s3.amazonaws.com/ec2-downloads/ec2-api-tools.zip
+sudo mkdir /usr/local/ec2
+sudo unzip ec2-api-tools.zip -d /usr/local/ec2
+rm ec2-api-tools.zip 
+
+

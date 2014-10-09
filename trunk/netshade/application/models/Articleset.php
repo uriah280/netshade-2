@@ -69,6 +69,7 @@ class Application_Model_Articleset
             $count ++;
             if ($count >= 8) break;
         } 
+        mysql_free_result ($result );
         return array ('articles' => $articles
                     , 'tally' => $tally );
     }
@@ -81,6 +82,7 @@ class Application_Model_Articleset
         $result = $Db -> Execute ($query);
         if ($row = mysql_fetch_assoc($result))  
         {   
+            mysql_free_result ($result );
             return new Application_Model_Articleset ($row, $start);
         } 
     } 
@@ -186,6 +188,7 @@ class Application_Model_Articleset
         if($row = mysql_fetch_array($result))  
         {   
             $file = $row[1];
+            mysql_free_result ($result );
             if ($field == 'data' && strlen($file) > 1 && file_exists($file))
             {
                 $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -204,6 +207,14 @@ class Application_Model_Articleset
             {
                 $data = base64_decode ($row[0]);
                 header("Content-Type: {$type}");  
+$im = @imagecreatefromstring ($data);
+if ($im)
+{
+    imagejpeg ($im, "", 100);
+    imagedestroy ($im);
+    return;
+
+}
             }
  
  
@@ -223,6 +234,7 @@ class Application_Model_Articleset
         if ($row = mysql_fetch_array($result))  
         {  
             $this -> count = $row[0];
+            mysql_free_result ($result );
             return;
         } 
         $result = $Db -> Execute ("SELECT COUNT(1) as cnt FROM Ns_Articleset WHERE parent_uuid = '{$this->uuid}'"); 
@@ -230,6 +242,7 @@ class Application_Model_Articleset
         {  
             $this -> count = $row[0];
             $this -> Setchildren ($Db);
+            mysql_free_result ($result );
         } 
     } 
 
@@ -248,6 +261,7 @@ class Application_Model_Articleset
         {  
             $this -> groupname = $row["Address"];
             $this -> serverkey = $row["Serverkey"]; 
+            mysql_free_result ($result );
             return true;
         } 
         return false;
@@ -266,6 +280,7 @@ class Application_Model_Articleset
                 $this -> group = $row[0];
                 $this-> Setgroupdata ($Db);
             }  
+            mysql_free_result ($result );
         }  
         $Db -> Source = "Articleset:GetInfo";
         
@@ -275,12 +290,14 @@ class Application_Model_Articleset
         {  
             $this -> userkey = $row["UserKey"];
         } 
+        mysql_free_result ($result );
         $query  = "SELECT Username FROM Ns_Users WHERE uuid = '{$this->userkey}'";
         $result = $Db -> Execute ($query); 
         while($row = mysql_fetch_assoc($result))  
         {  
             $this -> username = $row["Username"];
         } 
+        mysql_free_result ($result );
         $this->GetCache ($Db);
         $query  = "SELECT * FROM Ns_Bookmark WHERE UserKey = '{$this->userkey}' AND Articlekey = '{$this->uuid}'" ;
         $result = $Db -> Execute ($query); 
@@ -288,6 +305,7 @@ class Application_Model_Articleset
         {  
             $this -> bookmarked = true;  
         }  
+        mysql_free_result ($result );
 
         if (strlen($this -> type) < 3 && strlen($this -> parent) == 36)
         {
@@ -297,6 +315,7 @@ class Application_Model_Articleset
             {  
                 $this -> type = $row["message_type"];
             }   
+             mysql_free_result ($result );
         }
 
         if ( (!is_numeric($this -> count)) || $this -> count < 1)
@@ -322,6 +341,7 @@ class Application_Model_Articleset
         {  
             $this -> cache = true;
         } 
+        mysql_free_result ($result );
     }
 
     function CheckRar ($Db)
@@ -333,6 +353,7 @@ class Application_Model_Articleset
             $this -> count = $row[0];
             $this -> Setchildren ($Db);
         } 
+        mysql_free_result ($result );
     }
 
     function GetRars ($startat = -1)
@@ -349,6 +370,7 @@ class Application_Model_Articleset
             $count ++;
             if ($startat > -1 && $count >= PAGE_SIZE) break;
         }  
+        mysql_free_result ($result );
     }
 
     function Randomof ()
@@ -365,6 +387,7 @@ class Application_Model_Articleset
         while($row = mysql_fetch_array($result)) { 
               $ret2[] = $row[0]; 
         }
+        mysql_free_result ($result );
  
         shuffle($ret2);
         foreach ($ret2 as $x) {
@@ -381,9 +404,9 @@ class Application_Model_Articleset
         $result = $Db -> Execute ("SELECT * FROM Ns_Articleset WHERE parent_uuid = '{$this->uuid}' OR uuid = '{$this->uuid}' ORDER BY subject"); 
 
         $this -> count = mysql_num_rows($result); 
-        if ($startat > -1) mysql_data_seek($result, $startat);
+        if ($startat > -1 && !$sort) mysql_data_seek($result, $startat);
 
-       #  $this -> items = array($this); 
+         $tmp = array(); 
 
         while($row = mysql_fetch_assoc($result))  
         {  
@@ -391,11 +414,18 @@ class Application_Model_Articleset
             if ($startat > -1 || $this->type == "rar") $set -> GetCache ($Db);
             if ($this->type == "rar") $set -> CheckRar ($Db);
  
-            $this -> items[] = $set; 
-            $count = sizeof($this -> items);// ++;
-            if ($startat > -1 && $count >= PAGE_SIZE) break;
+            $tmp[] = $set; 
+            $count = sizeof($tmp);// ++;
+            if ($startat > -1 && $count >= PAGE_SIZE && !$sort) break;
         } 
-        if ($sort) uasort($this->items, 'cmp');
+        mysql_free_result ($result );
+
+        if ($sort) {
+            usort($tmp, 'cmp');
+            $tmp = $startat > -1 ? array_slice ($tmp, $startat, PAGE_SIZE) : $tmp;
+        }
+
+        $this -> items = $tmp;
     }
 
 }

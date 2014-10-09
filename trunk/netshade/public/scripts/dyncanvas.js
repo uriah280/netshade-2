@@ -3,7 +3,7 @@ var
     MatchedCanvas = {
         create : function (width, height) {
 
-            var image = new Image (), canvas = document.createElement("canvas") ;
+            var image = Snapshot.create(), canvas = Icetag.create("canvas") ;
             canvas.style.width = width + "px"; 
             canvas.style.height = height + "px";
             canvas.width = width; 
@@ -29,7 +29,7 @@ var
               , i       : 0
               , photo   : []
               , slices  : []
-              , picture : new Image()
+              , picture : Snapshot.create()
               , source  : source
               , items   : source.batch
               , width   : width
@@ -43,18 +43,20 @@ var
 
                     for (var f, w = this.width/3, e=0;f=this.slices[e];e++) {
 
-                        var x = Math.floor(w * e);
- 
+                        var x = Math.floor(w * e); 
 
                         api.imagecopyresized (palette.context, f, 0, 0, f.width, f.height, x, 0, f.width, f.height); 
+
+                          f.dispose();
                     }
 
                     this.picture.width   = this.width;
                     this.picture.height  = this.height;
                     this.picture.onerror = stop;
-                    this.picture.onload  = function () { that.onload() }
+                    this.picture.onload  = function () { that.onload(); this.dispose(); }
                     this.picture.src = palette.url(); 
                     this.source.batch = this.slices;
+                    palette.canvas.dispose ();
                 }
 
               , shave   : function () {
@@ -62,6 +64,9 @@ var
                     var that=this, api = CanvasAPI, w = this.width/3, f=this.photo.pop(),  
                          s = Sizer.stretch (f, w, this.height), temp = MatchedCanvas.create (s.w, s.h);
                         api.imagecopyresized (temp.context, f, 0, 0, f.width, f.height, s.x, s.y, s.w, s.h);
+
+                         f.dispose();
+
                      temp.image.onload = function () {
                          that.slices.push(this);
                          that.shave();
@@ -74,7 +79,7 @@ var
               , next    : function () {
                     if (this.items.length == 0) return this.shave();
                     var d=this.peek(), that=this, id=this.id, src = '/rpc/small/id/' + d, 
-                           pic = new Image(),
+                           pic = Snapshot.create(), //new Image(),
                           next = function () { that.add(this); that.next() }, 
                            stop = function () {  that.onerror() }; 
                                           

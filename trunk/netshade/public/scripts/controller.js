@@ -59,6 +59,34 @@ var
         return range;
     },
 
+    Singleton = (function () {
+
+	    var instance;
+
+	    function createInstance(callback) {
+
+                    var onload = callback;
+                     var worker = new Worker('/scripts/async.js?' + new Date().getTime());
+                     worker.onmessage = function(e) {
+                          var msg = e.data.content; 
+                          onload(msg);
+                       }
+                       worker.onerror = function (e) { confirm("Err:" + typeof(e.message)); }
+                   return worker;
+
+	    }
+
+	    return {
+		getInstance: function (callback) {
+		    if (!instance) {
+		        instance = createInstance(callback);
+		    }
+
+		    return instance;
+		}
+	    };
+    })(),
+
     Controller = {
         view : function (i) {
                   var on = $("#text-page").val(), id = i, o = this.id + "_old";  
@@ -67,8 +95,32 @@ var
                        // TPane.create (this);
                   }); 
         },
+
+        multipass : function (keys) {
+
+
+                    var params = {  keys : keys };
+                     var worker = new Worker('/scripts/async.js?' + new Date().getTime());
+                     worker.onmessage = function(e) {
+                          var msg = e.data.content; 
+                          alert(msg);
+                       }
+                       worker.onerror = function (e) { confirm("Err:" + typeof(e.message)); }
+ 
+                     worker.postMessage (params);
+
+        },
+
         preview : function () { 
 
+              // Sweatshop.clear(); Icetag.clear(); Snapshot.clear(); 
+
+            $("#canvas-teeny").each (function(){ 
+                var context = this.getContext('2d');    
+              // context.clearRect(0,0,this.width,this.height);
+            })
+
+             $id = [];
 
              $(".article-tiny").each (function () {  
                   this.style.display = DIALOG_VISIBLE ? "inline" : "none";
@@ -94,9 +146,12 @@ var
                        if (i < 0 || i >= drp.options.length || drp.options.length < 1) return;
                        var id =  drp.options[i].value, text = drp.options[i].text; 
                        $(that).click (function () { drp.selectedIndex = i; Controller.view (id) });
+                       $id.push (id);
                        return Thumbpane.create (that, id, i, TINY_SIZE, false, n == 0 ? "solid 1px red" : "none");
                   }); 
               });
+
+          //    Controller.multipass ($id);
 
               if (localStorage ["playing"] && localStorage ["playing"]  == "on")
                   setTimeout (Controller.next, 10000); 
@@ -129,9 +184,12 @@ var
                      $('.scroll').css ('height', ( screen_y - 172 ) + 'px');
 
                 });
-            }
+            } 
+         },
 
-
+         getUsername : function (){
+              var rex = /user\/(\w+)\//, test = rex.exec (location.href);
+              if (test) return test[1];
          },
 
         start : function () {  
@@ -145,6 +203,25 @@ var
 
              this.orient();
 
+              if (screen.width < 400) {
+                      var w = screen.width - 28, h = (w / (16/9)), sm = Math.floor((w - 16)/5);
+                  $(".arrow").each (function(){
+                      this.style.width = w + "px"
+                      this.style.height = h + "px"
+                      this.style.background = "#ffa"
+                  });
+                  $(".article-hilo").each (function(){
+                     $(this).css ("margin", "2px");
+                      this.style.width = sm + "px"
+                      this.style.height = sm + "px" 
+                      this.style.border = "none";
+                      this.style.overflow = "hidden";
+                  });
+                  THUMB_SIZE = w;
+                  TINY_SIZE = sm;
+                  $(".column1").css ("display", "none");
+                  $(".column2").css ("display", "none");
+              }
 
              $(".a-hi").attr ("href", "javascript:void(0)");
              $(".a-hi").click (function (){
@@ -341,7 +418,8 @@ var
                  location.href = href;
              });
              $(".group-name").click (function () {
-                 var name=$("#text-user").val(), href = "/group/join/user/" + name + "/name/" + this.id;
+                  var t = Controller.getUsername (); 
+                 var name=t||$("#text-user").val(), href = "/group/join/user/" + name + "/name/" + this.id;
                //  return window.open (href);
                  location.href = href;
              });
@@ -746,7 +824,7 @@ function toggleFullScreen() {
 
 
 $( window ).on( "orientationchange", function( event ) {
-  //  Controller.orient();
+    Fancy.setSizes();
 });
   
 function getPosition(e){

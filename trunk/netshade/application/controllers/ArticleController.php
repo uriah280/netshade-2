@@ -105,10 +105,11 @@ $this->view->css     = "float";
         $from = $request->getParam('from');  
         $page = $request->getParam('page');    
         $on   = $request->getParam('on');    
+        $sort = $request->getParam('sort');  
 
         $article = Application_Model_Articleset::byId ($from);
         $chosen  = Application_Model_Articleset::byId ($id);
-        $article -> GetArticles ();
+        $article -> GetArticles (-1, isset($sort));
 
 
 $main = array ('controller' => 'group', 'action' => 'list', 'page' => $on, 'on' => NULL, 'id' => NULL
@@ -131,6 +132,7 @@ $this->view->option  = "Settings";
 
 
         $this -> view -> page    = $page;  
+        $this -> view -> sort    = $sort; 
         $this -> view -> article = $article;
         $this -> view -> chosen  = $chosen;
     }
