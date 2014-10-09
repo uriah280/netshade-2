@@ -1,6 +1,13 @@
  
+   <?  
+    $sortas  = strlen($this->sort) > 0 ? "subject" : "filename";
+?>  
+  <ul class="my-menu"> 
+    <li class="li-sortas"><a>Sort by <?= $sortas ?></a></li>
+    <li><a class="group-name" id="<?= $this -> article -> groupname ?>"><?= $this -> article -> groupname ?></a></li>  
  
-
+</ul> 
+ 
     <div class="a-next 1 article-scale <?= $this->unrar ?>" id="<?= $this -> chosen -> uuid ?>" 
      ><?= $this -> chosen -> subject ?></div>
 

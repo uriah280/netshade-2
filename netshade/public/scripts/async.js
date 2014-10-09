@@ -27,7 +27,12 @@ var connection = {
 
 
 self.onmessage = function(e) { 
-
+    var keys;
+    if (keys = e.data.keys)
+    {
+        self.postMessage( {content : keys.length + "!!", status : 1 } );
+        return;
+    }
     connection.open(e.data.uri); 
 }
 

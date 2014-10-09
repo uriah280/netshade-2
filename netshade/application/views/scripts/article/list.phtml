@@ -1,9 +1,11 @@
  <?
-    $action = $this->article->bookmarked ? "Unbookmark" : "Bookmark";    
+    $action = $this->article->bookmarked ? "Unbookmark" : "Bookmark";  
+    $sortas  = strlen($this->sort) > 0 ? "subject" : "filename";  
  
 ?>
 
   <ul class="my-menu"> 
+    <li class="li-sortas"><a>Sort by <?= $sortas ?></a></li> 
     <li><a class="bookmark" id="/rpc/bookmark/id/<?= $this->article -> uuid ?>/user/<?= $this->article->username ?>"><?= $action ?></a></li>
  
 </ul> 

@@ -8,7 +8,7 @@ class BookmarksController extends Zend_Controller_Action
        $this->_helper->layout->setLayout('device');
        $this->view->addScriptPath(HOME_PATH . "netshade/application/views/partials");
        
-        $home = array ('action' => 'display', 'controller' => 'index');   
+        $home = array ('action' => 'display', 'controller' => 'index', 'article' => NULL, 'id' => NULL, 'page' => NULL, 'p' => NULL, 'pg' => NULL, 'key' => NULL);   
         $self = array ('action' => 'index', 'controller' => 'bookmarks', 'article' => NULL, 'id' => NULL, 'page' => NULL, 'pg' => NULL);   
 
        $this->crumb = array (
@@ -133,14 +133,15 @@ $this->crumb[] = new Application_Model_Link ($article -> subject) ;
     {
         $request    = $this->getRequest();   
         $id         = $request->getParam('id');   
-        $key        = $request->getParam('key');    
+        $key        = $request->getParam('key'); 
+        $sort       = $request->getParam('sort');     
         $unrar   = "";
 
         $article = Application_Model_Articleset::byId ($id);
         $article -> GetRars (); 
         if (sizeof ($article -> items) == 0) 
         {
-            $article -> GetArticles (); 
+            $article -> GetArticles (-1, isset($sort)); 
             $chosen  = Application_Model_Articleset::byId ($key);
         }
         else 

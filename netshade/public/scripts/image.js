@@ -42,7 +42,7 @@ var
                        // api.imagestring (context, "700 9pt Lato", 8, 14, this.text, "#922", null,
                         //              this.width - 20, 16, 5); 
 
-                    if (this.x >= 0) return;
+                    if (this.x >= 0) return picture.dispose();
                     window.requestNextAnimationFrame (next);
 
                 },
@@ -63,7 +63,7 @@ var
 
                                $(this.canvas).off ('click');
                                $(this.canvas).on ('click', function() {
-                                    window.open( on );
+                                     location.href = on;//   window.open( on );
                                 });
 
 
@@ -78,12 +78,15 @@ var
         }
     },
 
+
      PANE_SIZE = 752,
 
      shuffle= function (o) { //v1.0
         for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
         return o;
     },
+
+
     Fancy = {
 
         loading : [],
@@ -100,7 +103,7 @@ var
         },  
 
         init : function (arr) {
-            Fancy.loading = arr;
+            Fancy.loading = shuffle( arr );
             Fancy.limit = arr.length; 
             Fancy.go ();
         },  
@@ -109,7 +112,7 @@ var
  
             
             var groupname = Fancy.loading.pop (), url = "/rpc/picsof/user/milton/name/" + groupname;
-              document.title = Fancy.limit + ". "+groupname+"...";
+             // document.title = Fancy.limit + ". "+groupname+"...";
             $ajax(url, function (data) {
                   
                    try {
@@ -151,7 +154,7 @@ var
         },
 
         add : function (name, list) {
-            if (list.length < 5) return alert (name + " list only has " + list.length + " items"); 
+            if (list.length < 5) return;// alert (name + " list only has " + list.length + " items"); 
             var id=this.items.length, object = {
                 i    : 0
               , id   : id
@@ -191,21 +194,21 @@ var
             var also = othergroups.length > 0 ? ("Also in: "+othergroups.join(' ')) : "No other groups",
                   href = $("#text-page").val() + "/name/" + f.groupname + "/id/";                           
 
-            sb[0] = { href:"/group/join/name/" + f.groupname + "/user/" + f.username + "/id/", id : 0, uuid : f.uuid, text:f.groupname, batch : subitem };  
-            sb[1] = { href:href, id : 1, text:f.count + ": " + f.subject, uuid : f.uuid, batch : Fancy.pics.fresh.kids };   
+            sb[0] = { href:"/group/join/name/" + f.groupname + "/user/" + f.username + "/id/", id : 0, uuid : f.uuid, text:"Open " + f.groupname, batch : subitem };  
+            sb[1] = { href:href, id : 1, text:"See all " + f.count + " items", uuid : f.uuid, batch : Fancy.pics.fresh.kids };   
             sb[2] = { href:href, id : 2, text:also, uuid : othergroup.uuid };    
  
 
             $(".info").each (function (){
                 var tmp = this.className.split (" "), i=tmp[0], o=sb[i]
                 if (o.batch && o.batch.length == 3) {                                    
-                    Photobatch.create (o, 250, 140, 
+                    Photobatch.create (o, canvas_w, canvas_h, 
                         function () { ServiceBus.Fancy (this.picture,  this.source) }, 
                         function () { alert ("An error occured!"); });
                     return; 
                 }
 
-                var src = '/rpc/small/id/' + o.uuid, pc = new Image(); 
+                var src = '/rpc/small/id/' + o.uuid, pc = Snapshot.create();// new Image(); 
                 pc.onload = function () { ServiceBus.Fancy (this,  o); } 
                 pc.src = src;   
 
@@ -218,34 +221,62 @@ var
 
         play   : function () {
 
-                $("#i-can").each (function () { 
+                $("#center-main-canvas").each (function () { 
 
-                    var that=this, z = PANE_SIZE;
-                    
+                    var that=this, z = PANE_SIZE, api = CanvasAPI , context = this.getContext('2d');
+
+                    context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+
                     for (var p in Fancy.pics )
                     {
                         if (!Fancy.pics[p]) { z = 0 ; continue; }
                         var fresh = Fancy.pics[p], article = fresh.article, name = fresh.group.name,
-                            picture = fresh.picture, api = CanvasAPI , context = this.getContext('2d');
+                            picture = fresh.picture;
 
                         Fancy.x += Fancy.span;
 
 
-                        var s = Sizer.fit (picture, PANE_SIZE), x = s.x + Fancy.x + z ;  
+                        var s = Sizer.fit (picture, PANE_SIZE, PANE_H), x = s.x + Fancy.x + z ;  
                         if (x > z) x = z;
+                          
+                        for (var f=[],i=0;i<3;i++)
+                            f.push (100+Math.floor(Math.random() * 99))
 
-
+                       // var hue = "rgb("+f[0]+","+f[1]+","+f[2]+")";
                         api.imagecopyresized (context, picture, 0, 0, picture.width, picture.height, x, s.y, s.w, s.h);
 
-                        api.imagestring (context, "400 22pt Lato", 15, 40, name, "#fff", null,
+                            var imgd = context.getImageData(0, 0, 1, 1),  pix = imgd.data, r = 0;// Math.floor (pix.length/4);// (Math.random() * pix.length);
+                          
+                               
+                        var rep=['alt.', 'binaries.', 'picture.', 'nospam.', 'erotica.', 'erotic.', 'pictures.'], hue = "rgb("+pix[r]+","+pix[r+1]+","+pix[r+2]+")";  
+                        for (var f,i=0;f=rep[i++];name=name.replace(f,"")); 
+                   name = "#" + name.split (".").join ("-")  
+                     //name = name.charAt(0).toUpperCase() + name.substr(1);
+ 
+
+                        api.imagestring (context, "700 44pt Lato", 38, PANE_H-82, name, hue, null,
                                       600, 18, 5);
-                        api.imagestring (context, "400 22pt Lato", 14, 39, name, "#228", null,
+                        api.imagestring (context, "300 44pt Lato", 35, PANE_H-90, name, "#fff", null,
+                                      600, 18, 5);
+                        api.imagestring (context, "300 44pt Lato", 34, PANE_H-89, name, "#333", null,
                                       600, 18, 5);
 
-                        //api.imagestring (context, "400 10pt Lato", 15, 61, article.subject, "#fff", null,
-                        //              600, 18, 5);
-                        //api.imagestring (context, "400 10pt Lato", 14, 60, article.subject, "#222", null,
-                        //              600, 18, 5); 
+                           var metrics = context.measureText(name), subject_x = metrics.width + 64, subj_span = PANE_SIZE - subject_x - 40;
+                             context.font = "300 12pt Lato";
+                               metrics = context.measureText(article.subject);
+                              var offY = metrics.width > subj_span ? 108 : 90, line_x = subject_x - 14;
+
+
+                            api.imageline (context, line_x + 1, PANE_H - 123, line_x + 1, PANE_H - 79, "#333", 2) ;
+                            api.imageline (context, line_x, PANE_H - 124, line_x, PANE_H - 80, hue, 2) ;
+
+                        api.imagestring (context, context.font, subject_x+1, PANE_H-offY+1, article.subject, hue, null,
+                                      subj_span, 18, 2);
+                        api.imagestring (context, context.font, subject_x, PANE_H-offY, article.subject, "#000", null,
+                                      subj_span, 18, 2);
+
+                         picture.dispose ();
+ 
 
                         z = 0;
 
@@ -269,44 +300,80 @@ var
             Fancy.proceed_ ();
         },
         proceed_ : function () {
- 
+               Sweatshop.clear(); Icetag.clear(); Snapshot.clear(); 
             var group=Fancy.peek(), article = group.peek(), 
                   command = "/rpc/randomof/id/" + article.uuid, 
                src = '/rpc/picture/id/' + article.uuid, tiny = '/rpc/small/id/' + article.uuid; 
- 
-                    var params = {  uri : command };
-                     var worker = new Worker('/scripts/async.js?' + new Date().getTime());
-                     worker.onmessage = function(e) {
-                          var msg = e.data.content; 
-                          // confirm(msg);
-                       }
-                       worker.onerror = function (e) { confirm("Err:" + typeof(e.message)); }
-                     worker.postMessage (params);
+  
 
             $ajax( command, function( uuids ) { 
-                var picture = new Image(), kids = uuids.split (",");  
-                picture.onerror = Fancy.proceed;
-                picture.onload = function () {  
-                    if (this.width > 1999) return this.src = tiny;
+                
+                var kids = uuids.split (","), picture = Snapshot.create (function () {  
+                    //if (this.width > 1999) return this.src = tiny;
                     Fancy.pics.stale = Fancy.pics.fresh;
                     Fancy.pics.fresh = { kids : kids, group : group, article : article, picture : this };
                     Fancy.x = -PANE_SIZE;
                     Fancy.play();
-                }
+                }, Fancy.proceed);
                 picture.src = src;  
             });  
 
+        }, 
+
+        setSizes : function () {
+
+            var thin = $(window).width() < $(window).height(), base_w = $(window).width() - 8;
+ 
+            if (thin) {
+                base_w = $(window).width() - 4; 
+                base_w = base_w - (base_w % 3);
+                base_w += 2;
+            }
+ 
+            PANE_SIZE = thin ? base_w : (Math.floor (base_w * 0.75) + 2);
+
+            canvas_w  = thin ? Math.floor ((base_w - 2) / 3) :  Math.floor (base_w * 0.25);
+            PANE_H    = Math.floor (9*(PANE_SIZE/16));
+            PANE_H    = PANE_H - (PANE_H % 3)
+            canvas_h  = Math.floor ((PANE_H - 2) / 3);
+
+                 $("#center-main-canvas").each (function () {
+                      this.width = PANE_SIZE;
+                      this.height = PANE_H;
+                      $(this).css ("width", PANE_SIZE + "px");
+                      $(this).css ("height", PANE_H + "px");
+                 })
+
+                 $(".info").each (function () {
+                      $(this).css ("width", canvas_w + "px");
+                      $(this).css ("height", canvas_h + "px");
+                 })
+
+                 $(".i-canvas").each (function () {
+                      this.width = canvas_w;
+                      this.height = canvas_h;
+                      $(this).css ("width", canvas_w + "px");
+                      $(this).css ("height", canvas_h + "px");
+                 })
+
         },
+
         go : function () { 
+ 
+                   Fancy.setSizes ();
+
             $("header").each (function () {
 
-            var w=PANE_SIZE,h=9*(PANE_SIZE/16) ;
+//1031, 780
+ 
 
+                $(this).html ('<div class="splash main"><canvas id="center-main-canvas" width=' + PANE_SIZE + ' height=' + PANE_H + '/></div>' + 
+                              '<div class="0 splash info"><canvas width="' + canvas_w + '" height="' + canvas_h + '" class="i-canvas 0" /></div>' + 
+                              '<div class="1 splash info"><canvas width="' + canvas_w + '" height="' + canvas_h + '" class="i-canvas 1" /></div>' + 
+                              '<div class="2 splash info"><canvas width="' + canvas_w + '" height="' + canvas_h + '" class="i-canvas 2" /></div>');  
+ 
 
-                $(this).html ('<div class="splash main"><canvas id="i-can" width=' + w + ' height=' + h + '/></div>' + 
-                              '<div class="0 splash info"><canvas width="250" height="140" class="i-canvas 0" /></div>' + 
-                              '<div class="1 splash info"><canvas width="250" height="140" class="i-canvas 1" /></div>' + 
-                              '<div class="2 splash info"><canvas width="250" height="140" class="i-canvas 2" /></div>');  
+                   Fancy.setSizes ();
 
                  $(".i-canvas").each (function () {
                       var tmp=this.className.split (" "), id=tmp[1];
@@ -321,23 +388,101 @@ var
         }
     },
 
-    $ajax = function (uri, callback) {
+         canvas_w = 250, canvas_h = 140, PANE_H = 0,
+     shopdata = { w : "", i : "", t : "" },
 
+     Sweatshop = {
+         worker  : [],
+           countof : function () {
+              var i=0;
+               for (var x in this.worker)
+                if (this.worker[x])
+                   i++;
+               shopdata.w = i + "x" + this.worker.length;
+              document.title = shopdata.i + ", " + shopdata.w + ", " + shopdata.t + "W";
+           },
+         clear : function () { for (var i=0;i<this.worker.length;i++) this.worker[i]=null; },
+         dispose : function (id) { this.worker[id] = null; this.countof(); },
+         create : function (params, callback) {
+             var onload = callback, id = Sweatshop.worker.length,object= new Worker('/scripts/async.js?' + new Date().getTime());
+             object.onmessage = function(e) {
+                          var msg = e.data.content; 
+                          onload(msg);
+                         Sweatshop.dispose (id);
+                       }
+             Sweatshop.worker.push (object);
+             object.postMessage (params);
+             return object;
+         }
+    },
+// 
+     Icetag = {
+         tag  : [],
+           countof : function () {
+              var i=0;
+               for (var x in this.tag)
+                if (this.tag[x])
+                   i++;
+               shopdata.t = i + "x" + this.tag.length;
+              document.title = shopdata.i + ", " + shopdata.w + ", " + shopdata.t + "T";
+           },
+         clear : function () { 
+             for (var f, i=0;i<this.tag.length;i++) { 
+                 if (f = $(this.tag[i])) f.remove();
+                 this.tag[i]=null;
+             }
+         },
+         dispose : function (id) { this.tag[id] = null; this.countof(); },
+         create : function (name) {
+             var id = Icetag.tag.length, object = document.createElement(name); 
+             object.dispose = function (){ Icetag.dispose (id) };
+             Icetag.tag.push (object);
+             return object;
+         }
+     },
+
+     Snapshot = {
+         image  : [],
+           countof : function () {
+              var i=0;
+               for (var x in this.image)
+                if (this.image[x])
+                   i++;
+               shopdata.i = i + "x" + this.image.length;
+              document.title = shopdata.i + ", " + shopdata.w + ", " + shopdata.t + "P";
+           },
+         clear : function () { for (var i=0;i<this.image.length;i++) this.image[i]=null; },
+         dispose : function (id) { this.image[id] = null; this.countof(); },
+         create : function (onload, onerror) {
+             var id = Snapshot.image.length, object = new Image();
+             object.onload  = onload;
+             object.onerror = onerror;
+             object.dispose = function (){ Snapshot.dispose (id) };
+             Snapshot.image.push (object);
+             return object;
+         }
+     },
+
+    $ajax = function (uri, callback) {
                     var onload = callback, params = {  uri : uri };
-                     var worker = new Worker('/scripts/async.js?' + new Date().getTime());
+                                
+                     var worker = Sweatshop.create(params, onload); /*new Worker('/scripts/async.js?' + new Date().getTime());
                      worker.onmessage = function(e) {
                           var msg = e.data.content; 
                           onload(msg);
                        }
                        worker.onerror = function (e) { confirm("Err:" + typeof(e.message)); }
-                     worker.postMessage (params);
+                         */     /*  */
+
+                    // var worker = Singleton.getInstance (callback);
+                   //  worker.postMessage (params);
 
     },
 
     Runit = {
         items   : [],  
         display : function (image, article, text) { 
-            var canvas = document.createElement("canvas");
+            var canvas = Icetag.create("canvas");// document.createElement("canvas");
             canvas.style.width = image.width + "px"; 
             canvas.style.height = image.height + "px";
             canvas.width = image.width; 
@@ -369,7 +514,7 @@ var
 
                     this.picture.src = canvas.toDataURL();
 
-                    if (this.s >= 0) return;
+                    if (this.s >= 0) return canvas.dispose();
                     window.requestNextAnimationFrame (next);
                 }
             }
@@ -381,14 +526,13 @@ var
             return object;
         },
         create : function (context, picture, caption, size, s, source) {
+ 
 
-            
-
-            var id=this.items.length, object = {
+            var trueH=source.element.offsetHeight; var id=this.items.length, object = {
                 context : context,
                 picture : picture,
                 caption : caption,
-                source  : source,
+                source  : source, 
                 size : size,
                 x  : s.x,
                 y  : s.y,
@@ -401,10 +545,10 @@ var
                     var api = CanvasAPI, canvas = this.canvas, context = canvas.getContext('2d'), next = function () { Runit.items[id].renderText() },
                           Y = this.size - 50;
                     this.n += this.z; 
-                    if (this.n > 9) this.n = 9;
+                    if (this.n > 9) this.n = 9; 
 
                     api.imagecopyresized (context, this.picture, 0, 0, this.picture.width, this.picture.height, this.x, this.s, this.w, this.h);
-
+ 
                     api.imagestring (context, "9pt Lato", this.n, Y + 1, this.caption, "#fff", null,
                                       200, 14, 5);
                     api.imagestring (context, "9pt Lato", this.n - 1, Y, this.caption, "#000", null,
@@ -419,7 +563,7 @@ var
               
                 attach : function () {
  
-                    var palette = document.createElement("canvas"), canvas = this.context.canvas, image = document.createElement("IMG"),
+                    var palette = Icetag.create("canvas"), canvas = this.context.canvas, image = Icetag.create("IMG"),
                          article = this.source.article, text = this.caption, picture = this.picture, size = this.source.size; 
 
                        palette.style.width  = this.w + "px"; 
@@ -469,7 +613,7 @@ var
                 },
 
                 staticFrame : function () {
-                    var api = CanvasAPI, canvas = this.canvas, context = canvas.getContext('2d'),  Y = this.size - 50;
+                    var api = CanvasAPI, canvas = this.canvas, context = canvas.getContext('2d'),  Y = trueH - 50;
                                               canvas.style.width = this.w + "px"; 
                                               canvas.style.height = this.h + "px";
                                               canvas.width = this.w; 
@@ -479,24 +623,29 @@ var
                     {
                         Y = 24; 
                     }
-                         context.clearRect(0,0,this.w,this.h);
+                         context.clearRect(0,0,this.w,this.h); 
 
                     api.imagecopyresized (context, this.picture, 0, 0, this.picture.width, this.picture.height, this.x, this.y, this.w, this.h);
 
                     api.imagestring (context, "9pt Lato", 9, Y + 1, this.caption, "#fff", null,
-                                      200, 14, 5);
+                                      canvas.width - 20, 14, 5);
                     api.imagestring (context, "9pt Lato", 8, Y, this.caption, "#00f", null,
-                                      200, 14, 5); 
+                                      canvas.width - 20, 14, 5); 
 
                     return canvas.toDataURL();
                 },
 
-                writeFrame : function () {
+                writeFrame : function () { 
+
                     if (this.source.size > 0) this.image.src = this.staticFrame(); 
-                    else {
+                    else { 
+
+                        this.image.onload = null;
                        return this.image.src = this.picture.src;
+
                        this.canvas = this.context.canvas; 
                        this.staticFrame(); 
+
                     }
                    // this.image.src = this.source.size < 1 ? this.picture.src : this.staticFrame(); 
                      ServiceBus.FrameLoaded (this, this.source)
@@ -558,8 +707,11 @@ var
                                resize  = my.size, caption = my.caption, preview = my.preview,
                                command = "/rpc/thumb/article/" + key + "/" + suffix + after + Thumbpane.table,
                                showpic = function (){  
-                                          var api = CanvasAPI, that=this, context = that.getContext('2d'), pic = new Image();
+                                          var api = CanvasAPI, that=this, context = that.getContext('2d'), pic =  Snapshot.create (); //new Image();
+
+
                                           pic.onload = function () {
+ 
                                               var s = Sizer.fit (this, resize), size = resize < 0 ? s.h : resize, 
                                                        prefix = my.count < 1 ? "" : (my.count + " items: "); 
                                               that.style.width = s.w + "px"; 
@@ -570,9 +722,11 @@ var
                                                    Runit.create (context, this, prefix + caption, size, s, my);
 
                                               if (preview) { Controller.preview (); }
+
                                               Thumbpane.check();
 
                                               if (my.css) $(target).css ("border", my.css);
+                                                 this.dispose ();
                                           } 
                                           pic.onerror = function () { 
 
@@ -580,6 +734,7 @@ var
                                                      200, 14, 5); 
                                               if (preview) { Controller.preview (); }
                                               Thumbpane.check();
+                                                 this.dispose ();
                                           } 
                                           api.imagestring (context, "9pt Lato", 8, 18, "Drawing...", "#090"); 
  
@@ -591,9 +746,9 @@ var
                                      my.source  = "/rpc/" + my.type + "/id/" + my.article + after + Thumbpane.table, key = "I" + Math.floor( Math.random() * 1000000 ); 
                                      var img  = "<canvas id='" + key + "' class='" + my.source + "'></canvas>", tiny = target.className.indexOf ("for-canvas"); 
  
-                                     if (false) //(my.target && my.size < 0) 
+                                     if (false)//(tiny > 0) //(my.target && my.size < 0) 
                                      { 
-                                          var api = CanvasAPI, that=document.createElement("canvas"), context = that.getContext('2d'), pic = new Image(), 
+                                          var api = CanvasAPI, that=Icetag.create("canvas"), context = that.getContext('2d'), pic = Snapshot.create(),// new Image(), 
                                                index = target.id - (-3); 
 
                                               that.style.width = "52px"; 
@@ -601,15 +756,20 @@ var
                                               that.width = 52; 
                                               that.height = 52;    
 
-
                                           pic.onload = function () {
-                                              var s = Sizer.fit (this, 52);
+                                              var s = Sizer.fit (this, 52, null, true), x = s.x + (index * 54) + 6, im = this;
  
-                                                api.imagecopyresized (context, this, 0, 0, this.width, this.height, s.x, s.y, s.w, s.h);
-                                              $("#canvas-teeny").each (function(){
-                                                   var ctx = this.getContext('2d');
-                                                   ctx.drawImage(that, (index * 52) + 1, 0);
-                                              })
+                                              $("#canvas-teeny").each (function(){ 
+                                                   var ctx = this.getContext('2d');   
+                                                          ctx.clearRect(x,0,52,52);
+                                                     api.imagecopyresized (ctx, im, 0, 0, im.width, im.height, x, s.y, s.w, s.h); 
+                                                     if (index == 3)
+                                                     {
+                                                          var y = Math.min (52, s.h)
+                                                             api.imageline (ctx, x, y, x + s.w, y, "#900", 6) ;
+                                                     }
+                                              });
+                                              this.dispose ();
                                           }
                                           pic.src = my.source;
                                      }
@@ -668,10 +828,11 @@ var
     },
 
     Sizer = {
-        fit : function (picture, size, height) { 
+        fit : function (picture, size, height, force) { 
              if (size < 0) return this.scale (picture);
              var w = picture.width, h = picture.height, r = w/h, w1 = size, h1 = w1 / r, x = 0, y = 0;
-             if (w > h) { // long 
+            
+            if (w > h && !force) { // long 
                  h1 = size;
                  w1 = h1 * r; 
                  if (w1 > size) 
@@ -679,7 +840,6 @@ var
                      x = (size - w1) / 2;
                  }
              } 
-
 
             if (height && height < h1 && w > h) {
                 y = -((h1 - height) / 2);
@@ -769,7 +929,7 @@ var
                     send       : function () {
                         var my = Q.queue[id]; 
 
- 
+ /*
                      my.worker.onmessage = function(e) {
                           var data = e.data.content, xmlDoc = $.parseXML( data ),
                              xml = $( xmlDoc ), tmp = { state : "PENDING" }; 
@@ -791,7 +951,7 @@ var
                        my.worker.onerror = function (e) { confirm("Err:" + typeof(e.message)); }
                      return my.worker.postMessage ({uri:my.command});
 
- 
+ */
 
 
 
