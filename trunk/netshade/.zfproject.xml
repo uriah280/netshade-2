@@ -36,6 +36,9 @@
           <actionMethod actionName="randomof"/>
           <actionMethod actionName="connect"/>
           <actionMethod actionName="picsof"/>
+          <actionMethod actionName="batch"/>
+          <actionMethod actionName="unbatch"/>
+          <actionMethod actionName="smalltextpicture"/>
         </controllerFile>
         <controllerFile controllerName="Article">
           <actionMethod actionName="index"/>
@@ -172,6 +175,15 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Rpc">
             <viewScriptFile forActionName="picsof"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="batch"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="unbatch"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="smalltextpicture"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

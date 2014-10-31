@@ -15,6 +15,7 @@
                             $css = $article->cache ? "cache" : ""; ?>
 		     
 			<li class="arrow article-picture <?= $css ?> <?= $this->unrar ?>" id="<?= $article -> uuid ?>"
+                           data-article-key="<?= $article -> uuid  ?>"
                               ><?= $article -> subject ?></a></li>
 		   
 		<? endforeach ?>

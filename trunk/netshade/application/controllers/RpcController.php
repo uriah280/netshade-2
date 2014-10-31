@@ -5,6 +5,7 @@ class RpcController extends Zend_Controller_Action
 
     public function init()
     {
+        session_start(); 
         $this->_helper->layout->disableLayout();
     }
 
@@ -35,6 +36,60 @@ class RpcController extends Zend_Controller_Action
     public function rarAction()
     {
         // action body
+    }
+
+    public function unbatchAction()
+    {
+        $request    = $this->getRequest(); 
+        $batchkey   = $request->getParam('batchkey');   
+        $batch      = $_SESSION[$batchkey];
+        $response   = array ();
+        foreach ($batch as $id) { 
+            $response[] = Application_Model_QMessage::Receive ($id);
+        }
+        $response = implode ("\n", $response);
+        echo "<response>{$response}</response>";
+    }
+
+    public function batchAction()
+    {  
+        $request    = $this->getRequest();  
+        $article    = $request->getParam('article');   
+        $user       = $request->getParam('user');   
+        $user       = new Application_Model_ShadeUser($user);
+        $articles   = explode (",", $article);
+        $endpoint   = "queue.article"; 
+        $batchkey   = gen_uuid(); 
+
+#echo $articles[0] . "\n\n";
+
+        $tmp = Application_Model_Articleset::byId ($articles[0]);
+            $tmp ->  GetInfo();
+        $groupname = $tmp -> groupname;
+                
+        $batch = array();
+        $xml = "<batch key='{$batchkey}'>";
+        foreach ($articles as $article) 
+        { 
+            $data = array (
+                   "userkey" => $tmp -> serverkey
+                 , "groupname" => $groupname 
+                 , "article" => $article 
+                 , "endpoint" => $endpoint
+                 , "uuid" => $article
+             ); 
+#echo "\n\n";
+##var_dump ($data);
+#echo "\n\n";
+
+
+             $key = Application_Model_QMessage::Send ($data);
+             $xml .= "<item key='{$key}'>{$article}</item>"; 
+             $batch[] = $key;
+         }
+         $xml .= "</batch>";
+         $_SESSION[$batchkey] = $batch;
+         echo $xml;
     }
 
     public function thumbAction()
@@ -149,14 +204,22 @@ class RpcController extends Zend_Controller_Action
         echo implode (',', $array);
     }
 
+    public function smalltextpictureAction()
+    {
+        $request    = $this->getRequest(); 
+        $id         = $request->getParam('id'); 
+        $type       = $request->getParam('type');  
+        if ($type == "rar") $article = Application_Model_Articlerar::byId ($id); 
+        else $article = Application_Model_Articleset::byId ($id);
+        $article -> RenderasText ("thumb");
+    }
+
     public function smallAction()
     {
         $request    = $this->getRequest(); 
         $id         = $request->getParam('id'); 
-        $type       = $request->getParam('type'); 
-        $table      = $request->getParam('table');  
-        if ($type == "rar") $article = Application_Model_Articlerar::byId ($id);
-        else if (isset ($table)) $article = Application_Model_Articleset::byId ($id, -1, $table) ;
+        $type       = $request->getParam('type');  
+        if ($type == "rar") $article = Application_Model_Articlerar::byId ($id); 
         else $article = Application_Model_Articleset::byId ($id);
         $article -> Render ("thumb");
     }
@@ -246,9 +309,15 @@ class RpcController extends Zend_Controller_Action
             $ret = implode ("\n", $ret);
          echo "<list> {$ret} </list>" ; 
     }
-
+ 
 
 }
+
+
+
+
+
+
 
 
 

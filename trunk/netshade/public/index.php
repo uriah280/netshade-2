@@ -1,6 +1,5 @@
 <?php
-
-         error_reporting(E_ALL & ~E_NOTICE);
+ini_set('error_reporting', E_ALL); 
 
 function gen_uuid() {
     return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
