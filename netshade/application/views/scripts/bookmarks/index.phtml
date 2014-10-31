@@ -13,7 +13,9 @@
 
 		 <? foreach ($this->List as $article):  ?>
 		     
-			<li class="arrow article-picture" id="<?= $article ['Articlekey'] ?>"><?= $article ['address'] ?> (<?= $article ['countof']  ?>)</li>
+			<li class="arrow article-picture" id="<?= $article ['Articlekey'] ?>"
+                           data-article-key="<?= $article ['Articlekey'] ?>"
+                          ><?= $article ['address'] ?> (<?= $article ['countof']  ?>)</li>
 		   
 		 <? endforeach ?>
 

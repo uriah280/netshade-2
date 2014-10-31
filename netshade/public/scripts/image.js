@@ -728,6 +728,7 @@ var
                                               if (my.css) $(target).css ("border", my.css);
                                                  this.dispose ();
                                           } 
+
                                           pic.onerror = function () { 
 
                                               api.imagestring (context, "9pt Lato", 9, 36, caption + " did not load", "#900", null,

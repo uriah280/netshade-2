@@ -12,7 +12,8 @@
 
 		 <? foreach ($this->User->Bookmarks as $article):  ?>
 		     
-			<li class="<?= $article->count ?> arrow article-picture" id="<?= $article -> uuid ?>"><?= $article -> subject  ?>)</li>
+			<li class="<?= $article->count ?> arrow article-picture" id="<?= $article -> uuid ?>"
+                           data-article-key="<?= $article -> uuid  ?>"><?= $article -> subject  ?>)</li>
 		   
 		 <? endforeach ?>
 

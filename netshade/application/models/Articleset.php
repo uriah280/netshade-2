@@ -175,6 +175,23 @@ class Application_Model_Articleset
         return $range;
     }
 
+    function RenderasText ($field = 'data')
+    {  
+        $Db     = new Application_Model_ShadeDb (false, "Articleset:RenderasText");   
+        $query  = "SELECT {$field}, filename FROM Ns_Articledata WHERE uuid = '{$this->uuid}'";
+        $result = $Db -> Execute ($query);  
+             
+
+        if($row = mysql_fetch_array($result))  
+        {   
+            echo $row[0];
+        } 
+        else 
+        {
+            echo $query;
+        }
+    }
+
     function Render ($field = 'data')
     { 
         if ($this->type == "wmv") $type = "video/mov";

@@ -12,7 +12,10 @@ $item = $this->item;
          $css = $is ? "border:solid 1px #900;margin:0px" : ""; 
          if ($is) $was = false; ?>
         
-	<div style="<?= $css ?>" class="article-hilo <?= $this->unrar ?>" title="<?= $item[$n]['article']->uuid ?>" id="<?= $uri ?>"> p#<?= $item[$n]['page'] ?></div>    
+	<div style="<?= $css ?>" class="article-hilo <?= $this->unrar ?>" title="<?= $item[$n]['article']->uuid ?>" 
+                 id="<?= $uri ?>" 
+             data-small-key="<?= $item[$n]['article']->uuid ?>"
+            > p#<?= $item[$n]['page'] ?></div>    
    
      <? endfor ?>
 </div>

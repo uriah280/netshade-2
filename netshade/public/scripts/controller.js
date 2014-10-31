@@ -504,6 +504,29 @@ var
                    });  
               });
 
+             var batchKeys = [];
+             $("*[data-article-key]").each (function (){
+                 batchKeys.push ($(this).data("articleKey"));
+                   $(this).click (function (){
+                       var on = $("#text-page").val();
+                       location.href = on + this.id;
+                   });  
+                 $(this).html ("Connecting...");
+             });
+             Batchpane.Create (batchKeys, THUMB_SIZE, 'data-article-key', function () {
+
+                 var smallKeys = [];
+                 $("*[data-small-key]").each (function () {   
+                     $(this).click (function (){
+                         var old = location.href.replace (/\/page\/\d+/, "") + "/page/" + this.id;
+                         location.href = this.id;//old;
+                      });   
+                      smallKeys.push ($(this).data("smallKey"));
+                 });
+                  Batchpane.Create (smallKeys, TINY_SIZE, 'data-small-key');
+             });
+/*THUMB_SIZE = 244,
+    TINY_SIZE 
              $(".article-picture").each (function () {   
                    $(this).click (function (){
                        var on = $("#text-page").val();
@@ -511,6 +534,7 @@ var
                    });  
                    return Thumbpane.create (this, this.id, $(this).html(), THUMB_SIZE); 
               });
+*/
 
              var delay = function () {
                  Thumbpane.oncomplete = null; 
@@ -838,5 +862,14 @@ function getPosition(e){
     top  += e.offsetTop;
     return {x : left, y : top};
 }
-
-//http://localhost
+String.prototype.truncate=function(y) { try { return this.length>y?(this.substr(0,y/2)+'...'+this.substr(this.length-(y/2))):this } catch (ex) { return ''} }; 
+String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ''); }; 
+String.prototype.format = function ()
+{
+    var o=this, r={x:0,r:/\{/g,s:'|+{+|',e:/\|\+\{\+\|/g,t:'{'};
+    for (var i=0;i<arguments.length;i++) 
+        while (o.indexOf ('{'+i+'}')>=0 && r.x++ < 32)
+            try { o=o.replace ('{'+i+'}', arguments[i].toString().replace (r.r,r.s)); }
+            catch (ex) { }
+    return o.replace (r.e,r.t);
+}
