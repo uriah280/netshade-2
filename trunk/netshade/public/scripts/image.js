@@ -975,7 +975,7 @@ var
 			            } 
                                     my.onprogress ();  
                                 } 
-			        setTimeout (my.send, 750);
+			        setTimeout (my.send, 2750);
 			    }
 			});
                     }
