@@ -55,9 +55,15 @@ var
                       if (!this.tries[x]) this.tries[x] = 1;
                       this.tries[x] ++;
                       if (this.tries[x] > 4) return;
-                       this.render (x);
+                       this.render (x, 1);
                   },
-                  render : function (x) {
+                  render : function (x, i) {
+                      var that=this, num=x, render = function () {
+                           that.render_(num);
+                       }
+                      setTimeout (render, i * 100);
+                  },
+                  render_ : function (x) {
                       var renderKey = x, div = findBydata (this.tag, x), resize = this.size, request = "/rpc/smalltextpicture/id/{0}".format (x);
                       $ajax( request, function( uuid ) {   
 
@@ -116,10 +122,9 @@ var
                       });  
                   },
                   final : function (data) {
-                      var that=this
-                          for (var n in this.batchkeys) {
-                                var x = this.batchkeys[n]
-                               this.render (x); 
+                      var that=this, i = 0;
+                          for (var n in this.batchkeys) { 
+                               this.render(this.batchkeys[n], i++); 
                           }
                        if (this.ondone) 
                            this.ondone();
