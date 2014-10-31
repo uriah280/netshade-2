@@ -1,6 +1,9 @@
 var
     Batchpane = {
         Batch : [],
+        Dispose : function (id) {
+            this.Batch[id] = null;
+        },
         Poll : function (id) {
             this.Batch[id].poll();
         },
@@ -62,10 +65,17 @@ var
 
 
                                           pic.onload = function () {
- 
-                                              var s = Sizer.fit (this, resize), size = resize < 0 ? s.h : resize, 
+                                                 Batchpane.Dispose(ID)
+                                              var s = Sizer.fit (this, resize), size = resize < 0 ? s.h : resize, ex = "img-" + renderKey,
                                                   im = "<img src='{0}' width='{1}' height='{2}'>".format (src, s.w, s.h);
-                                               
+                                                   if ($(ex).length) {
+                                                       $(ex).each (function (){
+                                                           this.width = s.w;
+                                                           this.height = s.h;
+                                                           this.src = src; 
+                                                       });
+                                                       return;
+                                                   }
                                                    div.html (im);
                                           } 
 
@@ -98,7 +108,7 @@ var
                                }
 
                                if (!(response.done || (response.hung && that.started)))
-                                   return setTimeout (recheck, 500);
+                                   return setTimeout (recheck, 3000);
                           // }
                                    setTimeout (function () { that.final() }, 300)
                           
@@ -106,11 +116,13 @@ var
                       });  
                   },
                   final : function (data) {
+                      var that=this
                           for (var n in this.batchkeys) {
                                 var x = this.batchkeys[n]
                                this.render (x); 
                           }
-                       if (this.ondone) this.ondone();
+                       if (this.ondone) 
+                           this.ondone();
                   },
                   attach : function (data) {
                       var Doc = $.parseXML( data ), xml = $( Doc ), tmp = {}, that = this; 
