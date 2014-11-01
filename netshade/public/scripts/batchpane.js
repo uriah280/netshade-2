@@ -88,18 +88,17 @@ var
 
                                                           // this.width = s.w;
                                                           // this.height = s.h;
-                                               //var source = TextonPicture (this, caption);
+                                               var source = TextonPicture (this, caption, resize);
                                                   
 
-                                 var im = "<img src='{0}' onload='$a(this, {1}, {2}, {3})' data-raw-src='{0}' data-inner-text=\"{4}\" width='{1}' height='{2}'>".format (
-                                           src, s.w, s.h, resize, caption.replace (/"/g, ''));
+                                 var im = "<img src='{0}' data-raw-src='{0}' data-inner-text=\"{4}\" >".format (
+                                           source, s.w, s.h, resize, caption.replace (/"/g, ''));
 
  
                                                    div.children ("img").each (function () {
-                                                           this.width = s.w;
-                                                           this.height = s.h;
-                                                           this.src = src; 
-                                                           $(this).attr ('data-raw-src', src);
+
+                                                           fadeIn (this, s.w, s.h, src);
+ 
                                                           exist = true;
                                                     });
 
@@ -107,6 +106,7 @@ var
                                                    if (exist) { 
                                                       return;
                                                    } 
+
                                                    div.html (im);
 
                                                    
@@ -134,9 +134,11 @@ var
                                     if (obj.state != 'PENDING') that.started = true;
                                     if (x) {
                                        if (obj.state == "COMPLETE") {
-                                               write2Cell(div, "COMPLETE<br/>{0}<br/>{1}".format(x, obj.id));
+                                            //   write2Cell(div, "COMPLETE<br/>{0}<br/>{1}".format(x, obj.id));
                                            // div.html ("COMPLETE<br/>{0}<br/>{1}".format(x, obj.id));
+                                          //  div.css ( { border : "none" })
                                        }
+                                       //else div.css ( { border : "solid 1px #0f0" });
                                        // else div.html (obj.caption);
                                     }
                                }
@@ -167,10 +169,10 @@ var
                       $(xml).find ('item').each (function (){ 
                             var key = $(this).attr ("key");
                             tmp [key] = $(this).text();
-                             var cell = findBydata (that.tag, tmp [key]);
+                             var cell = findBydata (that.tag, tmp [key]), caption = $(cell).html(), prefix = $(cell).data("articleCount");
                              if (!cell.length) return;// alert ("Cannot find cell " + that.tag);
-
-                               that.caption [ tmp [key] ] = $(cell).html();
+                              if (prefix) caption = "{0} items - {1}".format(prefix, caption)
+                               that.caption [ tmp [key] ] = caption;
 
                              write2Cell(cell, "Connected...");//$(cell).html ("Connected...");
                        }); 
@@ -188,33 +190,98 @@ var
         }
     }
 
-    function $a(im, w, h, x, y) {
-       var text = [w, h, x, y].join (" x "); //$(im).data("innerText");
-       im.onload = null; 
-     //  im.src = TextonPicture (im, text);
+    function faded (picture, w, h, alpha) {
+         var api = CanvasAPI, canvas = document.createElement("canvas") , context = canvas.getContext('2d');
+ 
+                  canvas.width = w;    
+                  canvas.height = h;    
+                  canvas.style.width = w + "px";   
+                  canvas.style.height = h + "px";    
+
+	    context.clearRect(0, 0, picture.width, picture.height);
+	    context.globalAlpha = 1;
+	    context.drawImage(picture, 0, 0);
+           
+           return canvas.toDataURL();
+
     }
 
-    function TextonPicture (picture, text) {
+var fader={
+   ash:[],
+   add:function (picture, w, h, src){
+        var id=fader.ash.length,object = {
+         picture:picture, w:w, h:h, src:src, alpha:.1,clone:undefined,
+          next : function () {
+               var next = function () { fader.ash[id].next(); }
+               if (this.alpha >= 1) return;
+		this.picture.src = faded(this.clone, this.w, this.h, this.alpha); 
+                this.alpha -=- 0.1; 
+               // setTimeout (next, 250)
+             }, 
+          invoke : function (pic) {
+                this.clone = pic;
+		this.picture.width = this.w;
+		this.picture.height = this.h;
+		$(this.picture).attr ('data-raw-src', this.src); 
+                this.next ();
+             }, 
+          load : function () {
+                var that=this, im = new Image ();
+                im.onload = function () {
+                     this.onload = null;
+                     that.invoke (this);
+                 }
+                im.src = this.src;
+            }
+         }
+
+        fader.ash.push (object);
+        object.load ();
+    }
+}
+
+    function fadeIn (picture, w, h, src) {
+        picture.onload = null;
+        // return fader.add (picture, w, h, src);
+
+        picture.width = w;
+        picture.height = h;
+        picture.src = src; 
+        $(picture).attr ('data-raw-src', src); 
+    }
+
+    function $a(im, w, h, size) {
+ 
+       var text = $(im).data("innerText") || "No caption detected";
+       im.onload = null; 
+       im.src = TextonPicture (im, text, size); 
+    }
+
+    function TextonPicture (picture, text, size) {
          var api = CanvasAPI, canvas = document.createElement("canvas") , context = canvas.getContext('2d');
 
-                  canvas.width = picture.width;    
-                  canvas.height = picture.height;    
-                  canvas.style.width = picture.width + "px";   
-                  canvas.style.height = picture.height + "px";    
-  
-            //   context.drawImage(picture, 0, 0);
-           api.imagecopyresized (context, picture, 0, 0, picture.width, picture.height, 0,0,  picture.width, picture.height);  
-            api.imagestring (context, "700 9pt Lato", 10, 16, text, "#fff", null,
-                                      picture.width - 20, 16, 5);
-            api.imagestring (context, "700 9pt Lato", 9, 15, text, "#222", null,
-                                      picture.width - 20, 16, 5);
+                  var s = Sizer.fit (picture, size)
+                  canvas.width = s.w;    
+                  canvas.height = s.h;    
+                  canvas.style.width = s.w + "px";   
+                  canvas.style.height = s.h + "px";    
+           var x = size - picture.width, y = size - picture.height;
+           api.imagecopyresized (context, picture, 0, 0, picture.width, picture.height, s.x, s.y, s.w, s.h);  
+            var loc = { y : size > 0 ? (size - 50) : (s.h - 50)}
+            api.imagestring (context, "700 9pt Lato", 10, loc.y, text, "#fff", null,
+                                      s.w - 20, 16, 5);
+            api.imagestring (context, "700 9pt Lato", 9, loc.y - 1, text, "#222", null,
+                                      s.w - 20, 16, 5);
 
            return canvas.toDataURL();
     }
 
     function write2Cell (cell, value) {
        var im;
-       if (im = (cell).children ("img")) return im;
+       if (im = (cell).children ("img")) { 
+          document.title = value;
+          return im;
+       }
        $(cell).html (value);
        return false;
     }
