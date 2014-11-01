@@ -465,8 +465,20 @@ var
 
     $ajax = function (uri, callback) {
                     var onload = callback, params = {  uri : uri };
-                                
+                          
+                      return  $.ajax({
+			    type: "GET",
+			    url: uri,
+			    cache: false, 
+			    success: callback
+			});
+
+      
                      var worker = Sweatshop.create(params, onload); /*new Worker('/scripts/async.js?' + new Date().getTime());
+
+                    
+
+
                      worker.onmessage = function(e) {
                           var msg = e.data.content; 
                           onload(msg);

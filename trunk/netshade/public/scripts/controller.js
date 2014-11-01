@@ -90,10 +90,24 @@ var
     Controller = {
         view : function (i) {
                   var on = $("#text-page").val(), id = i, o = this.id + "_old";  
-                 $(".article-scale").each (function () {     
-                       return Thumbpane.create (this, id, "", -1, true);
+
+
+             $(".article-scale").each (function () {   
+                   $(this).attr ("data-scale-key", id);
+        //     alert ($(this).attr ("data-scale-key"))
+                  Batchpane.Create ([id], -1, 'data-scale-key', function (){
+                       Controller.preview ();
+                       ServiceBus.OnPageResize();
+                  }, "data");
+                 //  Thumbpane.create (this, this.id, $(this).html(), -1, true);
+              });
+ 
+
+
+              //   $(".article-scale").each (function () {     
+              //         return Thumbpane.create (this, id, "", -1, true);
                        // TPane.create (this);
-                  }); 
+              //    }); 
         },
 
         multipass : function (keys) {

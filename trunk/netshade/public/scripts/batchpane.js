@@ -148,7 +148,7 @@ var
                             var key = $(this).attr ("key");
                             tmp [key] = $(this).text();
                              var cell = findBydata (that.tag, tmp [key]);
-                             if (!cell.length) return alert ("Cannot find cell " + that.tag);
+                             if (!cell.length) return;// alert ("Cannot find cell " + that.tag);
                              $(cell).html ("Connected...");
                        }); 
 
