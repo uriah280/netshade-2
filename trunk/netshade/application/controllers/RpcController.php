@@ -158,6 +158,19 @@ class RpcController extends Zend_Controller_Action
      
     }
 
+
+    public function smalltextpictureAction()
+    {
+        $request    = $this->getRequest(); 
+        $id         = $request->getParam('id'); 
+        $type       = $request->getParam('type');  
+        $field      = $request->getParam('field');  
+        if ($type == "rar") $article = Application_Model_Articlerar::byId ($id); 
+        else $article = Application_Model_Articleset::byId ($id);
+        $article -> RenderasText (isset($field)?$field:"thumb");
+    }
+
+
     public function pictureAction()
     {
         $request    = $this->getRequest(); 
@@ -203,17 +216,6 @@ class RpcController extends Zend_Controller_Action
         }
         echo implode (',', $array);
     }
-
-    public function smalltextpictureAction()
-    {
-        $request    = $this->getRequest(); 
-        $id         = $request->getParam('id'); 
-        $type       = $request->getParam('type');  
-        if ($type == "rar") $article = Application_Model_Articlerar::byId ($id); 
-        else $article = Application_Model_Articleset::byId ($id);
-        $article -> RenderasText ("thumb");
-    }
-
     public function smallAction()
     {
         $request    = $this->getRequest(); 

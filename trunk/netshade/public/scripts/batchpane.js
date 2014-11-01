@@ -26,12 +26,13 @@ var
                 done : done, hung : hung, response : response
             } 
         }, 
-        Create : function (items, sizeof, tag, ondone) {
+        Create : function (items, sizeof, tag, ondone, field) {
              
              var username = undefined, rex = /user\/(\w+)\//, test = rex.exec (location.href);
              if (test) username = test[1];
              if (!username) return alert ("Could not read username")
-             
+             if (items.length == 0) return;
+
              var value = items.join (","), command = "/rpc/batch/article/{0}/user/{1}".format(value, username), 
                     ID = Batchpane.Batch.length, recheck = function () { Batchpane.Poll(ID)}; 
 
@@ -40,6 +41,7 @@ var
                   tag : tag, 
                   size : sizeof, 
                   batchkeys : {}, 
+                  field : field, 
                   ondone : ondone, 
                   batchkey : undefined, 
                   command : command,
@@ -64,7 +66,12 @@ var
                       setTimeout (render, i * 100);
                   },
                   render_ : function (x) {
-                      var renderKey = x, div = findBydata (this.tag, x), resize = this.size, request = "/rpc/smalltextpicture/id/{0}".format (x);
+                      var renderKey = x, div = findBydata (this.tag, x), resize = this.size, 
+                            request = "/rpc/smalltextpicture/id/{0}".format (x);
+
+                            if (this.field) request += "/field/" + this.field;
+ 
+
                       $ajax( request, function( uuid ) {   
 
                             var pic = new Image(), src =  "data:image/jpeg;base64,{0}".format(uuid);
@@ -109,12 +116,12 @@ var
                                        if (obj.state == "COMPLETE") {
                                             div.html ("COMPLETE<br/>{0}<br/>{1}".format(x, obj.id));
                                        }
-                                       else div.html (obj.caption);
+                                       // else div.html (obj.caption);
                                     }
                                }
 
                                if (!(response.done || (response.hung && that.started)))
-                                   return setTimeout (recheck, 3000);
+                                   return setTimeout (recheck, 1000);
                           // }
                                    setTimeout (function () { that.final() }, 300)
                           
@@ -130,7 +137,7 @@ var
                            this.ondone();
                   },
                   attach : function (data) {
-                      var Doc = $.parseXML( data ), xml = $( Doc ), tmp = {}, that = this; 
+                      var uuid = undefined, Doc = $.parseXML( data ), xml = $( Doc ), tmp = {}, that = this; 
  
 
                       $(xml).find ('batch').each (function (){ 
@@ -141,11 +148,11 @@ var
                             var key = $(this).attr ("key");
                             tmp [key] = $(this).text();
                              var cell = findBydata (that.tag, tmp [key]);
-
+                             if (!cell.length) return alert ("Cannot find cell " + that.tag);
                              $(cell).html ("Connected...");
                        }); 
 
-                      if (!uuid) return alert ("Parser fail");
+                      if (!uuid) return;// alert ("Parser fail");
 
                       this.batchkeys = tmp;
                       this.batchkey = uuid;
@@ -161,7 +168,7 @@ var
 
 
    function findBydata (str,val) {
-var query = "*[{0}='{1}']".format(str, val); 
+       var query = "*[{0}='{1}']".format(str, val); 
        return $(query);
    }
 

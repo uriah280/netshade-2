@@ -120,14 +120,18 @@ var
               // context.clearRect(0,0,this.width,this.height);
             })
 
-             $id = [];
+             $id = []; 
 
+             var batchKeys = []; 
+
+ 
              $(".article-tiny").each (function () {  
                   this.style.display = DIALOG_VISIBLE ? "inline" : "none";
                   if (!DIALOG_VISIBLE) return;
                   var that = this, n = this.id; 
                   $(this).empty();
                   $(this).css ("border", "none");
+ 
 
                   if (DIALOG_HILO) 
                   {
@@ -136,7 +140,12 @@ var
                            if (i < 0 || i >= s.length || s.length < 1) return;
                            var id =  s[i].article, text = s[i].text, index = s[i].index; 
                            $(that).click (function () { drp.selectedIndex = index; Controller.view (id) });
-                           return Thumbpane.create (that, id, index, TINY_SIZE, false, id == drp.value ? "solid 1px red" : ""); 
+
+ 
+
+                           batchKeys.push (id); 
+                           $(that).attr("data-small-key", id);
+                           $(that).css ("border", id == drp.value ? "solid 1px red" : ""); 
                       }); 
                       return;
                   }
@@ -147,10 +156,15 @@ var
                        var id =  drp.options[i].value, text = drp.options[i].text; 
                        $(that).click (function () { drp.selectedIndex = i; Controller.view (id) });
                        $id.push (id);
-                       return Thumbpane.create (that, id, i, TINY_SIZE, false, n == 0 ? "solid 1px red" : "none");
+
+                           batchKeys.push (id); 
+                           $(that).attr("data-small-key", id); 
+                          $(that).css ("border", id == drp.value ? "solid 1px red" : "");
+                    //   return Thumbpane.create (that, id, i, TINY_SIZE, false, n == 0 ? "solid 1px red" : "none");
                   }); 
               });
-
+ 
+             Batchpane.Create (batchKeys, TINY_SIZE, 'data-small-key');
           //    Controller.multipass ($id);
 
               if (localStorage ["playing"] && localStorage ["playing"]  == "on")
@@ -443,10 +457,6 @@ var
                          location.href = href;
               });
 
-             $(".article-scale").each (function () {   
-                   Thumbpane.create (this, this.id, $(this).html(), -1, true);
-              });
- 
 
               var tmp_c = [];
               $(".carousel").each (function (){
@@ -525,6 +535,20 @@ var
                  });
                   Batchpane.Create (smallKeys, TINY_SIZE, 'data-small-key');
              });
+
+             
+             $(".article-scale").each (function () {   
+                   $(this).attr ("data-scale-key", this.id);
+                  Batchpane.Create ([this.id], -1, 'data-scale-key', function (){
+                       Controller.preview ();
+                       ServiceBus.OnPageResize();
+                  }, "data");
+                 //  Thumbpane.create (this, this.id, $(this).html(), -1, true);
+              });
+ 
+
+
+
 /*THUMB_SIZE = 244,
     TINY_SIZE 
              $(".article-picture").each (function () {   
