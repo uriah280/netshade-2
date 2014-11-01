@@ -293,7 +293,7 @@ var
              $(".controller").each (function (){
                   this.invoke = function (sender, e) {
                        $(this).css ("height", DIALOG_VISIBLE ? "96px" : "24px"); 
-                       var W = $(window).width() - this.offsetWidth - 24 , H = $(window).height() - this.offsetHeight - 48;
+                       var W = $(window).width() - this.offsetWidth - 8 , H = $(window).height() - this.offsetHeight - 8;
                        this.style.left = W + "px";
                        this.style.top  = H + "px";
                   }
@@ -535,10 +535,9 @@ var
                        var on = $("#text-page").val();
                        location.href = on + this.id;
                    });  
-                 $(this).html ("Connecting...");
+                // $(this).html ("Connecting...");
              });
              Batchpane.Create (batchKeys, THUMB_SIZE, 'data-article-key', function () {
-
                  var smallKeys = [];
                  $("*[data-small-key]").each (function () {   
                      $(this).click (function (){

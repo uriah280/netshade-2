@@ -46,6 +46,7 @@ var
                   batchkey : undefined, 
                   command : command,
                   tries : { },
+                  caption : { },
                   started : false,
                   load : function () {  
 
@@ -71,6 +72,7 @@ var
 
                             if (this.field) request += "/field/" + this.field;
  
+                              var caption = this.caption [ x ]; 
 
                       $ajax( request, function( uuid ) {   
 
@@ -78,18 +80,36 @@ var
 
 
                                           pic.onload = function () {
-                                                 Batchpane.Dispose(ID)
-                                              var s = Sizer.fit (this, resize), size = resize < 0 ? s.h : resize, ex = "img-" + renderKey,
-                                                  im = "<img src='{0}' width='{1}' height='{2}'>".format (src, s.w, s.h);
-                                                   if ($(ex).length) {
-                                                       $(ex).each (function (){
+                                            //   this.onload = null;
+                                                 Batchpane.Dispose(ID);
+
+
+                                              var exist, s = Sizer.fit (this, resize), size = resize < 0 ? s.h : resize, ex = "img-" + renderKey;
+
+                                                          // this.width = s.w;
+                                                          // this.height = s.h;
+                                               //var source = TextonPicture (this, caption);
+                                                  
+
+                                 var im = "<img src='{0}' onload='$a(this, {1}, {2}, {3})' data-raw-src='{0}' data-inner-text=\"{4}\" width='{1}' height='{2}'>".format (
+                                           src, s.w, s.h, resize, caption.replace (/"/g, ''));
+
+ 
+                                                   div.children ("img").each (function () {
                                                            this.width = s.w;
                                                            this.height = s.h;
                                                            this.src = src; 
-                                                       });
-                                                       return;
-                                                   }
+                                                           $(this).attr ('data-raw-src', src);
+                                                          exist = true;
+                                                    });
+
+
+                                                   if (exist) { 
+                                                      return;
+                                                   } 
                                                    div.html (im);
+
+                                                   
                                           } 
 
                                pic.onerror = function () {
@@ -114,7 +134,8 @@ var
                                     if (obj.state != 'PENDING') that.started = true;
                                     if (x) {
                                        if (obj.state == "COMPLETE") {
-                                            div.html ("COMPLETE<br/>{0}<br/>{1}".format(x, obj.id));
+                                               write2Cell(div, "COMPLETE<br/>{0}<br/>{1}".format(x, obj.id));
+                                           // div.html ("COMPLETE<br/>{0}<br/>{1}".format(x, obj.id));
                                        }
                                        // else div.html (obj.caption);
                                     }
@@ -137,8 +158,7 @@ var
                            this.ondone();
                   },
                   attach : function (data) {
-                      var uuid = undefined, Doc = $.parseXML( data ), xml = $( Doc ), tmp = {}, that = this; 
- 
+                      var uuid = undefined, Doc = $.parseXML( data ), xml = $( Doc ), tmp = {}, that = this;  
 
                       $(xml).find ('batch').each (function (){ 
                             uuid = $(this).attr ("key");
@@ -149,7 +169,10 @@ var
                             tmp [key] = $(this).text();
                              var cell = findBydata (that.tag, tmp [key]);
                              if (!cell.length) return;// alert ("Cannot find cell " + that.tag);
-                             $(cell).html ("Connected...");
+
+                               that.caption [ tmp [key] ] = $(cell).html();
+
+                             write2Cell(cell, "Connected...");//$(cell).html ("Connected...");
                        }); 
 
                       if (!uuid) return;// alert ("Parser fail");
@@ -165,6 +188,36 @@ var
         }
     }
 
+    function $a(im, w, h, x, y) {
+       var text = [w, h, x, y].join (" x "); //$(im).data("innerText");
+       im.onload = null; 
+     //  im.src = TextonPicture (im, text);
+    }
+
+    function TextonPicture (picture, text) {
+         var api = CanvasAPI, canvas = document.createElement("canvas") , context = canvas.getContext('2d');
+
+                  canvas.width = picture.width;    
+                  canvas.height = picture.height;    
+                  canvas.style.width = picture.width + "px";   
+                  canvas.style.height = picture.height + "px";    
+  
+            //   context.drawImage(picture, 0, 0);
+           api.imagecopyresized (context, picture, 0, 0, picture.width, picture.height, 0,0,  picture.width, picture.height);  
+            api.imagestring (context, "700 9pt Lato", 10, 16, text, "#fff", null,
+                                      picture.width - 20, 16, 5);
+            api.imagestring (context, "700 9pt Lato", 9, 15, text, "#222", null,
+                                      picture.width - 20, 16, 5);
+
+           return canvas.toDataURL();
+    }
+
+    function write2Cell (cell, value) {
+       var im;
+       if (im = (cell).children ("img")) return im;
+       $(cell).html (value);
+       return false;
+    }
 
 
    function findBydata (str,val) {
