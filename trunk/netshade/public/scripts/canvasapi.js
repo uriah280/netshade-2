@@ -35,12 +35,12 @@ var CanvasAPI = {
         }
 
         if (CanvasAPI.Icons[src]) {
-            picture = CanvasAPI.Icons[src];
-            return invoke ();
+         //   picture = CanvasAPI.Icons[src];
+         //   return invoke ();
         }
         picture.onload = invoke; 
         picture.src = src; 
-        CanvasAPI.Icons[src] = picture;
+        // CanvasAPI.Icons[src] = picture;
              
     },
 

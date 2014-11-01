@@ -163,19 +163,21 @@ var
                       }); 
                       return;
                   }
+                  else 
+                  {
+		          $("#article-select").each (function () {  
+		               var drp=this, o=drp.selectedIndex, i = o - (-n);
+		               if (i < 0 || i >= drp.options.length || drp.options.length < 1) return;
+		               var id =  drp.options[i].value, text = drp.options[i].text; 
+		               $(that).click (function () { drp.selectedIndex = i; Controller.view (id) });
+		               $id.push (id);
 
-                  $("#article-select").each (function () {  
-                       var drp=this, o=drp.selectedIndex, i = o - (-n);
-                       if (i < 0 || i >= drp.options.length || drp.options.length < 1) return;
-                       var id =  drp.options[i].value, text = drp.options[i].text; 
-                       $(that).click (function () { drp.selectedIndex = i; Controller.view (id) });
-                       $id.push (id);
-
-                           batchKeys.push (id); 
-                           $(that).attr("data-small-key", id); 
-                          $(that).css ("border", id == drp.value ? "solid 1px red" : "");
-                    //   return Thumbpane.create (that, id, i, TINY_SIZE, false, n == 0 ? "solid 1px red" : "none");
-                  }); 
+		                   batchKeys.push (id); 
+		                   $(that).attr("data-small-key", id); 
+		                  $(that).css ("border", id == drp.value ? "solid 1px red" : "");
+		            //   return Thumbpane.create (that, id, i, TINY_SIZE, false, n == 0 ? "solid 1px red" : "none");
+		          }); 
+                  }
               });
  
              Batchpane.Create (batchKeys, TINY_SIZE, 'data-small-key');
