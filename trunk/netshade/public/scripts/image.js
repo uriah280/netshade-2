@@ -103,7 +103,7 @@ var
         },  
 
         init : function (arr) {
-            Fancy.loading = shuffle( arr );
+            Fancy.loading = arr; // shuffle( arr );
             Fancy.limit = arr.length; 
             Fancy.go ();
         },  
@@ -111,10 +111,9 @@ var
         init_ : function () {
  
             
-            var groupname = Fancy.loading.pop (), url = "/rpc/picsof/user/milton/name/" + groupname;
-             // document.title = Fancy.limit + ". "+groupname+"...";
-            $ajax(url, function (data) {
-                  
+            var groupname = Fancy.loading.pop (), username = Controller.getUsername(), url = "/rpc/picsof/user/" + username + "/name/" + groupname;
+              document.title = Fancy.limit + ". "+groupname+"...";
+            $ajax(url, function (data) { 
                    try {
 
                         var xmlDoc = $.parseXML( data ),
@@ -139,12 +138,20 @@ var
 	 
 			});
  
+                        if (list.length == 0) {
+//if (confirm(groupname + " has no items\n" + data ))
+                             Fancy.limit --;
+                             Fancy.proceed ();
+                            return;
+                        }
  
                         Fancy.add (groupname, list);
                         Fancy.proceed_ ();
 
                    } catch (ex) 
                    { 
+ 
+//                    if (confirm(ex.message))
                         Fancy.limit --;
                         Fancy.proceed ();
                    }
@@ -301,38 +308,49 @@ var
         },
         proceed_ : function () {
                Sweatshop.clear(); Icetag.clear(); Snapshot.clear(); 
-            var group=Fancy.peek(), article = group.peek(), 
-                  command = "/rpc/randomof/id/" + article.uuid, 
-               src = '/rpc/picture/id/' + article.uuid, tiny = '/rpc/small/id/' + article.uuid; 
-  
+            var that=this, group=Fancy.peek();
 
-            $ajax( command, function( uuids ) { 
-                
-                var kids = uuids.split (","), picture = Snapshot.create (function () {  
-                    //if (this.width > 1999) return this.src = tiny;
-                    Fancy.pics.stale = Fancy.pics.fresh;
-                    Fancy.pics.fresh = { kids : kids, group : group, article : article, picture : this };
-                    Fancy.x = -PANE_SIZE;
-                    Fancy.play();
-                }, Fancy.proceed);
-                picture.src = src;  
-            });  
+            try {
+                var article = group.peek(), command = "/rpc/randomof/id/" + article.uuid, 
+                   src = '/rpc/picture/id/' + article.uuid, tiny = '/rpc/small/id/' + article.uuid;  
 
+//if (confirm(src)) 
+                    $ajax( command, function( uuids ) {     
+                        try {                            
+                        var kids = uuids.split (","), picture = Snapshot.create (function () {  
+                            //if (this.width > 1999) return this.src = tiny;
+                            Fancy.pics.stale = Fancy.pics.fresh;
+                            Fancy.pics.fresh = { kids : kids, group : group, article : article, picture : this };
+                            Fancy.x = -PANE_SIZE;
+                            Fancy.play();
+                        }, Fancy.proceed);
+                        picture.src = src; 
+                        } catch (ex) {
+                            that.proceed ();
+                        } 
+                    });  
+            } catch (ex) {
+//if (confirm(ex.message))
+                that.proceed ();
+            }
         }, 
 
         setSizes : function () {
 
-            var thin = $(window).width() < $(window).height(), base_w = $(window).width() - 8;
- 
+            var thin = $(document).width() < $(document).height(), BASE_WIDTH = $(document).width() - 8;
+
+            thin = false;
+
             if (thin) {
-                base_w = $(window).width() - 4; 
-                base_w = base_w - (base_w % 3);
-                base_w += 2;
+               alert ([$(document).width(), $(document).height()])
+                BASE_WIDTH = $(document).width() - 4; 
+                BASE_WIDTH = BASE_WIDTH - (BASE_WIDTH % 3);
+                BASE_WIDTH += 2;
             }
  
-            PANE_SIZE = thin ? base_w : (Math.floor (base_w * 0.75) + 2);
+            PANE_SIZE = thin ? BASE_WIDTH : (Math.floor (BASE_WIDTH * 0.75) + 2);
 
-            canvas_w  = thin ? Math.floor ((base_w - 2) / 3) :  Math.floor (base_w * 0.25);
+            canvas_w  = thin ? Math.floor ((BASE_WIDTH - 24) / 3) :  Math.floor (BASE_WIDTH * 0.25);
             PANE_H    = Math.floor (9*(PANE_SIZE/16));
             PANE_H    = PANE_H - (PANE_H % 3)
             canvas_h  = Math.floor ((PANE_H - 2) / 3);
@@ -363,10 +381,7 @@ var
                    Fancy.setSizes ();
 
             $("header").each (function () {
-
-//1031, 780
  
-
                 $(this).html ('<div class="splash main"><canvas id="center-main-canvas" width=' + PANE_SIZE + ' height=' + PANE_H + '/></div>' + 
                               '<div class="0 splash info"><canvas width="' + canvas_w + '" height="' + canvas_h + '" class="i-canvas 0" /></div>' + 
                               '<div class="1 splash info"><canvas width="' + canvas_w + '" height="' + canvas_h + '" class="i-canvas 1" /></div>' + 
@@ -381,7 +396,7 @@ var
                  })
 
   
-                Fancy.items = shuffle (Fancy.items);
+               // Fancy.items = shuffle (Fancy.items);
 
                 Fancy.proceed();
             });
@@ -902,7 +917,7 @@ var
        scale : function (picture) {
 
                        var w = picture.width, h = picture.height, r = w/h, W = $(window).width() - 16, w1 = W, h1 = w1 / r, 
-                                H = $(window).height() - 40, h2 = H, x = 0, y = 0;
+                                H = $(window).height() - 60, h2 = H, x = 0, y = 0;
 
                        if (w > h) { // long  
                        } else {  

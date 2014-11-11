@@ -1,8 +1,13 @@
  <?
-    $action = $this->article->bookmarked ? "Unbookmark" : "Bookmark";  
-    $item = $this-> counter-> Rangefrom( $this -> start ); 
+    $action  = $this->article->bookmarked ? "Unbookmark" : "Bookmark";  
+    $item    = $this-> counter-> Rangefrom( $this -> start ); 
     $sortas  = strlen($this->sort) > 0 ? "subject" : "filename";
- 
+    $refs    = explode ('|', $this->article->ref);
+    $other   = array ();
+    foreach ($refs as $ref) {
+       if (strlen ($ref) > 10 && $ref != $this->article->groupname)
+            $other[] = trim($ref); 
+    }
 ?>
 
          <div id="div-stat"><?= $this -> pages ?></div> 
@@ -11,7 +16,8 @@
 		 <? foreach ($this->article->items as $article):
                             $css = $article->cache ? "cache" : ""; ?>
 		     
-			<li class="arrow article-picture <?= $css ?>" id="<?= $article -> uuid ?>" title="name/<?= $this->article->groupname ?>/user/<?= $this->article->username ?>"
+			<li class="arrow article-picture <?= $css ?>" id="<?= $article -> uuid ?>" title="name/<?= $this->article->groupname ?>/user/<?= $this->user ?>"
+                           data-article-key="<?= $article -> uuid  ?>"
                               ><?= $article -> subject ?></a></li>
 		   
 		<? endforeach ?>
@@ -30,8 +36,22 @@
   
  
 
-  <ul class="my-menu">
+  <ul class="my-menu"> 
+
     <li class="li-sortas"><a>Sort by <?= $sortas ?></a></li> 
-    <li><a class="bookmark" id="/rpc/bookmark/id/<?= $this->article -> uuid ?>/user/<?= $this->article->username ?>"><?= $action ?></a></li>
+    <li><a class="bookmark" id="/rpc/bookmark/id/<?= $this->article -> uuid ?>/user/<?= $this->user ?>"><?= $action ?></a></li>
  
+<? if (sizeof ($other) > 0): ?>
+    <li>
+ <a>Open related group </a>
+      <ul>
+<? foreach ($other as $ref): ?>
+
+       <li><a id="<?= $ref ?>" class="a-group"><?= $ref ?></a></li>
+<? endforeach ?>
+      </ul>
+
+      </li> 
+ <?endif?>
+
 </ul>

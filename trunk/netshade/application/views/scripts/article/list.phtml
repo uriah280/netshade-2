@@ -1,13 +1,33 @@
  <?
     $action = $this->article->bookmarked ? "Unbookmark" : "Bookmark";  
     $sortas  = strlen($this->sort) > 0 ? "subject" : "filename";  
+    $refs    = explode ('|', $this->article->ref);
+    $other   = array ();
+    foreach ($refs as $ref) {
+       if (strlen ($ref) > 10 && $ref != $this->article->groupname)
+            $other[] = trim($ref); 
+    }
  
 ?>
 
   <ul class="my-menu"> 
+    <li class="li-ref"><a><?= $this->article->ref ?></a></li> 
     <li class="li-sortas"><a>Sort by <?= $sortas ?></a></li> 
     <li><a class="bookmark" id="/rpc/bookmark/id/<?= $this->article -> uuid ?>/user/<?= $this->article->username ?>"><?= $action ?></a></li>
- 
+
+
+ <? if (sizeof ($other) > 0): ?>
+    <li>
+ <a>Open related group </a>
+      <ul>
+<? foreach ($other as $ref): ?>
+
+       <li><a id="<?= $ref ?>" class="a-group"><?= $ref ?></a></li>
+<? endforeach ?>
+      </ul>
+
+      </li> 
+ <?endif?>
 </ul> 
 
    <input type="hidden" id="text-suffix" value="name/<?= $this->article->groupname ?>/user/<?= $this->article->username ?>"/>

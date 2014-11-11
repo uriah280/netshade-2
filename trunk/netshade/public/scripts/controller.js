@@ -5,10 +5,11 @@ var
     THUMB_SUFFIX = "",
     DIALOG_VISIBLE = true,
     DIALOG_HILO = true,
+    SLIDE_OFFSET = 5,
 
     Rangefrom = function (options, start)
     { 
-            var countof = options.length , full = 7, SPAN = Math.floor (full / 2), range = [];
+            var countof = options.length , full = 11, SPAN = Math.floor (full / 2), range = [];
 
         if (start > 0)
         {
@@ -93,8 +94,7 @@ var
 
 
              $(".article-scale").each (function () {   
-                   $(this).attr ("data-scale-key", id);
-        //     alert ($(this).attr ("data-scale-key"))
+                   $(this).attr ("data-scale-key", id); 
                   Batchpane.Create ([id], -1, 'data-scale-key', function (){
                        Controller.preview ();
                        ServiceBus.OnPageResize();
@@ -128,37 +128,34 @@ var
         preview : function () { 
 
               // Sweatshop.clear(); Icetag.clear(); Snapshot.clear(); 
-
-            $("#canvas-teeny").each (function(){ 
-                var context = this.getContext('2d');    
-              // context.clearRect(0,0,this.width,this.height);
-            })
+ 
 
              $id = []; 
 
-             var batchKeys = []; 
-
+             var batchKeys = [];  
+              Batchpane.Uncheat();
  
              $(".article-tiny").each (function () {  
-                  this.style.display = DIALOG_VISIBLE ? "inline" : "none";
+                  //this.style.display = DIALOG_VISIBLE ? "inline" : "none";
                   if (!DIALOG_VISIBLE) return;
                   var that = this, n = this.id; 
                   $(this).empty();
                   $(this).css ("border", "none");
- 
+
+
 
                   if (DIALOG_HILO) 
                   {
                       $("#article-select").each (function () {  
-                           var drp=this,s = Rangefrom(drp.options, drp.selectedIndex), i = n - (-3); 
+                           var drp=this,s = Rangefrom(drp.options, drp.selectedIndex), i = n - (-SLIDE_OFFSET); 
                            if (i < 0 || i >= s.length || s.length < 1) return;
                            var id =  s[i].article, text = s[i].text, index = s[i].index; 
-                           $(that).click (function () { drp.selectedIndex = index; Controller.view (id) });
-
- 
+                           $(that).click (function () { drp.selectedIndex = index; Controller.view (id) }); 
 
                            batchKeys.push (id); 
-                           $(that).attr("data-small-key", id);
+                            Batchpane.Cheat({ index : index, id : id });
+
+                           $(that).attr("data-canvas-key", id);
                            $(that).css ("border", id == drp.value ? "solid 1px red" : ""); 
                       }); 
                       return;
@@ -173,18 +170,37 @@ var
 		               $id.push (id);
 
 		                   batchKeys.push (id); 
-		                   $(that).attr("data-small-key", id); 
+                            Batchpane.Cheat({ index : i, id : id });
+		                   $(that).attr("data-canvas-key", id); 
 		                  $(that).css ("border", id == drp.value ? "solid 1px red" : "");
 		            //   return Thumbpane.create (that, id, i, TINY_SIZE, false, n == 0 ? "solid 1px red" : "none");
 		          }); 
                   }
               });
  
-             Batchpane.Create (batchKeys, TINY_SIZE, 'data-small-key');
-          //    Controller.multipass ($id);
+             Batchpane.Create (batchKeys, TINY_SIZE, 'data-canvas-key');
+ 
+        },
 
-              if (localStorage ["playing"] && localStorage ["playing"]  == "on")
-                  setTimeout (Controller.next, 10000); 
+        setNext : function () {
+             Controller.timer = 0; 
+             Controller.setNext_ ();
+            
+        },
+        setNext_ : function () {
+             Controller.timer ++;  
+             if (Controller.marquee) {
+                      var i2 = new Image(); i2.onload = function () {
+                         Controller.marquee.src = TextonPicture (this, Controller.caption, -1, Controller.timer / 3);
+                       } 
+                      i2.src = Controller.src;
+                  } else document.title = Controller.timer;
+
+
+             if (Controller.timer > 3) {
+                  return Controller.next ();
+             }
+             setTimeout (Controller.setNext_, 3333);
         },
         next : function (i) {
                  var index = i == undefined ? 1 : i; 
@@ -220,6 +236,8 @@ var
          getUsername : function (){
               var rex = /user\/(\w+)\//, test = rex.exec (location.href);
               if (test) return test[1];
+              var rex2 = /user\/(\w+)/, test2 = rex2.exec (location.href); 
+              if (test2) return test2[1];
          },
 
         start : function () {  
@@ -227,12 +245,17 @@ var
                 DIALOG_VISIBLE = on;
                 DIALOG_HILO    = hilo;
 
+
              $.browser = {
                    android : navigator.userAgent.indexOf ("Android") > 0
               };
 
              this.orient();
-
+ 
+                 BASE_WIDTH = $(document).width() - 48;
+                 THUMB_SIZE = (BASE_WIDTH / 4);// - 44;
+                 TINY_SIZE  = BASE_WIDTH / 16;
+ 
               if (screen.width < 400) {
                       var w = screen.width - 28, h = (w / (16/9)), sm = Math.floor((w - 16)/5);
                   $(".arrow").each (function(){
@@ -256,6 +279,9 @@ var
              $(".a-hi").attr ("href", "javascript:void(0)");
              $(".a-hi").click (function (){
                  DIALOG_HILO = !DIALOG_HILO;
+
+                 Batchpane.Square = {}; 
+
                  $(this).html (DIALOG_HILO ? "Hilo" : "Sort");
 	         localStorage ["hilo"] = DIALOG_HILO ? "on" : "off";
                  Controller.preview();
@@ -291,15 +317,59 @@ var
 	             $(".my-menu").menu();
               });
 
+$('canvas').click(function(e) {
+    var offset = $(this).offset(), ordinal = Math.floor ((e.clientX - offset.left) / 64), index = ordinal - SLIDE_OFFSET; 
+
+
+ 
+		          $("#article-select").each (function () {  
+		               var drp=this, o=drp.selectedIndex, i = o - (-index);
+
+
+                  if (DIALOG_HILO) 
+                  { 
+                      var cheat = Batchpane.Cheats[ordinal]
+//if (!confirm ([cheat.index, cheat.id])) return;
+                               drp.selectedIndex = cheat.index;
+		               Controller.view (cheat.id) ; 
+                      return;
+                  }
+
+
+
+
+		               if (i < 0 || i >= drp.options.length || drp.options.length < 1) return alert(i+" is NOT valid  ");
+		               var id =  drp.options[i].value, text = drp.options[i].text;  
+//if (!confirm ([i, id])) return;
+
+                               drp.selectedIndex = i;
+		               Controller.view (id) ;
+		          }); 
+
+
+  });
+
+             $("#canvas-teeny").each (function (){
+                  this.invoke = function (sender, e) {
+                       $(this).css ("display", DIALOG_VISIBLE ? "inline" : "none");
+                  } 
+                  ServiceBus.Subscribe ("OnPageResize", this);
+              });
+
 
              $(".controller").each (function (){
                   this.invoke = function (sender, e) {
-                       $(this).css ("height", DIALOG_VISIBLE ? "96px" : "24px"); 
-                       var W = $(window).width() - this.offsetWidth - 8 , H = $(window).height() - this.offsetHeight - 8;
-                       this.style.left = W + "px";
+                       var W = ( $(window).width() - this.offsetWidth ) / 2 ;
+
+                       $(this).css ({ height   : DIALOG_VISIBLE ? "112px" : "24px", 
+                                      overflow : "hidden", 
+                                      left     : W + "px" 
+                                    });  
+
+                       var H = $(window).height() - this.offsetHeight - 8;
                        this.style.top  = H + "px";
                   }
-                  this.style.height = "120px";
+                  this.style.height = "112px";
                   ServiceBus.Subscribe ("OnPageResize", this);
               });
              window.onresize = function ()  { ServiceBus.OnPageResize(); }
@@ -307,7 +377,7 @@ var
              $("#progressbar").each (function (){
                   this.invoke = function (sender, e) {
                       $(this).progressbar({
-                              value: e 
+                            value : e 
                        });
                   }
                   ServiceBus.Subscribe ("Progress", this);
@@ -317,8 +387,7 @@ var
                    // $(this).html (DIALOG_VISIBLE?"&#171;" : "&#187;");
                    $(this).click (function (){
                        DIALOG_VISIBLE = !DIALOG_VISIBLE;
-	               localStorage ["dialog"] = DIALOG_VISIBLE ? "on" : "off";
-                         //  $(this).html (DIALOG_VISIBLE?"&#171;" : "&#187;");
+	               localStorage ["dialog"] = DIALOG_VISIBLE ? "on" : "off"; 
                            ServiceBus.OnPageResize();
                            Controller.preview(); 
                    }); 
@@ -437,6 +506,16 @@ var
                           location.reload();
                      });  
              }); 
+
+
+             $(".rpcparam").click (function () {
+                  var param = prompt ("Find:", "");
+                  if (!param) return;
+                  var href = location.href.replace ("group/list", "rpc/find/param/" + param);
+                  location.href = href;
+
+             });
+
              $(".group-join").click (function () {
                  var name=$("#text-user").val(), tmp=this.className.split(" "), href = "/group/join/user/" + name + "/name/" + this.id + "/start/" + tmp[1] + "/amount/" + tmp[2]; 
               //   return window.open (href);
@@ -449,12 +528,12 @@ var
              });
              $(".group-name").click (function () {
                   var t = Controller.getUsername (); 
-                 var name=t||$("#text-user").val(), href = "/group/join/user/" + name + "/name/" + this.id;
+                 var name=t||Controller.getUsername(), href = "/group/join/user/" + name + "/name/" + this.id;
                //  return window.open (href);
                  location.href = href;
              });
              $(".a-group").click (function () {
-                 var name=$("#text-user").val(), href = "/group/join/user/" + name + "/name/" + this.id; 
+                 var name=Controller.getUsername(), href = "/group/join/user/" + name + "/name/" + this.id; 
                  location.href = href;
              });
              $(".msmq-id").each (function () { 
@@ -530,18 +609,42 @@ var
                    });  
               });
 
+               $(".article-lookup").css ({display : "none"});
+               $("*[data-article-index]").each (function (){
+                     var id = $(this).data("articleIndex"), value = $(this).html();
+                     Batchpane.Index[id] = value;
+                });
+
              var batchKeys = [];
+try {
              $("*[data-article-key]").each (function (){
+$(this).css (
+  { width : THUMB_SIZE + "px",
+    height : THUMB_SIZE + "px" }
+);
+
+                if (this.className.indexOf ("article-picture") >= 0) {
                  batchKeys.push ($(this).data("articleKey"));
                    $(this).click (function (){
                        var on = $("#text-page").val();
                        location.href = on + this.id;
                    });  
+                }
                 // $(this).html ("Connecting...");
              });
+}
+catch (e) {
+alert (e.message)
+}
+ 
              Batchpane.Create (batchKeys, THUMB_SIZE, 'data-article-key', function () {
                  var smallKeys = [];
                  $("*[data-small-key]").each (function () {   
+var ts = TINY_SIZE - 1;
+ $(this).css (
+  { width : ts + "px",
+    height : ts + "px" }
+  );
                      $(this).click (function (){
                          var old = location.href.replace (/\/page\/\d+/, "") + "/page/" + this.id;
                          location.href = this.id;//old;
@@ -577,7 +680,9 @@ var
 
              var delay = function () {
                  Thumbpane.oncomplete = null; 
-                 $(".article-hilo").each (function () {   
+                 $(".article-hilo").each (function () {    
+
+
                      $(this).click (function (){
                          var old = location.href.replace (/\/page\/\d+/, "") + "/page/" + this.id;
                          location.href = this.id;//old;
@@ -677,7 +782,7 @@ var
                               w1 - 10, 14, 4);
                        TPane.done [that.title] = this;
                           if (localStorage ["playing"] && localStorage ["playing"]  == "on")
-                             setTimeout (Controller.next, 6000); 
+                           Controller.setNext();//  setTimeout (Controller.next, 6000); 
                           Controller.preview();
                    }
                    if (TPane.done [that.title]) return;

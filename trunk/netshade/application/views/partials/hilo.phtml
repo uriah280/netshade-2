@@ -6,7 +6,7 @@ $item = $this->item;
 <div class="hilo-panel">
      <?
      $was = true;
-     for ($n=0;$n<sizeof ($item)&&$n<15;$n++):
+     for ($n=0;$n<sizeof ($item)&&$n<16;$n++):
          $uri = $this->url (array ($this->label => $item[$n]['page'] ) ); 
          $is  = $item[$n]['page'] == $this->page && $was;
          $css = $is ? "border:solid 1px #900;margin:0px" : ""; 

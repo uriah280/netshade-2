@@ -606,6 +606,9 @@ class News_Usenet_Server
                         SetProgress ($messageKey, $size, $count, 'IN PROGRESS', 
                            "Found $alike articles like $param in $start_id thru $max_id...");
                     } 
+
+                    if ($alike > 50000) break;
+
                     $buf = fgets($nntp->nntp, 4096);     
                 }   
                 SetProgress ($messageKey, $size, $count, 'IN PROGRESS', "Retrieving $sz bytes $start_id $max_id...");

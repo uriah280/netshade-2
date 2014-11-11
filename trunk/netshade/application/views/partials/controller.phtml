@@ -9,13 +9,17 @@
 	<div class="article-menu"><span class="ui-icon ui-icon-circle-triangle-s"></span></div>  
 
     <select id="article-select">
-        <? foreach ($this-> items as $article): ?> 
+        <? foreach ($this-> items as $article): 
+           $value = $this->unrar == "" ? trunc($article -> subject, 50) : $article -> filename ;
+           $value = str_replace ('"', '', $value ); 
+           $value = str_replace ('<', '&lt;', $value );
+           $value = str_replace ('>', '&gt;', $value );?> 
          <option value="<?= $article -> uuid ?>"
             <? if ($article -> uuid == $this -> uuid ): ?>
                 selected 
             <? endif ?>
            >
-           <?= $this->unrar == "" ? trunc($article -> subject, 50) : $article -> filename ?>
+           <?= $value ?>
          </option>
         <? endforeach ?> 
     </select>
@@ -24,15 +28,17 @@
     <a class="a-next -1">Prev</a> &nbsp; <a class="a-ps">Play</a> &nbsp; <a class="a-next 1">Next</a>   &nbsp; <a class="a-hi">Hilo</a>  
       
    </div>
-<canvas id="canvas-teeny" width="372" height="52"></canvas>
+<!-- <canvas id="canvas-teeny" width="724" height="84"></canvas> -->
+<img id="canvas-teeny" width="724" height="84"/>
+
     <div style="padding: 0px 0px 0px 24px">
 
      &nbsp;
 
-     <? for ($n=-3;$n<4;$n++): ?>
+     <? for ($n=-5;$n<6;$n++): ?>
         
-	<div class="article-tiny for-canvas <?= $this->unrar?>" id="<?= $n ?>"
-          >...</div>    
+	<div class="article-tiny for-canvas <?= $this->unrar ?>" id="<?= $n ?>"
+         data-canvas-name="#canvas-teeny" style="display:none"></div>    
 
      <? endfor ?>
 
@@ -40,3 +46,12 @@
   <p>
 </p>
 </div>
+
+<ul class="article-lookup">
+
+        <? foreach ($this-> items as $article): ?> 
+         <li data-article-index="<?= $article -> uuid ?>" 
+           ><?= $article -> subject ?></li>
+        <? endforeach ?> 
+
+</ul>

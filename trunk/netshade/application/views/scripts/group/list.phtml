@@ -8,6 +8,7 @@
       $lowid = $this->group->MinID;
       $amount = $this->group->LowID - $lowid;
   }
+
   $data = array (
            
     $this->group->LowID,
@@ -28,6 +29,12 @@
 <? if ($amount > 0): ?>
     <li><a class="group-join <?= $this->group->LowID ?> <?= $amount ?>" id="<?= $this->group->Name ?>">Get the previous <?= $amount ?> items starting at <?= $this->group->LowID ?>...</a></li> 
 <? endif ?>
+
+<? if ($this->group->HighID < $this->group->MaxID): ?>
+    <li><a class="group-join <?= $this->group->HighID + 50000 ?> 50000" id="<?= $this->group->Name ?>">Get the next 50000 items starting at <?= $this->group->HighID ?>...</a></li> 
+<? endif ?>
+
+
 <!--
     <li><a class="group-renew" id="<?= $this->group->Name ?>">Clear all articles and reload...</a></li> 
 -->
@@ -49,6 +56,13 @@
 
       </ul>
  
+      </li> 
+
+
+
+
+    <li>
+ <a class="rpcparam">Find in group... </a>
       </li> 
 
 
@@ -119,7 +133,10 @@
                             ?>
 		     
 			<li style="color:<?= $hue ?>" class="<?= $count ?> arrow article-<?= $article -> type ?> <?= $css?>" id="<?= $article -> uuid ?>" 
-			    ><?= $article->date ?>, <?= $article -> subject ?><?= $parts ?>, <?= $countof ?></li> 
+                           data-article-count="<?= $count ?>"
+                           data-article-key="<?= $article -> uuid  ?>"
+                           data-book-marked="<?= $bk  ?>"
+			    ><?= $article->date ?>, (<?= $bk ?>)<?= $article -> subject ?><?= $parts ?>, <?= $countof ?></li> 
 			
 		   
 		<? endforeach ?>
