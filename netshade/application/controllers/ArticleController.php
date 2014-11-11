@@ -39,6 +39,7 @@ class ArticleController extends Zend_Controller_Action
         $find = $request->getParam('find');  
         $most = $request->getParam('most');  
         $sort = $request->getParam('sort');  
+        $user = $request->getParam('user');  
         $suffix = isset ($find) ? "/find/{$find}" : "";
         $suffix .= isset ($most) ? "/most/{$most}" : "";
         $suffix .= isset ($sort) ? "/sort/{$sort}" : "";
@@ -54,7 +55,7 @@ class ArticleController extends Zend_Controller_Action
 
 
 $back = array ('controller' => 'group', 'action' => 'list', 'page' => $on, 'on' => NULL, 'id' => NULL
-        , 'name' => $article->groupname, 'user' => $article->username);  
+        , 'name' => $article->groupname, 'user' => $user);  
 
 $next = array ('action' => 'list', 'from' => $article->uuid, 'id' => NULL);  
 $this->view->back    = $this->view->url ($back);
@@ -68,7 +69,8 @@ $this->view->option  = "Settings";
         $this -> view -> nav     = $this->crumb;
 
 
-        $this -> view -> page    = $page; 
+        $this -> view -> user    = $user;
+        $this -> view -> page    = $page;  
         $this -> view -> start   = $start;
         $this -> view -> sort    = $sort; 
         $this -> view -> article = $article;

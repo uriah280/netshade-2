@@ -19,6 +19,8 @@ header {
 #div-stat {
     text-align : center;
     padding : 8px;
+    width : 100%;
+    display : block;
 }
 
 
@@ -70,8 +72,7 @@ header {
 
 .rounded { 
     padding : 0px 0px 0px 12px; 
-    margin : 2px;  
-   max-width: 1024px;
+    margin : 2px;   
 }
 
 
@@ -98,12 +99,13 @@ header {
 .for-canvas {
    /*  display : none; */
 }
-
+/*
 #canvas-teeny {
     width     : 372px;
     height    : 52px;
     display : none;
 }
+*/
 
 .article-menu {
     cursor:pointer;
@@ -122,11 +124,12 @@ header {
 
 .controller {
     position : absolute;
-    width : 500px;
+    width : 732px;
     height : 200px;
     background : #ffe;
     border : solid 1px #999;
     padding : 0px; 
+    z-index : 1000;
 }
 
 .my-menu {

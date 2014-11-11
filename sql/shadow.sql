@@ -1,3 +1,4 @@
+DROP DATABASE Netshade;
 CREATE DATABASE IF NOT EXISTS Netshade;
 
 USE Netshade;
