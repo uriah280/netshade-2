@@ -317,7 +317,9 @@ var
 	             $(".my-menu").menu();
               });
 
-$('canvas').click(function(e) {
+             $("#canvas-teeny").each (function (){
+$(this).click(function(e) {
+
     var offset = $(this).offset(), ordinal = Math.floor ((e.clientX - offset.left) / 64), index = ordinal - SLIDE_OFFSET; 
 
 
@@ -349,7 +351,6 @@ $('canvas').click(function(e) {
 
   });
 
-             $("#canvas-teeny").each (function (){
                   this.invoke = function (sender, e) {
                        $(this).css ("display", DIALOG_VISIBLE ? "inline" : "none");
                   } 
@@ -623,14 +624,22 @@ $(this).css (
     height : THUMB_SIZE + "px" }
 );
 
+
                 if (this.className.indexOf ("article-picture") >= 0) {
                  batchKeys.push ($(this).data("articleKey"));
+
+
                    $(this).click (function (){
                        var on = $("#text-page").val();
-                       location.href = on + this.id;
-                   });  
+                        Cellbrowse.attach (this);
+
+//                       location.href = on + this.id;
+                   });
+
+  
                 }
-                // $(this).html ("Connecting...");
+
+
              });
 }
 catch (e) {
@@ -1017,3 +1026,4 @@ String.prototype.format = function ()
             catch (ex) { }
     return o.replace (r.e,r.t);
 }
+var FAVEB64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABgUlEQVR42mNkoBAwUs2AnVJS3G7c3CVAphUQP3r150+f+P3710Fy9xQUlBRZWXOBTFkgPrHn27cprk+f/oAbMFVUlDlLQGA/kGmLZPjXr//+ufz6//+/IDPzbiCfF0nuwLJPn1yiX778Czbgs7JyOA8T0wosLrwOtUQDXeLP//+RrHfurAAb8E9FZTYjI2MKKX4HOmwu0507KWAD/iorr2NiYgokxYB///6tZ757NwhswDtp6VmCXFyppBjw4du3mYJPn2aADTjEze1hLSm5nYmRuFj99/8/w9nnz13Nvn7dA9fxUFh4o5yQkB8Rfmd49O7dKoV378IZGJDSQS8TE2+IoOB2WUFBa0YcLgFpfvju3d6NHz74Ffz79w3FABBoZGTkCOXhmaYiKprAysyMIvfrz5//d16/nrb269fCuv//f8PEsVp1iJU1VEdMbAYwYIVA/Pffvr299vp1is2vXxvQ1eIMtTmMjNLWPDxdQO8wn/3ypST6378n2NRRLzORCwCG2Y4RZzDtrAAAAABJRU5ErkJggg==";

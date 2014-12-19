@@ -1,19 +1,62 @@
 var
+    Cellbrowse = {
+        attach : function (cell) {
+               var on = $("#text-page").val();
+               return location.href = on + cell.id;
+
+              $(cell).children ("img").each (function () {
+                   var that = this, src = $(this).data ("rawSrc"), size = $(this).data ("sizeFactor"), im = new Image();
+                   im.onload = function () {
+                      that.src =  TextonPicture (this, "Eureka!", size) ;  
+                   }
+                   im.src = src;
+              });
+        } 
+    },
+
     Sliderpane = {
+   
+        List : [],
         Square : {},
         Pic : {},
         Thumb : {},
-        Caption : "Loading...",
+        Caption : "",
         Picture : undefined,
         Canvas : undefined,
         Percent : -1,
+        Unique : {},
+        Full : false,
         Init : function (x, src) {
+        //    if (this.Full) return;
+            var ok = true, e = 0;
             this.Square [x].src = src;
+            for (var n in this.Square) { e ++;
+                if (!this.Square [x].src) {
+                    ok = false;
+                    break;
+                }
+            }
+            if (!ok) return $(".estat").html (e + ". Not yet");
+            this.Full = true;
+            // $(".estat").html (e + " thumbnails")
+            //this.Index = e;
             this.Draw ();
         },
+       Clear : function (){
+
+            this.List = [];
+            this.Square = {};
+            this.Index = 0;
+ 
+		        if (!this.Canvas) return;
+           
+		                  var context = this.Canvas.getContext('2d');
+		                  context.clearRect(0, 0, this.Canvas.width, this.Canvas.height);
+       },
         Write : function (caption) {  
             this.Caption = caption;
             this.Redraw();
+            this.Render();
         },
         Add : function (caption, articleID, palette, index) {
               var chosen = index == SLIDE_OFFSET;
@@ -23,40 +66,45 @@ var
 		             canvas   : palette, 
 		             article  : articleID, 
 		             index    : index, 
-		             key      : !DIALOG_HILO ? index : Batchpane.Cheats[index].index, 
+		             key      : /* !DIALOG_HILO ? index : */ Batchpane.Cheats[index].index, 
 		             caption  : caption, 
 		             thumb    : false,
 		             image    : false,
 		             old      : false,
-		             src      : false,
-		             w        : 64,
-		             save     : function (pic){ Sliderpane.Pic[this.article] = pic; },
+		             src      : undefined,
+		             w        : 64, 
+
 		             set      : function (pic){ Sliderpane.Thumb[this.article] = pic; },
-		             see      : function(){ return Sliderpane.Pic[this.article]; },
 		             is       : function(){ return Sliderpane.Thumb[this.article]; },
 		             draw     : function (CANVAS) {
+                                  //Sliderpane.Unwind (1);
+
 		                  if (!this.src) return; var cv = CANVAS;
-		                //  $(this.canvas).each (function (){ 
-		                //      cv = this;
-		                //  })
-		                  var that = this, api = CanvasAPI, span=this.w + 1, x = this.index * span, y = 1, context = cv.getContext('2d'), im = new Image(), 
-		                       old = this.is(), margin = 3, thumbnail = old, rawpic = this.see(); 
+		                   
+		                  var thumbnail, that = this, api = CanvasAPI, span=this.w + 1, x = this.index * span, y = 1, context = cv.getContext('2d'), im = new Image(), 
+		                         margin = 3, hash = this.article.substr (0,4);
 		                   x += margin;
 
-		                  var thumb = function (th) { 
+                                      if (Sliderpane.Unique[hash] == x) return;
+
+                                     Sliderpane.Unique[hash] = x;
+
+		                  var thumb = function (th, old) { 
 		                          context.globalAlpha = chosen ? 1 : 0.55;
+		                          context.clearRect(x, y - 1, span + 1, span + 1);
 		                          if (chosen) {
 		                              api.imagefilledrectangle  (context, x, y - 1, span + 1, span + 1, "#900") ;
 		                          } else if (old) {
 		                              api.imagefilledrectangle  (context, x, y - 1, span + 1, span + 1, "#333") ;
 		                          } 
-		                          context.clearRect(x + 1, y, span - 1, span - 1);
 		                          api.imagecopyresized (context, th, 0, 0, th.width, th.height, x + 1, y, span - 1, span - 1); 
-                                          Sliderpane.Render();
+                                         Sliderpane.Unwind(-1);
 		                   } 
+ 
 
 		                  var picload = function (pic) {
-		                      var src2 =  TextonPicture (pic, "#" + that.key, span - 1) ;   
+		                      var src2 =  TextonPicture (pic, hash, span - 1) ; 
+		                     // var src2 =  TextonPicture (pic, "#" + that.key, span - 1) ;   
 		                      var t = new Image (); t.onload = function () {
 		                          thumb (this);
 		                      }
@@ -64,17 +112,20 @@ var
 		                      that.set(t);
 		                  }  
 
-		                  if (thumbnail) return thumb (thumbnail); 
-		                  if (rawpic) return picload (rawpic); 
+		                  if (thumbnail = this.is()) return thumb (thumbnail, true);  
 
 		                  im.onload = function () {
 		                      picload(this);
 		                  }
-		                  im.src = this.src; 
-		                  this.save(im);
+		                  im.onerror = function () {
+		                      Sliderpane.Unwind(-1);
+		                  }
+		                  im.src = this.src;  
 		             } 
                          } ;
             this.Square[ articleID ] = object;
+            this.List.push(object);
+           
             return object;
         },
         screen : function () {
@@ -92,6 +143,14 @@ var
             }
             return this.Picture;
         },
+        Index : 10,
+        Unwind : function (i) { 
+            this.Index -=- i;
+
+             $(".dstat").html ("[[[ " + this.Index + " ]]]"); 
+
+            if (this.Index < 3) this.Render();
+        },
         Render : function () { 
              this.Picture.src = this.Canvas.toDataURL();
         },
@@ -105,18 +164,7 @@ var
 
                       api.imagestring (context, "700 9pt Lato", 10, 80, Sliderpane.Caption, "#222" );
 
-              return;
-
-            for (var n in this.Square) {
-                 $(this.Square[n].canvas).each (function (){
-                     $(this).css ({display:"inline"}); 
-                     var api = CanvasAPI, context = this.getContext('2d');
-	              context.globalAlpha = 1.0;
-	              context.clearRect(0, 68, this.width, 20);
-                      api.imagestring (context, "700 9pt Lato", 10, 80, Sliderpane.Caption, "#222" );
-                 }) 
-                break;
-            } 
+              return; 
         },
         Draw : function () { 
             this.Redraw ();
@@ -126,6 +174,7 @@ var
     }
 
     Batchpane = {
+        Fave : new Image(),
         Batch : [],
         Index : {},
         Square : {},
@@ -136,6 +185,9 @@ var
         Cheat : function (id) { this.Cheats.push (id) },
         Dispose : function (id) {
             this.Batch[id] = null;
+        },
+        init : function () {
+            this.Fave.src = FAVEB64;
         },
         Poll : function (id) {
             this.Batch[id].poll();
@@ -182,20 +234,7 @@ var
                   tries : { },
                   caption : { },
                   started : false,
-                  load : function () {  
-var v = [], z = value.split (",");
-
-
-for (var f,v=[],i=0;f=z[i];i++){
-    if (!Sliderpane.Pic[f])
-       v.push (f);
-}
- 
-this.command = "/rpc/batch/article/{0}/user/{1}".format(v.join (","), username);
-
-//alert (v)
-//alert (value)
-
+                  load : function () {   
 
                      $ajax( this.command, function( uuid ) {    
                                Batchpane.Batch [ID].attach (uuid);
@@ -207,12 +246,11 @@ this.command = "/rpc/batch/article/{0}/user/{1}".format(v.join (","), username);
                       this.tries[x] ++;
                       if (this.tries[x] > 4) {
                           div.css ({color : "#900"})
-                          write2Cell(div, "ERROR: Could not load {0}".format(caption));
-                          
+                          write2Cell(div, "ERROR: Could not load {0}".format(caption)); 
                           return;
                       }
                       // div.html ("Retrying " + caption + "...");
-                       this.render (x, 1);
+                       this.render (x, 20);
                   },
                   render : function (x, i) {
                       var that=this, num=x, render = function () {
@@ -222,7 +260,7 @@ this.command = "/rpc/batch/article/{0}/user/{1}".format(v.join (","), username);
                   }, 
                   render_ : function (x) {
                       var that=this, renderKey = x, div = findBydata (this.tag, x), resize = this.size, 
-                            request = "/rpc/smalltextpicture/id/{0}".format (x);
+                            request = "/rpc/smalltextpicture/id/{0}".format (x), marked = div.data ("bookMarked");
 
                             if (this.field) request += "/field/" + this.field;
  
@@ -237,18 +275,17 @@ this.command = "/rpc/batch/article/{0}/user/{1}".format(v.join (","), username);
                                           pic.onload = function () { 
 
                                                var exist, s = Sizer.fit (this, resize), size = resize < 0 ? s.h : resize, ex = "img-" + renderKey; 
-                                               var source = TextonPicture (this, caption, resize);
+                                               var source = TextonPicture (this, caption, resize, false, marked);
               
 				                 var title = caption.replace (/"/g, ''), 
 				                        im = "<img src='{3}' data-raw-src='{0}' data-size-factor='{2}' title=\"{1}\" data-inner-text=\"{1}\" />".format (
 				                           this.src, title, resize, source); 
  
-                                                    if (resize > 0 && Sliderpane.Square [x]) {
-                                                       //Sliderpane.Square [x].src = this.src;
+                                                    if (resize > 0 && Sliderpane.Square [x]) { 
                                                         return Sliderpane.Init(x, this.src);//Draw ();
                                                     }
 
-                                                   div.children ("img").each (function () {
+                                                    div.children ("img").each (function () {
                                                            fadeIn (this, s.w, s.h, src, resize, caption); 
                                                           exist = true;
                                                     });
@@ -321,13 +358,13 @@ catch (j)
                            this.ondone();
                   },
                   attach : function (data) {
-                      var uuid = undefined, Doc = $.parseXML( data ), xml = $( Doc ), tmp = {}, that = this ;
+                      var uuid = undefined, Doc = $.parseXML( data ), xml = $( Doc ), tmp = {}, that = this , cnt = 0;
 
                       $(xml).find ('batch').each (function (){ 
                             uuid = $(this).attr ("key");
                        }); 
 
-                         Sliderpane.Square = {};
+                         Sliderpane.Clear();
 
                       $(xml).find ('item').each (function (index){  
 
@@ -338,8 +375,7 @@ catch (j)
 
                               if (prefix) innerText = "{0} items - {1}".format(prefix, innerText);
                                that.caption [ articleID ] =  innerText; 
-                               that.tries [ articleID ] = 1; 
-
+                               that.tries [ articleID ] = 1;  
 
                               if (palette) {
                                   $(cell).css ("display", "none"); 
@@ -350,7 +386,7 @@ catch (j)
 
                              write2Cell(cell, "Connected...");//$(cell).html ("Connected...");
                        }); 
-
+                          Sliderpane.Index = Sliderpane.List.length; 
                       if (!uuid) return;// alert ("Parser fail");
 
                       this.batchkeys = tmp;
@@ -511,6 +547,7 @@ var fader={
 	    Controller.src = src;
             Sliderpane.Write (caption);
 	}
+
         picture.width = w;
         picture.height = h;
         im.src = src; 
@@ -524,7 +561,7 @@ var fader={
         im.src = TextonPicture (im, text, size); 
     }
 
-    function TextonPicture (picture, text, size, percent) {
+    function TextonPicture (picture, text, size, percent, marked) {
          var api = CanvasAPI, canvas = document.createElement("canvas") , context = canvas.getContext('2d'), 
                 s = Sizer.fit (picture, size), x = size - picture.width, y = size - picture.height, 
                   w = size > 0 && size < 65 ? 64 : s.w, h = size > 0 && size < 65 ? 64 : s.h;
@@ -533,10 +570,13 @@ var fader={
                   canvas.width = w;    
                   canvas.height = h;    
                   canvas.style.width = w + "px";   
-                  canvas.style.height = h + "px";    
-
+                  canvas.style.height = h + "px";  
+  
            
            api.imagecopyresized (context, picture, 0, 0, picture.width, picture.height, s.x, s.y, s.w, s.h);  
+           
+           if (marked && marked.length > 0)
+               context.drawImage(Batchpane.Fave, s.w - 24, 8);
             var loc = { y : size > 0 ? (size - 50) : (s.h - 50)}
 
   // text = [Math.round(w), h, '.', s.x, s.y].join ("x")
@@ -605,4 +645,6 @@ function connectRs(pic) {
 	 } 
 
 }
+
+Batchpane.init ();
 
