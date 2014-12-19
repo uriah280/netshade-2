@@ -10,17 +10,12 @@ body {
 a {
     cursor : pointer;
 }
-
-header {
-    display:block; 
-}
+ 
 
 
 #div-stat {
     text-align : center;
-    padding : 8px;
-    width : 100%;
-    display : block;
+    padding : 8px; 
 }
 
 
@@ -73,6 +68,7 @@ header {
 .rounded { 
     padding : 0px 0px 0px 12px; 
     margin : 2px;   
+    display : block;
 }
 
 

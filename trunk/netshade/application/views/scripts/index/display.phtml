@@ -9,16 +9,19 @@
 <input type="hidden" id="text-page" value="<?= $next ?>"/>
 
 
-           <header>Loading...</header>  
-
-
-<div id="div-stat">
+           <div class="header">Loading...</div>  
+ 
+<table width="100%">
+  <tr>
+    <td align="center">
 	Subscribed Groups | <a href="<?= $bookmarks ?>">Bookmarks</a> | <a href="<?= $groups ?>">All Groups</a>
-</div>
-
-<ul class="rounded">
-
-	<? foreach ($this->Groups as $group): ?>
+    </td>
+  </tr>
+  <tr>
+    <td>
+        <ul>
+ 
+	   <? foreach ($this->Groups as $group): ?>
 
 	<li class="group-name carousel" id="<?= $group -> Name ?>">
 	   <a class="list-item">
@@ -28,8 +31,10 @@
 	   </a>
 	</li>
 
-	<? endforeach ?>
+	   <? endforeach ?>
 
-</ul>
-
+        </ul>
+    </td>
+  </tr>
+</table>
  

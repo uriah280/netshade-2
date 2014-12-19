@@ -221,7 +221,7 @@ var
 
              });
  
-             setTimeout (Fancy.proceed, Fancy.loading.length > 0 ? 1500 : 5000);
+             setTimeout (Fancy.proceed, 12000);
 
         },
 
@@ -380,7 +380,7 @@ var
  
                    Fancy.setSizes ();
 
-            $("header").each (function () {
+            $(".header").each (function () {
  
                 $(this).html ('<div class="splash main"><canvas id="center-main-canvas" width=' + PANE_SIZE + ' height=' + PANE_H + '/></div>' + 
                               '<div class="0 splash info"><canvas width="' + canvas_w + '" height="' + canvas_h + '" class="i-canvas 0" /></div>' + 
