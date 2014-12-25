@@ -8,8 +8,8 @@ class BookmarksController extends Zend_Controller_Action
        $this->_helper->layout->setLayout('device');
        $this->view->addScriptPath(HOME_PATH . "netshade/application/views/partials");
        
-        $home = array ('action' => 'display', 'controller' => 'index', 'article' => NULL, 'id' => NULL, 'page' => NULL, 'p' => NULL, 'pg' => NULL, 'key' => NULL);   
-        $self = array ('action' => 'index', 'controller' => 'bookmarks', 'article' => NULL, 'id' => NULL, 'page' => NULL, 'pg' => NULL);   
+        $home = array ('action' => 'display', 'controller' => 'index', 'article' => NULL, 'id' => NULL, 'page' => NULL, 'p' => NULL, 'pg' => NULL, 'key' => NULL, 'from' => NULL);   
+        $self = array ('action' => 'index', 'controller' => 'bookmarks', 'article' => NULL, 'id' => NULL, 'page' => NULL, 'pg' => NULL, 'from' => NULL);   
 
        $this->crumb = array (
                   new Application_Model_Link ("Home", $this->view->url ($home)) 

@@ -171,7 +171,7 @@ var
             for (var n in this.Square)
                this.Square[n].draw (this.Canvas);
         }
-    }
+    },
 
     Batchpane = {
         Fave : new Image(),
@@ -234,10 +234,9 @@ var
                   tries : { },
                   caption : { },
                   started : false,
-                  load : function () {   
-
+                  load : function () {    
                      $ajax( this.command, function( uuid ) {    
-                               Batchpane.Batch [ID].attach (uuid);
+                          Batchpane.Batch [ID].attach (uuid);
                       }); 
                   },
                   retry : function (x) {
@@ -561,7 +560,7 @@ var fader={
         im.src = TextonPicture (im, text, size); 
     }
 
-    function TextonPicture (picture, text, size, percent, marked) {
+    function TextonPicture (picture, text, size, count, marked) {
          var api = CanvasAPI, canvas = document.createElement("canvas") , context = canvas.getContext('2d'), 
                 s = Sizer.fit (picture, size), x = size - picture.width, y = size - picture.height, 
                   w = size > 0 && size < 65 ? 64 : s.w, h = size > 0 && size < 65 ? 64 : s.h;
@@ -575,22 +574,22 @@ var fader={
            
            api.imagecopyresized (context, picture, 0, 0, picture.width, picture.height, s.x, s.y, s.w, s.h);  
            
-           if (marked && marked.length > 0)
-               context.drawImage(Batchpane.Fave, s.w - 24, 8);
-            var loc = { y : size > 0 ? (size - 50) : (s.h - 50)}
 
-  // text = [Math.round(w), h, '.', s.x, s.y].join ("x")
+           var panel_width=80, loc = { y: size > 0 ? (size - 50) : (s.h - 50),
+               x: size > 0 ? (size - panel_width) : (s.w - panel_width)
+           } 
 
             api.imagestring (context, "700 9pt Lato", 10, loc.y, text, "#fff", null,
                                       s.w - 20, 16, 5);
             api.imagestring (context, "700 9pt Lato", 9, loc.y - 1, text, "#222", null,
                                       s.w - 20, 16, 5);
 
-             if (percent != undefined) {
-                    
-                   api.imagefilledrectangle  (context, 0, s.h-4, s.w, 4, "#333") ;
-                   api.imagefilledrectangle  (context, 0, s.h-4, s.w * percent, 4, "#0a0") ;
-             }
+            if (count != undefined && count > 0) {
+                api.imagefilledrectangle(context, loc.x, 0, panel_width, 20, "#fff");
+                api.imagestring(context, "700 9pt Lato", loc.x + 24, 14, count, "#222");
+                drawStar(context, loc.x + 10, 10, marked && marked.length > 0 ? "#f00" : null); 
+            }
+
 
            return canvas.toDataURL();
     }
@@ -645,6 +644,4 @@ function connectRs(pic) {
 	 } 
 
 }
-
-Batchpane.init ();
-
+ 

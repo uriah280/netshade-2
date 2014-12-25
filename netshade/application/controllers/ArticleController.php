@@ -98,8 +98,7 @@ $this->view->css     = "float";
         $this -> view -> article = $article; 
         $this -> view -> key = $of; 
  
-    }
-
+    } 
     public function listAction()
     {
         $request    = $this->getRequest();   

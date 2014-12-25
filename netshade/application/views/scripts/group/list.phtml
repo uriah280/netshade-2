@@ -27,7 +27,18 @@
     <li><a class="bookmark" id="/rpc/subscribe/id/<?= $this->group->Key ?>/user/<?= $this->user ?>"><?= $action ?></a></li>
 
 <? if ($amount > 0): ?>
-    <li><a class="group-join <?= $this->group->LowID ?> <?= $amount ?>" id="<?= $this->group->Name ?>">Get the previous <?= $amount ?> items starting at <?= $this->group->LowID ?>...</a></li> 
+    <li><a>Get the previous <i>n</i> items starting at <?= $this->group->LowID ?> </a>
+		   
+		   
+      <ul>
+	       <li><a class="group-join <?= $this->group->LowID ?> 50000" id="<?= $this->group->Name ?>">50000</a></li>
+	       <li><a class="group-join <?= $this->group->LowID ?> 100000" id="<?= $this->group->Name ?>">100000</a></li>
+	       <li><a class="group-join <?= $this->group->LowID ?> 150000" id="<?= $this->group->Name ?>">150000</a></li>
+
+      </ul>
+ 
+		   
+		   </li> 
 <? endif ?>
 
 <? if ($this->group->HighID < $this->group->MaxID): ?>
@@ -49,7 +60,7 @@
              <?if ($x==$this->most): ?>
                  class="selected" 
              <? endif ?>
-         ><a class="a-count" id="<?= $x ?>"><?= $x ?> items</a>
+         ><a class="a-count" id="<?= $x ?>"><?= $x ?> items!</a>
 
          </li>
 <? endfor?> 
@@ -136,6 +147,8 @@
                            data-article-count="<?= $count ?>"
                            data-article-key="<?= $article -> uuid  ?>"
                            data-book-marked="<?= $bk  ?>"
+                      	   data-verbose="true"
+                           data-direct="/article/list/user/{0}/from/{1}/id/{2}"
 			    ><?= $article->date ?>, (<?= $bk ?>)<?= $article -> subject ?><?= $parts ?>, <?= $countof ?></li> 
 			
 		   

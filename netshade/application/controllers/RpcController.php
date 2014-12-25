@@ -97,8 +97,7 @@ class RpcController extends Zend_Controller_Action
 
         $request    = $this->getRequest(); 
         $groupname  = $request->getParam('name'); 
-        $article    = $request->getParam('article');  
-        $table      = $request->getParam('table');  
+        $article    = $request->getParam('article');   
         $user       = $request->getParam('user');  
         $type       = $request->getParam('type');  
         $test       = new Application_Model_ShadeUser($user);
@@ -111,8 +110,6 @@ class RpcController extends Zend_Controller_Action
         }
 
         $endpoint   = isset ($type) ? $type : "queue.article";
-         
-
         $tmp = Application_Model_Articleset::byId ($uuid);
  
 
@@ -156,6 +153,17 @@ class RpcController extends Zend_Controller_Action
          echo $key;
 
      
+    }
+
+
+    public function slideAction()
+    {
+        $this->_helper->layout->setLayout('partial');
+        $request    = $this->getRequest(); 
+        $id         = $request->getParam('id'); 
+        $article = Application_Model_Articleset::byId ($id);
+        $article -> GetArticles ();
+        $this -> view -> article = $article;
     }
 
 
@@ -234,12 +242,27 @@ class RpcController extends Zend_Controller_Action
         echo $article->id;
     }
 
+    public function sendAction()
+    {
+        $user       = $request->getParam('user');  
+        $test       = new Application_Model_ShadeUser($user);
+		$request    = array ("userkey" => $test -> Serverkey);
+		while (list ($key, $value) = each ($_GET)) {
+		    if (strpos ($key, ".") !== false) {
+			    $arr = explode (".", $request);
+				$request[ $arr[1] ] = $value;
+			}
+		}
+        echo Application_Model_QMessage::Send ($request);
+    }
+
     public function findAction()
     {
         $request    = $this->getRequest(); 
         $groupname  = $request->getParam('name'); 
         $param      = $request->getParam('param');  
         $user       = $request->getParam('user');  
+        $most       = $request->getParam('most');  
         $test       = new Application_Model_ShadeUser($user);
  
 
@@ -254,6 +277,7 @@ class RpcController extends Zend_Controller_Action
          $this->view->user  = $user;
          $this->view->param = $param;
          $this->view->name  = $groupname;
+         $this -> view -> most = strlen($most) > 0 ? $most : NULL;
          $this->view->key   = Application_Model_QMessage::Send ($data);
     }
 
