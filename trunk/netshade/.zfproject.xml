@@ -27,6 +27,7 @@
           <actionMethod actionName="picture"/>
           <actionMethod actionName="bookmark"/>
           <actionMethod actionName="getArticles"/>
+          <actionMethod actionName="send"/>
           <actionMethod actionName="small"/>
           <actionMethod actionName="getKeys"/>
           <actionMethod actionName="groups"/>
@@ -34,6 +35,7 @@
           <actionMethod actionName="find"/>
           <actionMethod actionName="rar"/>
           <actionMethod actionName="randomof"/>
+          <actionMethod actionName="slide"/>
           <actionMethod actionName="connect"/>
           <actionMethod actionName="picsof"/>
           <actionMethod actionName="batch"/>
@@ -100,6 +102,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Rpc">
             <viewScriptFile forActionName="receive"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="slide"/>
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Rpc">
             <viewScriptFile forActionName="thumb"/>
@@ -184,6 +189,9 @@
           </viewControllerScriptsDirectory>
           <viewControllerScriptsDirectory forControllerName="Rpc">
             <viewScriptFile forActionName="smalltextpicture"/>
+          </viewControllerScriptsDirectory>
+          <viewControllerScriptsDirectory forControllerName="Rpc">
+            <viewScriptFile forActionName="send"/>
           </viewControllerScriptsDirectory>
         </viewScriptsDirectory>
         <viewHelpersDirectory/>

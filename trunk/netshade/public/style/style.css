@@ -1,17 +1,16 @@
-body {
-     
-    background-color: #fff; /* Background color */
-    color: #222; /* Foreground color used for text */ 
+body { 
+ background-color: #fff;  
+    color: #222; 
     font-size: 14px;
-    margin: 0; /* Amount of negative space around the outside of the body */
-    padding: 0; /* Amount of negative space around the inside of the body */
+    margin: 0; 
+    padding: 0;  
     font-family:Lato,Arial;
     overflow:auto;
 }
 
 header {
     display:block;
-   max-width: 1024px;
+    max-width: 1024px;
 }
 
 .article-menu {
@@ -22,14 +21,14 @@ header {
 }
 
 .main {
-   margin: 0px 2px 2px 0px; 
-   overflow: hidden;
+    margin: 0px 2px 2px 0px; 
+    overflow: hidden;
     -webkit-border-top-left-radius: 8px; 
 }
 
 .top-right {
     float : right
-}
+}    
 
 .controller {
     position : absolute;
@@ -47,16 +46,16 @@ header {
 .controller p {
     padding : 4px;
     margin  : 4px;
-}
+}      
 
 
 .info {
-   width: 250px;
-   height: 140px;
-   background : #ffc;
-   margin: 0px 1px 1px 0px;
-   padding : 0px;
-   overflow: hidden;
+    width: 250px;
+    height: 140px;
+    background : #ffc;
+    margin: 0px 1px 1px 0px;
+    padding : 0px;
+    overflow: hidden;
 }
 
 #dialog {

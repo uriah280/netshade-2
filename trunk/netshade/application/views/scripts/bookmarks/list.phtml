@@ -9,11 +9,12 @@
                  <div id="div-stat"><?= $this -> pages ?></div> 
 
                    <ul class="rounded">
-
+				   
 		 <? foreach ($this->User->Bookmarks as $article):  ?>
 		     
 			<li class="<?= $article->count ?> arrow article-picture" id="<?= $article -> uuid ?>"
                            data-article-count="<?= $article->count ?>"
+                           data-direct="/bookmarks/display/user/{0}/id/{1}/key/{2}"
                            data-article-key="<?= $article -> uuid  ?>"><?= $article -> subject  ?>)</li>
 		   
 		 <? endforeach ?>

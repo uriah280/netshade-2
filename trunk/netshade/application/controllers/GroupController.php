@@ -125,6 +125,7 @@ $this->view->option  = "Settings";
         $groupname  = $request->getParam('name');  
         $user       = $request->getParam('user');  
         $start      = $request->getParam('start');  
+        $most       = $request->getParam('most');  
         $renew      = $request->getParam('renew');  
         $amount     = $request->getParam('amount');  
         if (!isset($amount)) $amount = 50000;
@@ -144,6 +145,7 @@ $this->view->option  = "Settings";
          $this->view->title    = "Joining {$groupname}...";
          $this -> view -> key  = $key;
          $this -> view -> user = $user;
+         $this -> view -> most = strlen($most) > 0 ? "/most/{$most}" : "";
          $this -> view -> name = $groupname;
     }
 

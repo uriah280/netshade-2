@@ -89,652 +89,633 @@ var
     })(),
 
     Controller = {
-        view : function (i) {
-                  var on = $("#text-page").val(), id = i, o = this.id + "_old";  
 
-
-             $(".article-scale").each (function () {   
-                   $(this).attr ("data-scale-key", id); 
-                  Batchpane.Create ([id], -1, 'data-scale-key', function (){
-                       Controller.preview ();
-                       ServiceBus.OnPageResize();
-                  }, "data");
-                 //  Thumbpane.create (this, this.id, $(this).html(), -1, true);
-              });
- 
-
-
-              //   $(".article-scale").each (function () {     
-              //         return Thumbpane.create (this, id, "", -1, true);
-                       // TPane.create (this);
-              //    }); 
+        nextPage: function (article) {
+            location.href = $("#text-page").val() + article;
         },
 
-        multipass : function (keys) {
+        view: function (id, direction) {
 
+            thumb_worker.clear();
 
-                    var params = {  keys : keys };
-                     var worker = new Worker('/scripts/async.js?' + new Date().getTime());
-                     worker.onmessage = function(e) {
-                          var msg = e.data.content; 
-                          alert(msg);
-                       }
-                       worker.onerror = function (e) { confirm("Err:" + typeof(e.message)); }
- 
-                     worker.postMessage (params);
-
-        },
-
-        preview : function () { 
-
-              // Sweatshop.clear(); Icetag.clear(); Snapshot.clear(); 
- 
-
-             $id = []; 
-
-             var batchKeys = [];  
-              Batchpane.Uncheat();
- 
-             $(".article-tiny").each (function () {  
-                  //this.style.display = DIALOG_VISIBLE ? "inline" : "none";
-                  if (!DIALOG_VISIBLE) return;
-                  var that = this, n = this.id; 
-                  $(this).empty();
-                  $(this).css ("border", "none");
-
-
-
-                  if (DIALOG_HILO) 
-                  {
-                      $("#article-select").each (function () {  
-                           var drp=this,s = Rangefrom(drp.options, drp.selectedIndex), i = n - (-SLIDE_OFFSET); 
-                           if (i < 0 || i >= s.length || s.length < 1) return;
-                           var id =  s[i].article, text = s[i].text, index = s[i].index; 
-                           $(that).click (function () { drp.selectedIndex = index; Controller.view (id) }); 
-
-                           batchKeys.push (id); 
-                            Batchpane.Cheat({ index : index, id : id });
-
-                           $(that).attr("data-canvas-key", id);
-                           $(that).css ("border", id == drp.value ? "solid 1px red" : ""); 
-                      }); 
-                      return;
-                  }
-                  else 
-                  {
-		          $("#article-select").each (function () {  
-		               var drp=this, o=drp.selectedIndex, i = o - (-n);
-		               if (i < 0 || i >= drp.options.length || drp.options.length < 1) return;
-		               var id =  drp.options[i].value, text = drp.options[i].text; 
-		               $(that).click (function () { drp.selectedIndex = i; Controller.view (id) });
-		               $id.push (id);
-
-		                   batchKeys.push (id); 
-                            Batchpane.Cheat({ index : i, id : id });
-		                   $(that).attr("data-canvas-key", id); 
-		                  $(that).css ("border", id == drp.value ? "solid 1px red" : "");
-		            //   return Thumbpane.create (that, id, i, TINY_SIZE, false, n == 0 ? "solid 1px red" : "none");
-		          }); 
-                  }
-              });
- 
-             Batchpane.Create (batchKeys, TINY_SIZE, 'data-canvas-key');
- 
-        },
-
-        setNext : function () {
-             Controller.timer = 0; 
-             Controller.setNext_ ();
-            
-        },
-        setNext_ : function () {
-             Controller.timer ++;  
-             if (Controller.marquee) {
-                      var i2 = new Image(); i2.onload = function () {
-                         Controller.marquee.src = TextonPicture (this, Controller.caption, -1, Controller.timer / 3);
-                       } 
-                      i2.src = Controller.src;
-                  } else document.title = Controller.timer;
-
-
-             if (Controller.timer > 3) {
-                  return Controller.next ();
-             }
-             setTimeout (Controller.setNext_, 3333);
-        },
-        next : function (i) {
-                 var index = i == undefined ? 1 : i; 
-            $("#article-select").each (function () {
-                  if (this.selectedIndex == (this.options.length - 1)) this.selectedIndex = 0;
-                  else this.selectedIndex -=- index;
-                  var id = $(this).val()
-                  Controller.view (id);
-             });
-
-         }, 
-
-        orient : function () {  
-            return;
-            var degree = Math.abs (window.orientation), big = Math.max (screen.width,screen.height), sm = Math.min (screen.width,screen.height); 
-            var screen_x = degree == 90 ?  big : sm; //Math.max (screen.width,screen.height);
-            var screen_y = degree != 90 ?  big : sm; //Math.min (screen.width,screen.height);
-
-            if (screen_x < DEFAULT_SIZE) {
-                $('#meta-v').each (function (){
-
-                     this.setAttribute('content','user-scalable=no, minimal-ui, initial-scale=1.0, width=' + screen_x);
-                     THUMB_SIZE = (screen_x - 52) / 4;
-                     $('.arrow').css ('width', THUMB_SIZE + 'px');
-                     $('.arrow').css ('height', THUMB_SIZE + 'px');
-                     $('.scroll').css ('width', ( screen_x - 16 ) + 'px');
-                     $('.scroll').css ('height', ( screen_y - 172 ) + 'px');
-
-                });
-            } 
-         },
-
-         getUsername : function (){
-              var rex = /user\/(\w+)\//, test = rex.exec (location.href);
-              if (test) return test[1];
-              var rex2 = /user\/(\w+)/, test2 = rex2.exec (location.href); 
-              if (test2) return test2[1];
-         },
-
-        start : function () {  
-	          var value = localStorage ["dialog"], on = value && value == "on",  hilo = localStorage ["hilo"] && localStorage ["hilo"] == "on";
-                DIALOG_VISIBLE = on;
-                DIALOG_HILO    = hilo;
-
-
-             $.browser = {
-                   android : navigator.userAgent.indexOf ("Android") > 0
-              };
-
-             this.orient();
- 
-                 BASE_WIDTH = $(document).width() - 48;
-                 THUMB_SIZE = (BASE_WIDTH / 4);// - 44;
-                 TINY_SIZE  = BASE_WIDTH / 16;
- 
-              if (screen.width < 400) {
-                      var w = screen.width - 28, h = (w / (16/9)), sm = Math.floor((w - 16)/5);
-                  $(".arrow").each (function(){
-                      this.style.width = w + "px"
-                      this.style.height = h + "px"
-                      this.style.background = "#ffa"
-                  });
-                  $(".article-hilo").each (function(){
-                     $(this).css ("margin", "2px");
-                      this.style.width = sm + "px"
-                      this.style.height = sm + "px" 
-                      this.style.border = "none";
-                      this.style.overflow = "hidden";
-                  });
-                  THUMB_SIZE = w;
-                  TINY_SIZE = sm;
-                  $(".column1").css ("display", "none");
-                  $(".column2").css ("display", "none");
-              }
-
-             $(".a-hi").attr ("href", "javascript:void(0)");
-             $(".a-hi").click (function (){
-                 DIALOG_HILO = !DIALOG_HILO;
-
-                 Batchpane.Square = {}; 
-
-                 $(this).html (DIALOG_HILO ? "Hilo" : "Sort");
-	         localStorage ["hilo"] = DIALOG_HILO ? "on" : "off";
-                 Controller.preview();
-             });
-
-             $(".link").attr ("href", "javascript:void(0)");
-             $(".link").click (function (){
-                 location.href = this.id;
-             });
-
-
-             $(".dyn-caption").each (function (){
-                 this.invoke = function (sender, e) {
-                     $(this).html (e);
-                 }
-                 ServiceBus.Subscribe ("OnDyntext", this);
-             });
-
-            $(".my-menu").mouseleave (function(){
-                $(".my-menu").hide(); 
+            $(".article-scale").each(function () {
+                $(this).attr("data-scale-key", id);
+                $(this).attr("data-direction", direction);
+                $(this).data("scaleKey", id);
+                $(this).data("direction", direction);
+                thumb_worker.create(this, -1, "scaleKey", function () {
+                    Controller.preview();
+                    ServiceBus.OnPageResize();
+                }, "data");
             });
 
-             $(".settings-button").click (function(){
- 
-                  
-			$( ".my-menu" ).css ("width", "450px");
-			$( ".my-menu" ).css ("display", "block");
-			$( ".my-menu" ).position({
-			  my: "left top",
-			  at: "right bottom",
-			  of: ".settings-button"
-			});
-	             $(".my-menu").menu();
-              });
 
-             $("#canvas-teeny").each (function (){
-$(this).click(function(e) {
+            $("#article-select").each(function () {
+                for (var f, x = this.selectedIndex, m = Math.min(x + 3, this.options.length - 1); (f = this.options[x]) && (x < m); x++) {
+                    cache_worker.create(f.value);
+                }
+            });
+        },
 
-    var offset = $(this).offset(), ordinal = Math.floor ((e.clientX - offset.left) / 64), index = ordinal - SLIDE_OFFSET; 
+        multipass: function (keys) {
 
 
- 
-		          $("#article-select").each (function () {  
-		               var drp=this, o=drp.selectedIndex, i = o - (-index);
+            var params = { keys: keys };
+            var worker = new Worker('/scripts/async.js?' + new Date().getTime());
+            worker.onmessage = function (e) {
+                var msg = e.data.content;
+                alert(msg);
+            }
+            worker.onerror = function (e) { confirm("Err:" + typeof (e.message)); }
+
+            worker.postMessage(params);
+
+        },
+
+        dropSelect: function (index, article) {
+            $("#article-select").each(function () {
+                var selectedIndex = this.selectedIndex;
+                this.selectedIndex = index;
+                Controller.view(article, index - selectedIndex);
+            });
+        },
+
+        preview: function () {
 
 
-                  if (DIALOG_HILO) 
-                  { 
-                      var cheat = Batchpane.Cheats[ordinal]
-//if (!confirm ([cheat.index, cheat.id])) return;
-                               drp.selectedIndex = cheat.index;
-		               Controller.view (cheat.id) ; 
-                      return;
-                  }
+            $id = [];
+            canvas_worker.clear();
+
+            var selectedIndex = -1;
+            $(".article-tiny").each(function () {
+
+                if (!DIALOG_VISIBLE) return;
+                var that = this, tinyIndex = this.id;
+                $(this).empty();
+                $(this).css("border", "none");
+
+                if (DIALOG_HILO) {
+                    $("#article-select").each(function () {
+                        var drp = this, range = Rangefrom(drp.options, drp.selectedIndex), i = tinyIndex - (-SLIDE_OFFSET);
+                        if (i < 0 || i >= range.length || range.length < 1) return;
+                        var id = range[i].article, text = range[i].text, index = range[i].index;
+                        $(that).click(function () { Controller.dropSelect(index, id); }); // drp.selectedIndex = index; Controller.view(id) });
+                        canvas_worker.create(id, index);
+                    });
+                }
+                else {
+                    $("#article-select").each(function () {
+                        selectedIndex = this.selectedIndex;
+                        var drp = this, dropIndex = drp.selectedIndex, articleIndex = dropIndex - (-tinyIndex);
+                        if (articleIndex < 0 || articleIndex >= drp.options.length || drp.options.length < 1) return;
+                        var id = drp.options[articleIndex].value, text = drp.options[articleIndex].text;
+                        canvas_worker.create(id, articleIndex);
+                    }); 
+                }
+            });
+
+            if (selectedIndex > 0) {
+                $("#article-select").each(function () {
+                    for (var f, x = selectedIndex + 1, m = Math.min(x + 4, this.options.length - 1); (f = this.options[x]) && (x < m); x++) {
+                        cache_worker.create(f.value, "thumb");
+                    }
+                });
+            }
+        },
+
+        setNext: function () {
+            Controller.timer = 0;
+            Controller.setNext_();
+
+        },
+        setNext_: function () {
+            Controller.timer++;
+
+
+            if (Controller.timer > 3) {
+                return Controller.next();
+            }
+            setTimeout(Controller.setNext_, 3333);
+        },
+        next: function (i) {
+            var index = i == undefined ? 1 : i;
+            $("#article-select").each(function () {
+                if (this.selectedIndex == (this.options.length - 1)) this.selectedIndex = 0;
+                else this.selectedIndex -= -index;
+                var id = $(this).val()
+                Controller.view(id);
+            });
+
+        },
+
+        orient: function () {
+            return;
+            var degree = Math.abs(window.orientation), big = Math.max(screen.width, screen.height), sm = Math.min(screen.width, screen.height);
+            var screen_x = degree == 90 ? big : sm; //Math.max (screen.width,screen.height);
+            var screen_y = degree != 90 ? big : sm; //Math.min (screen.width,screen.height);
+
+            if (screen_x < DEFAULT_SIZE) {
+                $('#meta-v').each(function () {
+
+                    this.setAttribute('content', 'user-scalable=no, minimal-ui, initial-scale=1.0, width=' + screen_x);
+                    THUMB_SIZE = (screen_x - 52) / 4;
+                    $('.arrow').css('width', THUMB_SIZE + 'px');
+                    $('.arrow').css('height', THUMB_SIZE + 'px');
+                    $('.scroll').css('width', (screen_x - 16) + 'px');
+                    $('.scroll').css('height', (screen_y - 172) + 'px');
+
+                });
+            }
+        },
+
+        getUsername: function () {
+            var rex = /user\/(\w+)\//, test = rex.exec(location.href);
+            if (test) return test[1];
+            var rex2 = /user\/(\w+)/, test2 = rex2.exec(location.href);
+            if (test2) return test2[1];
+        },
+
+        start: function () {
+            var value = localStorage["dialog"], on = value && value == "on", hilo = localStorage["hilo"] && localStorage["hilo"] == "on";
+            DIALOG_VISIBLE = on;
+            DIALOG_HILO = hilo;
+
+
+            $.browser = {
+                android: navigator.userAgent.indexOf("Android") > 0
+            };
+
+            this.orient();
+
+            BASE_WIDTH = $(document).width() - 48;
+            THUMB_SIZE = (BASE_WIDTH / 4); // - 44;
+            TINY_SIZE = BASE_WIDTH / 16;
+
+            if (screen.width < 400) {
+                var w = screen.width - 28, h = (w / (16 / 9)), sm = Math.floor((w - 16) / 5);
+                $(".arrow").each(function () {
+                    this.style.width = w + "px"
+                    this.style.height = h + "px"
+                    this.style.background = "#ffa"
+                });
+                $(".article-hilo").each(function () {
+                    $(this).css("margin", "2px");
+                    this.style.width = sm + "px"
+                    this.style.height = sm + "px"
+                    this.style.border = "none";
+                    this.style.overflow = "hidden";
+                });
+                THUMB_SIZE = w;
+                TINY_SIZE = sm;
+                $(".column1").css("display", "none");
+                $(".column2").css("display", "none");
+            }
+
+            $(".a-hi").attr("href", "javascript:void(0)");
+            $(".a-hi").click(function () {
+                DIALOG_HILO = !DIALOG_HILO;
+                $(this).html(DIALOG_HILO ? "Hilo" : "Sort");
+                localStorage["hilo"] = DIALOG_HILO ? "on" : "off";
+                Controller.preview();
+            });
+
+            $(".link").attr("href", "javascript:void(0)");
+            $(".link").click(function () {
+                location.href = this.id;
+            });
+
+
+            $(".dyn-caption").each(function () {
+                this.invoke = function (sender, e) {
+                    $(this).html(e);
+                }
+                ServiceBus.Subscribe("OnDyntext", this);
+            });
+
+            $(".my-menu").mouseleave(function () {
+                $(".my-menu").hide();
+            });
+
+            $(".settings-button").click(function () {
+
+
+                $(".my-menu").css("width", "450px");
+                $(".my-menu").css("display", "block");
+                $(".my-menu").position({
+                    my: "left top",
+                    at: "right bottom",
+                    of: ".settings-button"
+                });
+                $(".my-menu").menu();
+            });
+
+            $("#canvas-teeny").each(function () {
+                $(this).click(function (e) {
+
+                    var offset = $(this).offset(), ordinal = Math.floor((e.clientX - offset.left) / 64),
+                               index = ordinal - SLIDE_OFFSET;
 
 
 
-
-		               if (i < 0 || i >= drp.options.length || drp.options.length < 1) return alert(i+" is NOT valid  ");
-		               var id =  drp.options[i].value, text = drp.options[i].text;  
-//if (!confirm ([i, id])) return;
-
-                               drp.selectedIndex = i;
-		               Controller.view (id) ;
-		          }); 
+                    $("#article-select").each(function () {
+                        var drp = this, o = drp.selectedIndex, i = o - (-index);
 
 
-  });
+                        if (DIALOG_HILO) {
+                            var cheat = canvas_worker.object[ordinal];
+                            Controller.dropSelect(cheat.index, cheat.article);
+                            //                            drp.selectedIndex = cheat.index;
+                            //                            Controller.view(cheat.article);
+                            return;
+                        }
 
-                  this.invoke = function (sender, e) {
-                       $(this).css ("display", DIALOG_VISIBLE ? "inline" : "none");
-                  } 
-                  ServiceBus.Subscribe ("OnPageResize", this);
-              });
+                        if (i < 0 || i >= drp.options.length || drp.options.length < 1) return alert(i + " is NOT valid  ");
+                        var id = drp.options[i].value, text = drp.options[i].text;
 
 
-             $(".controller").each (function (){
-                  this.invoke = function (sender, e) {
-                       var W = ( $(window).width() - this.offsetWidth ) / 2 ;
+                        Controller.dropSelect(i, id);
+                        //                        drp.selectedIndex = i;
+                        //                        Controller.view(id);
+                    });
 
-                       $(this).css ({ height   : DIALOG_VISIBLE ? "112px" : "24px", 
-                                      overflow : "hidden", 
-                                      left     : W + "px" 
-                                    });  
 
-                       var H = $(window).height() - this.offsetHeight - 8;
-                       this.style.top  = H + "px";
-                  }
-                  this.style.height = "112px";
-                  ServiceBus.Subscribe ("OnPageResize", this);
-              });
-             window.onresize = function ()  { ServiceBus.OnPageResize(); }
+                });
 
-             $("#progressbar").each (function (){
-                  this.invoke = function (sender, e) {
-                      $(this).progressbar({
-                            value : e 
-                       });
-                  }
-                  ServiceBus.Subscribe ("Progress", this);
-              });
+                this.invoke = function (sender, e) {
+                    $(this).css("display", DIALOG_VISIBLE ? "inline" : "none");
+                }
+                ServiceBus.Subscribe("OnPageResize", this);
+            });
 
-              $(".article-menu").each (function (){ 
-                   // $(this).html (DIALOG_VISIBLE?"&#171;" : "&#187;");
-                   $(this).click (function (){
-                       DIALOG_VISIBLE = !DIALOG_VISIBLE;
-	               localStorage ["dialog"] = DIALOG_VISIBLE ? "on" : "off"; 
-                           ServiceBus.OnPageResize();
-                           Controller.preview(); 
-                   }); 
-              });
 
-             $(".span-of").each (function () {
-                  var t=this.id.split('x'),lo=t[0],hi=t[1],mn=t[2],mx=t[3], key = "I" + Math.floor( Math.random() * 1000000 ), width = 500, w2 = width + 50; ;
-                  var img  = "<canvas width='" + w2 + "' height='20' id='"+key+"'></canvas>";   
-                  $(this).html (img);
-                  $("#"+key).each (function (){
-                      var api = CanvasAPI, that=this, context = that.getContext('2d'), dm = mx-mn, dl=hi-lo, sx=lo-mn,
-                             px = width * (dl/dm), x = width * (sx/dm);
-                      context.fillStyle = '#ffc';
-                      context.fillRect(0,0, width + 50,30);
+            $(".controller").each(function () {
+                this.invoke = function (sender, e) {
+                    var W = ($(window).width() - this.offsetWidth) / 2;
 
-                      context.fillStyle = '#ccf';
-                      context.fillRect(25,5,width,10);
+                    $(this).css({ height: DIALOG_VISIBLE ? "112px" : "24px",
+                        overflow: "hidden",
+                        left: W + "px"
+                    });
 
-                      context.fillStyle = '#009'; 
-                      context.fillRect(25 + x,5,px,10);
+                    var H = $(window).height() - this.offsetHeight - 8;
+                    this.style.top = H + "px";
+                }
+                this.style.height = "112px";
+                ServiceBus.Subscribe("OnPageResize", this);
+            });
+            window.onresize = function () { ServiceBus.OnPageResize(); }
 
-                      var mw = context.measureText(mx).width, ml = context.measureText(lo).width,
+            $("#progressbar").each(function () {
+                this.invoke = function (sender, e) {
+                    $(this).progressbar({
+                        value: e
+                    });
+                }
+                ServiceBus.Subscribe("Progress", this);
+            });
+
+            $(".article-menu").each(function () {
+                // $(this).html (DIALOG_VISIBLE?"&#171;" : "&#187;");
+                $(this).click(function () {
+                    DIALOG_VISIBLE = !DIALOG_VISIBLE;
+                    localStorage["dialog"] = DIALOG_VISIBLE ? "on" : "off";
+                    ServiceBus.OnPageResize();
+                    Controller.preview();
+                });
+            });
+
+            $(".span-of").each(function () {
+                var t = this.id.split('x'), lo = t[0], hi = t[1], mn = t[2], mx = t[3], key = "I" + Math.floor(Math.random() * 1000000), width = 500, w2 = width + 50; ;
+                var img = "<canvas width='" + w2 + "' height='20' id='" + key + "'></canvas>";
+                $(this).html(img);
+                $("#" + key).each(function () {
+                    var api = CanvasAPI, that = this, context = that.getContext('2d'), dm = mx - mn, dl = hi - lo, sx = lo - mn,
+                             px = width * (dl / dm), x = width * (sx / dm);
+                    context.fillStyle = '#ffc';
+                    context.fillRect(0, 0, width + 50, 30);
+
+                    context.fillStyle = '#ccf';
+                    context.fillRect(25, 5, width, 10);
+
+                    context.fillStyle = '#009';
+                    context.fillRect(25 + x, 5, px, 10);
+
+                    var mw = context.measureText(mx).width, ml = context.measureText(lo).width,
                              max_x = (width + 25) - (mw / 2), lo_x = 25 + x - (ml / 2), max_y = 9, lo_y = 19;
 
-                      while ((lo_x + ml) >= (max_x - 10)) lo_x -= 10;
+                    while ((lo_x + ml) >= (max_x - 10)) lo_x -= 10;
 
-                      api.imagestring  (context, '300 8pt Lato', 1,9, mn, '#333');
-                      api.imagestring  (context, '300 8pt Lato', max_x, max_y, mx, '#333'); 
-                      api.imagestring  (context, '300 8pt Lato', lo_x, lo_y, lo, '#333');
-                      api.imagestring  (context, '300 8pt Lato', max_x, lo_y, hi, '#333');
-                  });
-              });
-  
-             $(".a-next").each (function () {
-                  $(this).attr ("href", "javascript:void(0)");
-                  $(this).click (function () { 
-                      var tmp = this.className.split(" "), i = tmp[1]
-                      Controller.next(i); 
-                   }); 
-             });
+                    api.imagestring(context, '300 8pt Lato', 1, 9, mn, '#333');
+                    api.imagestring(context, '300 8pt Lato', max_x, max_y, mx, '#333');
+                    api.imagestring(context, '300 8pt Lato', lo_x, lo_y, lo, '#333');
+                    api.imagestring(context, '300 8pt Lato', max_x, lo_y, hi, '#333');
+                });
+            });
 
-                   $(".a-swipe").on ("swipeleft", function () {
-                         Controller.next(1); 
+            $(".a-next").each(function () {
+                $(this).attr("href", "javascript:void(0)");
+                $(this).click(function () {
+                    var tmp = this.className.split(" "), i = tmp[1]
+                    Controller.next(i);
+                });
+            });
+
+            $(".a-swipe").on("swipeleft", function () {
+                Controller.next(1);
+            });
+            $(".a-swipe").on("swiperight", function () {
+                Controller.next(-1);
+            });
+
+
+            $(".a-ps").each(function () {
+                var value = localStorage["playing"], on = value && value == "on";
+                $(this).attr("href", "javascript:void(0)");
+                $(this).html(on ? "Stop" : "Play");
+
+                $(this).click(function () {
+                    localStorage["playing"] = on ? "off" : "on";
+                    $("#article-select").each(function () {
+                        Controller.nextPage($(this).val());
                     });
-                   $(".a-swipe").on ("swiperight", function () {
-                         Controller.next(-1); 
-                    });
+                });
 
+            });
 
-             $(".a-ps").each (function () {
-	          var value = localStorage ["playing"], on = value && value == "on";
-                  $(this).attr ("href", "javascript:void(0)");
-                  $(this).html (on?"Stop":"Play");
-                  $(this).click (function () {
-		       localStorage ["playing"] = on ? "off" : "on"; 
+            $(".a-count").click(function () {
+                var old = location.href;
+                old = old.replace(/\/most\/\d+/, "") + "/most/" + this.id;
+                old = old.replace(/\/page\/\d+/, "") + "/page/1";
+                location.href = old;
+            });
 
-                       $("#article-select").each (function (){ 
-                           var on = $("#text-page").val(); 
-                           location.href = on + $(this).val();
-                       });
-
-                      // location.reload();
-                  });
-             });  
-
-             $(".a-count").click (function (){
-                  var old = location.href;
-                  old = old.replace (/\/most\/\d+/, "") + "/most/" + this.id;
-                  old = old.replace (/\/page\/\d+/, "") + "/page/1";
-                  location.href = old;
-             });
-
-             $(".leftButton").click (function (){
+            $(".leftButton").click(function () {
                 location.href = this.id;
-             });
+            });
 
-             $(".rightButton").click (function (){
-                 DIALOG_VISIBLE = true;
-                 Controller.preview();
-                 $( "#dialog" ).dialog({
-                      autoOpen : true,
-                      width    : 600,
-                      buttons  : [{
-                              text  : "Okay",
-                              class  : "roundButton",
-                              click : function () {
-                                          DIALOG_VISIBLE = false;
-                                          $(this).dialog("close");
-                                      }
-                             }]
+            $(".rightButton").click(function () {
+                DIALOG_VISIBLE = true;
+                Controller.preview();
+                $("#dialog").dialog({
+                    autoOpen: true,
+                    width: 600,
+                    buttons: [{
+                        text: "Okay",
+                        class: "roundButton",
+                        click: function () {
+                            DIALOG_VISIBLE = false;
+                            $(this).dialog("close");
+                        }
+                    }]
 
-                     }); 
-             });
+                });
+            });
 
-             $("#text-suffix").each(function (){
-                 THUMB_SUFFIX = "";// $(this).val();
-                 Thumbpane.suffix = THUMB_SUFFIX;
-             });
+            $("#text-suffix").each(function () {
+                THUMB_SUFFIX = ""; // $(this).val();
+                Thumbpane.suffix = THUMB_SUFFIX;
+            });
 
-             $(".paginator").click (function (){
-                  var href=this.id, tmp=href.split("/"), page = tmp.pop(), group = this.title, command = "/rpc/get-articles/page/"+page+"/group/"+group;
-                     $.get( command, function( uuid ) {  
-                            TPane.batch (document.getElementById("div-stat"), uuid.split (","), THUMB_SUFFIX, 
-                                     function (){
-                                          location.href = href;
-                                       });
-                     });  
-             });
+            $(".paginator").click(function () {
+                var href = this.id, tmp = href.split("/"), page = tmp.pop(), group = this.title, command = "/rpc/get-articles/page/" + page + "/group/" + group;
+                $.get(command, function (uuid) {
+                    TPane.batch(document.getElementById("div-stat"), uuid.split(","), THUMB_SUFFIX,
+                                     function () {
+                                         location.href = href;
+                                     });
+                });
+            });
 
-             $("#article-select").change (function (){ 
-                       var on = $("#text-page").val(); 
-                       location.href = on + $(this).val();
-              });
-             $(".bookmark").click (function () {  
-                     $.get( this.id, function( data ) { 
-                          location.reload();
-                     });  
-             }); 
+            $("#article-select").change(function () {
+                Controller.nextPage($(this).val());
+            });
 
 
-             $(".rpcparam").click (function () {
-                  var param = prompt ("Find:", "");
-                  if (!param) return;
-                  var href = location.href.replace ("group/list", "rpc/find/param/" + param);
-                  location.href = href;
+            $(".bookmark").click(function () {
+                $.get(this.id, function (data) {
+                    location.reload();
+                });
+            });
 
-             });
 
-             $(".group-join").click (function () {
-                 var name=$("#text-user").val(), tmp=this.className.split(" "), href = "/group/join/user/" + name + "/name/" + this.id + "/start/" + tmp[1] + "/amount/" + tmp[2]; 
-              //   return window.open (href);
-                 location.href = href;
-             });
-             $(".group-renew").click (function () {
-                 var name=$("#text-user").val(), href = "/group/join/user/" + name + "/name/" + this.id + "/renew/renew"; 
-               //  return window.open (href);
-                 location.href = href;
-             });
-             $(".group-name").click (function () {
-                  var t = Controller.getUsername (); 
-                 var name=t||Controller.getUsername(), href = "/group/join/user/" + name + "/name/" + this.id;
-               //  return window.open (href);
-                 location.href = href;
-             });
-             $(".a-group").click (function () {
-                 var name=Controller.getUsername(), href = "/group/join/user/" + name + "/name/" + this.id; 
-                 location.href = href;
-             });
-             $(".msmq-id").each (function () { 
-                  var uuid = $(this).html(), url = this.id, 
-                     ondone=function(){ location.href=url };
-                  var q = QMessage.create ("/rpc/receive/id/" + uuid, ondone, this);
-                  q.send();
-             });
-              var id = "", that = undefined, title = undefined,
-                     ondone=function(){ alert ("Done") },
+            $(".rpcparam").click(function () {
+                var re, rex = /most\/(\d+)/,
+                         most = !(re = rex.exec(location.href)) ? "" : ("/most/" + re[1]);
+                var param = prompt("Find:", "");
+
+                if (!param) return;
+                var href = location.href.replace("group/list", "rpc/find/param/" + param + most);
+                location.href = href;
+
+            });
+
+            $(".group-join").click(function () {
+                var re, name = $("#text-user").val(), tmp = this.className.split(" "),
+                     rex = /most\/(\d+)/, most = !(re = rex.exec(location.href)) ? "" : ("/most/" + re[1]),
+                       href = "/group/join/user/" + name + "/name/" + this.id +
+                                "/start/" + tmp[1] + "/amount/" + tmp[2] + most;
+                location.href = href;
+            });
+            $(".group-renew").click(function () {
+                var name = $("#text-user").val(), href = "/group/join/user/" + name + "/name/" + this.id + "/renew/renew";
+                //  return window.open (href);
+                location.href = href;
+            });
+            $(".group-name").click(function () {
+                var t = Controller.getUsername();
+                var name = t || Controller.getUsername(), href = "/group/join/user/" + name + "/name/" + this.id;
+                //  return window.open (href);
+                location.href = href;
+            });
+            $(".a-group").click(function () {
+                var name = Controller.getUsername(), href = "/group/join/user/" + name + "/name/" + this.id;
+                location.href = href;
+            });
+            $(".msmq-id").each(function () {
+                var uuid = $(this).html(), url = this.id,
+                     ondone = function () { location.href = url };
+                var q = QMessage.create("/rpc/receive/id/" + uuid, ondone, this);
+                q.send();
+            });
+            var id = "", that = undefined, title = undefined,
+                     ondone = function () { alert("Done") },
                   batch = [];
 
 
-             $(".li-sortas").click (function () {   
-                         var rex=/\/sort\/\d+/, old = location.href.replace (rex, ""), href = rex.exec(location.href) ? old : ( old + "/sort/1");
-                         location.href = href;
-              });
+            $(".li-sortas").click(function () {
+                var rex = /\/sort\/\d+/, old = location.href.replace(rex, ""), href = rex.exec(location.href) ? old : (old + "/sort/1");
+                location.href = href;
+            });
 
 
-              var tmp_c = [];
-              $(".carousel").each (function (){
-                  tmp_c.push (this.id);
-              })
-              if (tmp_c.length) {  
-                 Fancy.init (tmp_c);  
-              }
+            var tmp_c = [];
+            $(".carousel").each(function () {
+                tmp_c.push(this.id);
+            })
+            if (tmp_c.length) {
+                Fancy.init(tmp_c);
+            }
 
 
-             $(".article-unrar").each (function () {   
-                       Thumbpane.create (this, this.id, $(this).html(), THUMB_SIZE, false, false, true);  
-                       $(this).click (function (){
-                           var on = location.href.replace ('/unrar/', '/onrar/') + "/of/" + this.id; 
-                           location.href = on;
-                       });
-              });
-
-
-             $(".article-all").each (function () {   
-                       $(this).click (function (){
-                           var on = location.href + "/all/1/get/" + this.id; 
-                           location.href = on;
-                       });
-              });
-
-
-             $(".article-rar").each (function () {   
-                   var israrpage = location.href.indexOf ("/rar/") > 0;
-
-                   if (this.className.indexOf ("cache") > 0) 
-                   {
-                       Thumbpane.create (this, this.id, $(this).html(), THUMB_SIZE);  
-                       if (israrpage) {
-                           $(this).click (function (){
-                               var on = location.href.replace ('/rar/', '/unrar/');
-                               location.href = on + "/r/" + this.id;
-                           });  
-                           return;
-                       }
-                   }
-
-
-                   if (israrpage) {
-                       $(this).click (function (){
-                           var on = location.href;
-                           location.href = on + "/get/" + this.id;
-                       });
-                       return;  
-                   }
-
-                   $(this).click (function (){
-                       var on = $("#text-page").val().replace ('/index/', '/rar/');
-                       location.href = on + this.id;
-                   });  
-              });
-
-               $(".article-lookup").css ({display : "none"});
-               $("*[data-article-index]").each (function (){
-                     var id = $(this).data("articleIndex"), value = $(this).html();
-                     Batchpane.Index[id] = value;
+            $(".article-unrar").each(function () {
+                Thumbpane.create(this, this.id, $(this).html(), THUMB_SIZE, false, false, true);
+                $(this).click(function () {
+                    var on = location.href.replace('/unrar/', '/onrar/') + "/of/" + this.id;
+                    location.href = on;
                 });
-
-             var batchKeys = [];
-try {
-             $("*[data-article-key]").each (function (){
-$(this).css (
-  { width : THUMB_SIZE + "px",
-    height : THUMB_SIZE + "px" }
-);
+            });
 
 
-                if (this.className.indexOf ("article-picture") >= 0) {
-                 batchKeys.push ($(this).data("articleKey"));
+            $(".article-all").each(function () {
+                $(this).click(function () {
+                    var on = location.href + "/all/1/get/" + this.id;
+                    location.href = on;
+                });
+            });
 
 
-                   $(this).click (function (){
-                       var on = $("#text-page").val();
-                        Cellbrowse.attach (this);
+            $(".article-rar").each(function () {
+                var israrpage = location.href.indexOf("/rar/") > 0;
 
-//                       location.href = on + this.id;
-                   });
-
-  
+                if (this.className.indexOf("cache") > 0) {
+                    Thumbpane.create(this, this.id, $(this).html(), THUMB_SIZE);
+                    if (israrpage) {
+                        $(this).click(function () {
+                            var on = location.href.replace('/rar/', '/unrar/');
+                            location.href = on + "/r/" + this.id;
+                        });
+                        return;
+                    }
                 }
 
 
-             });
-}
-catch (e) {
-alert (e.message)
-}
- 
-             Batchpane.Create (batchKeys, THUMB_SIZE, 'data-article-key', function () {
-                 var smallKeys = [];
-                 $("*[data-small-key]").each (function () {   
-var ts = TINY_SIZE - 1;
- $(this).css (
-  { width : ts + "px",
-    height : ts + "px" }
-  );
-                     $(this).click (function (){
-                         var old = location.href.replace (/\/page\/\d+/, "") + "/page/" + this.id;
-                         location.href = this.id;//old;
-                      });   
-                      smallKeys.push ($(this).data("smallKey"));
-                 });
-                  Batchpane.Create (smallKeys, TINY_SIZE, 'data-small-key');
-             });
+                if (israrpage) {
+                    $(this).click(function () {
+                        var on = location.href;
+                        location.href = on + "/get/" + this.id;
+                    });
+                    return;
+                }
 
-             
-             $(".article-scale").each (function () {   
-                   $(this).attr ("data-scale-key", this.id);
-                  Batchpane.Create ([this.id], -1, 'data-scale-key', function (){
-                       Controller.preview ();
-                       ServiceBus.OnPageResize();
-                  }, "data");
-                 //  Thumbpane.create (this, this.id, $(this).html(), -1, true);
-              });
- 
+                $(this).click(function () {
+                    var on = $("#text-page").val().replace('/index/', '/rar/');
+                    location.href = on + this.id;
+                });
+            });
+
+            $(".article-lookup").css({ display: "none" });
 
 
-
-/*THUMB_SIZE = 244,
-    TINY_SIZE 
-             $(".article-picture").each (function () {   
-                   $(this).click (function (){
-                       var on = $("#text-page").val();
-                       location.href = on + this.id;
-                   });  
-                   return Thumbpane.create (this, this.id, $(this).html(), THUMB_SIZE); 
-              });
-*/
-
-             var delay = function () {
-                 Thumbpane.oncomplete = null; 
-                 $(".article-hilo").each (function () {    
+            $("*[data-article-index]").each(function () {
+                var id = $(this).data("articleIndex"), value = $(this).html();
+                thumb_worker.text[id] = value;
+            });
 
 
-                     $(this).click (function (){
-                         var old = location.href.replace (/\/page\/\d+/, "") + "/page/" + this.id;
-                         location.href = this.id;//old;
-                      });  
-                      return Thumbpane.create (this, this.title, $(this).html(), TINY_SIZE); 
-                 });
-             };
-             Thumbpane.oncomplete = delay;
-           //  setTimeout (delay, 10000);
+            try {
+                $("*[data-article-key]").each(function () {
 
-             var mediaClick = function (){ 
-                   var src = "/rpc/picture/id/" + this.id, existing = $(this).html(); 
-                   if (this.className.indexOf ('cache') > 0) { 
-                      $(this).click (function (){
-                           window.open (src);
-                       });
-                       return TPane.bycache(this);  
-                   }  
-                   else $(this).click(function (){ 
-                     return TPane.create (this);
-                  });  
-             };
 
-             $(".article-wmv").each (mediaClick);
-             $(".article-m4v").each (mediaClick);
+                    $(this).css(
+                      { width: THUMB_SIZE + "px",
+                          height: THUMB_SIZE + "px"
+                      }
+                    );
 
-             Attachprog();
+                    if (this.className.indexOf("article-picture") >= 0) {
 
-             $(".article-photo").each (function () {  
-                   $(this).click (function (){
-                       var on = $("#text-page").val();
-                       location.href = on + this.id;
-                   });
-                   if (this.className.indexOf ('cache') > 0) { 
-                       return TPane.bycache(this);
-                   }
-                   batch.push (this.id);
-              });
+                        var that = this, drawCells = function () {
+                            thumb_worker.clear();
+                            $("*[data-small-key]").each(function () {
+                                var ts = TINY_SIZE - 1;
+                                $(this).css(
+                                        { width: ts + "px",
+                                            height: ts + "px"
+                                        }
+                                    );
+                                $(this).click(function () {
+                                    var old = location.href.replace(/\/page\/\d+/, "") + "/page/" + this.id;
+                                    location.href = this.id;
+                                });
+                                thumb_worker.create(this, TINY_SIZE, "smallKey");
+                            });
+                        },
 
-              if (batch.length > 0) { 
-                   TPane.batch (document.getElementById("div-stat"), batch, THUMB_SUFFIX)
-              }
-         }
+
+                        onClick = function (sender, e, regions) {
+
+                            var offset = $(sender).offset(), x = e.clientX - offset.left, y = e.clientY - offset.top,
+                                    article = $(sender).data("article"), worker = this;
+
+                            for (var reg, i = 0; reg = regions[i]; i++) {
+                                if (reg.contains(x, y)) {
+                                    switch (reg.label) {
+                                        case "pause":
+                                            return slide_worker.create(that, article, worker.onclick);
+                                            break;
+                                        case "play":
+                                            if (slide_worker.object[article]) {
+                                                return slide_worker.object[article].pause(slide_worker.object[article].state);
+                                            }
+                                            return slide_worker.create(that, article, worker.onclick);
+                                            break;
+                                        case "bookmark":
+                                            return thumb_worker.bookmark(article);
+                                            break;
+                                    }
+                                }
+                            }
+
+                            if (slide_worker.object[article] && slide_worker.object[article].state) {
+                                slide_worker.object[article].direct();
+                                return;
+                            }
+
+                            Controller.nextPage(article);
+                        }
+
+
+                        thumb_worker.create(this, THUMB_SIZE, "articleKey", drawCells, "thumb", onClick);
+
+                    }
+
+
+                });
+            }
+            catch (e) {
+                alert(e.message)
+            }
+
+
+
+            $(".article-scale").each(function () {
+                $(this).attr("data-scale-key", this.id);
+                thumb_worker.create(this, -1, "scaleKey", function () {
+                    Controller.preview();
+                    ServiceBus.OnPageResize();
+                }, "data");
+            });
+
+            var mediaClick = function () {
+                var src = "/rpc/picture/id/" + this.id, existing = $(this).html();
+                if (this.className.indexOf('cache') > 0) {
+                    $(this).click(function () {
+                        window.open(src);
+                    });
+                    return TPane.bycache(this);
+                }
+                else $(this).click(function () {
+                    return TPane.create(this);
+                });
+            };
+
+            $(".article-wmv").each(mediaClick);
+            $(".article-m4v").each(mediaClick);
+
+            Attachprog();
+
+
+        }
     },
  
 
