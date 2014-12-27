@@ -169,10 +169,8 @@ var
                 var sender = this;
                 require(['request'], function (req) {
                     req.msmq(sender);
-                }); 
+                });
             });
-
-             
 
             // TO DO: update carousel script to workers
             var tmp_c = [];
@@ -270,18 +268,9 @@ $(document).ready (function () {
 $( window ).on( "orientationchange", function( event ) {
     Fancy.setSizes();
 });
-  
-function getPosition(e){
-    var left = 0, top = 0;
-    while (e.offsetParent){
-        left += e.offsetLeft;
-        top  += e.offsetTop;
-        e     = e.offsetParent;
-    }
-    left += e.offsetLeft;
-    top  += e.offsetTop;
-    return {x : left, y : top};
-}
+   
+
+
 String.prototype.truncate=function(y) { try { return this.length>y?(this.substr(0,y/2)+'...'+this.substr(this.length-(y/2))):this } catch (ex) { return ''} }; 
 String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ''); }; 
 String.prototype.format = function ()
@@ -292,5 +281,4 @@ String.prototype.format = function ()
             try { o=o.replace ('{'+i+'}', arguments[i].toString().replace (r.r,r.s)); }
             catch (ex) { }
     return o.replace (r.e,r.t);
-}
-var FAVEB64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABgUlEQVR42mNkoBAwUs2AnVJS3G7c3CVAphUQP3r150+f+P3710Fy9xQUlBRZWXOBTFkgPrHn27cprk+f/oAbMFVUlDlLQGA/kGmLZPjXr//+ufz6//+/IDPzbiCfF0nuwLJPn1yiX778Czbgs7JyOA8T0wosLrwOtUQDXeLP//+RrHfurAAb8E9FZTYjI2MKKX4HOmwu0507KWAD/iorr2NiYgokxYB///6tZ757NwhswDtp6VmCXFyppBjw4du3mYJPn2aADTjEze1hLSm5nYmRuFj99/8/w9nnz13Nvn7dA9fxUFh4o5yQkB8Rfmd49O7dKoV378IZGJDSQS8TE2+IoOB2WUFBa0YcLgFpfvju3d6NHz74Ffz79w3FABBoZGTkCOXhmaYiKprAysyMIvfrz5//d16/nrb269fCuv//f8PEsVp1iJU1VEdMbAYwYIVA/Pffvr299vp1is2vXxvQ1eIMtTmMjNLWPDxdQO8wn/3ypST6378n2NRRLzORCwCG2Y4RZzDtrAAAAABJRU5ErkJggg==";
+} 
