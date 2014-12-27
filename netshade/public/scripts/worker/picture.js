@@ -1,5 +1,6 @@
-define(['drawing'], function (drawing) {
+define(['drawing', 'sizer'], function (drawing, sizer) {
     var drawingAPI = drawing;
+    var photoSizer = sizer;
     return {
 
         canvas: function (worker) {
@@ -31,7 +32,7 @@ define(['drawing'], function (drawing) {
 
         create: function (picture, worker) {
             var canvas = document.createElement("canvas"), context = canvas.getContext('2d'),
-                dimension = Sizer.fit(picture, worker.size),
+                dimension = photoSizer.fit(picture, worker.size),
                 base_width = worker.state ? 160 : 100,
                   offset_width = worker.state ? 106 : 66, panel_width = base_width,
                   panel_y = 32, loc = { y: worker.size > 0 ? (worker.size - 50) : (dimension.h - 50),

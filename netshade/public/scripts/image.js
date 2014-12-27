@@ -6,196 +6,88 @@
 */
 
 
-var 
-    Pane = {
-        items: [],
-        create: function (id, canvas, text) {
-            var object = {
-                id: id,
-                pics: { stale: undefined, fresh: undefined },
-                canvas: canvas,
-                text: text,
-                x: -canvas.width,
-                width: canvas.width,
-                height: canvas.height,
+var
+//     PANE_SIZE = 752,
 
-                runit: function () {
-                    var next = function () { Pane.items[id].runit() }
+//    Pane = {
+//        items: [],
+//        create: function (id, canvas, text) {
+//            var object = {
+//                id: id,
+//                pics: { stale: undefined, fresh: undefined },
+//                canvas: canvas,
+//                text: text,
+//                x: -canvas.width,
+//                width: canvas.width,
+//                height: canvas.height,
 
-                    var picture = this.pics.fresh, api = CanvasAPI, context = this.canvas.getContext('2d');
-                    this.x -= -42;
-                    if (this.x > 0) this.x = 0;
+//                runit: function () {
+//                    var next = function () { Pane.items[id].runit() }
 
-                    var s = Sizer.fit(picture, this.width, this.height), x = s.x + this.x;
+//                    var picture = this.pics.fresh, api = CanvasAPI, context = this.canvas.getContext('2d');
+//                    this.x -= -42;
+//                    if (this.x > 0) this.x = 0;
 
-                    if (this.e && this.e.batch && this.e.batch.length == 3) {
-                        api.imagecopyresized(context, picture, 0, 0, picture.width, picture.height, this.x, 0, picture.width, picture.height);
-                    }
-                    else {
-                        api.imagecopyresized(context, picture, 0, 0, picture.width, picture.height, x, s.y, s.w, s.h);
-                    }
+//                    var s = Sizer.fit(picture, this.width, this.height), x = s.x + this.x;
 
-                    api.imagestring(context, "700 9pt Lato", 10, 16, this.text, "#fff", null,
-                                      this.width - 20, 16, 5);
-                    api.imagestring(context, "700 9pt Lato", 9, 15, this.text, "#222", null,
-                                      this.width - 20, 16, 5);
-                    // api.imagestring (context, "700 9pt Lato", 8, 14, this.text, "#922", null,
-                    //              this.width - 20, 16, 5); 
+//                    if (this.e && this.e.batch && this.e.batch.length == 3) {
+//                        api.imagecopyresized(context, picture, 0, 0, picture.width, picture.height, this.x, 0, picture.width, picture.height);
+//                    }
+//                    else {
+//                        api.imagecopyresized(context, picture, 0, 0, picture.width, picture.height, x, s.y, s.w, s.h);
+//                    }
 
-                    if (this.x >= 0) return; 
-                    window.requestNextAnimationFrame(next);
+//                    api.imagestring(context, "700 9pt Lato", 10, 16, this.text, "#fff", null,
+//                                      this.width - 20, 16, 5);
+//                    api.imagestring(context, "700 9pt Lato", 9, 15, this.text, "#222", null,
+//                                      this.width - 20, 16, 5);
+//                    // api.imagestring (context, "700 9pt Lato", 8, 14, this.text, "#922", null,
+//                    //              this.width - 20, 16, 5); 
 
-                },
+//                    if (this.x >= 0) return; 
+//                    window.requestNextAnimationFrame(next);
 
-                invoke: function (sender, e) {
-                    if (e.id != this.id) return;
+//                },
 
-
-                    this.x = -this.width;
-                    this.pics.stale = this.pics.fresh;
-                    this.pics.fresh = sender;
-                    this.e = e;
+//                invoke: function (sender, e) {
+//                    if (e.id != this.id) return;
 
 
-
-                    this.text = e.text;
-                    var on = e.href + e.uuid;
-
-                    $(this.canvas).off('click');
-                    $(this.canvas).on('click', function () {
-                        location.href = on; //   window.open( on );
-                    });
+//                    this.x = -this.width;
+//                    this.pics.stale = this.pics.fresh;
+//                    this.pics.fresh = sender;
+//                    this.e = e;
 
 
 
-                    this.runit();
+//                    this.text = e.text;
+//                    var on = e.href + e.uuid;
 
-                }
-            }
-            Pane.items[id] = object;
-            ServiceBus.Subscribe("Fancy", object);
-            return object;
-        }
-    },
+//                    $(this.canvas).off('click');
+//                    $(this.canvas).on('click', function () {
+//                        location.href = on; //   window.open( on );
+//                    });
 
 
-     PANE_SIZE = 752,
+
+//                    this.runit();
+
+//                }
+//            }
+//            Pane.items[id] = object;
+//            ServiceBus.Subscribe("Fancy", object);
+//            return object;
+//        }
+//    },
+
+
 
      shuffle= function (o) { //v1.0
         for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
         return o;
     },
 
-
-    Fancy = {
-
-//        loading: [],
-//        x: -PANE_SIZE,
-//        index: -1,
-//        limit: -1,
-//        span: PANE_SIZE / 4,
-//        items: [],
-//        pics: { stale: undefined, fresh: undefined },
-
-
-
-//        peek: function () {
-//            this.index++;
-//            if (this.index >= this.limit) this.index = 0;
-//            return this.items[this.index];
-//        },
-
-        init: function (arr) { 
-            require(['fancy'], function (req) {
-                req.start(arr);
-            });  
-        },
-
-//        init_: function () { 
-//            require(['fancy'], function (req) {
-//                req.initialize();
-//            }); 
-//        },
-
-//        add: function (name, list) {
-//            if (list.length < 5) return; // alert (name + " list only has " + list.length + " items"); 
-//            var id = this.items.length, object = {
-//                i: 0
-//              , id: id
-//              , name: name
-//              , list: list
-//              , list: shuffle(list)
-//              , peek: function () {
-//                  this.i++;
-//                  if (this.i >= this.list.length) this.i = 0;
-//                  return this.list[this.i];
-//              }
-//            }
-//            this.items.push(object);
-//            return object;
-//        }, 
-
-//        play: function () { 
-//            require(['fancy'], function (req) {
-//                req.playMain();
-//            }); 
-//        },
-
-
-//        proceed: function () {
-//            if (Fancy.loading.length > 0) return Fancy.init_();
-//            Fancy.proceed_();
-//        },
-
-//        proceed_: function () {
-//            require(['fancy'], function (req) {
-//                req.nextImage();
-//            });
-//        },
-
-        setSizes: function () {
-
-            var thin = $(document).width() < $(document).height(), BASE_WIDTH = $(document).width() - 8;
-
-            thin = false;
-
-            if (thin) {
-                alert([$(document).width(), $(document).height()])
-                BASE_WIDTH = $(document).width() - 4;
-                BASE_WIDTH = BASE_WIDTH - (BASE_WIDTH % 3);
-                BASE_WIDTH += 2;
-            }
-
-            PANE_SIZE = thin ? BASE_WIDTH : (Math.floor(BASE_WIDTH * 0.75) + 2);
-
-            canvas_w = thin ? Math.floor((BASE_WIDTH - 24) / 3) : Math.floor(BASE_WIDTH * 0.25);
-            PANE_H = Math.floor(9 * (PANE_SIZE / 16));
-            PANE_H = PANE_H - (PANE_H % 3)
-            canvas_h = Math.floor((PANE_H - 2) / 3);
-
-            $("#center-main-canvas").each(function () {
-                this.width = PANE_SIZE;
-                this.height = PANE_H;
-                $(this).css("width", PANE_SIZE + "px");
-                $(this).css("height", PANE_H + "px");
-            })
-
-            $(".info").each(function () {
-                $(this).css("width", canvas_w + "px");
-                $(this).css("height", canvas_h + "px");
-            })
-
-            $(".i-canvas").each(function () {
-                this.width = canvas_w;
-                this.height = canvas_h;
-                $(this).css("width", canvas_w + "px");
-                $(this).css("height", canvas_h + "px");
-            })
-
-        } 
-         
-    },
-
+     
          canvas_w = 250, canvas_h = 140, PANE_H = 0,
      shopdata = { w : "", i : "", t : "" },
 
@@ -280,23 +172,7 @@ var
 			    cache: false, 
 			    success: callback
 			});
-
-      
-                     var worker = Sweatshop.create(params, onload); /*new Worker('/scripts/async.js?' + new Date().getTime());
-
-                    
-
-
-                     worker.onmessage = function(e) {
-                          var msg = e.data.content; 
-                          onload(msg);
-                       }
-                       worker.onerror = function (e) { confirm("Err:" + typeof(e.message)); }
-                         */     /*  */
-
-                    // var worker = Singleton.getInstance (callback);
-                   //  worker.postMessage (params);
-
+             
     },
 
     Runit = {
@@ -647,99 +523,99 @@ var
     },
 
 
-    Sizer = {
-        force: function () {
-            for (var object, i = 0; object = arguments[i]; i++) {
-                object.width = this.w;
-                object.height = this.h;
-            }
-        },
-        fit: function (picture, size, height, force) {
-            if (size < 0) return this.scale(picture);
-            var w = picture.width, h = picture.height, r = w / h, w1 = size, h1 = w1 / r, x = 0, y = 0;
+//    Sizer = {
+//        force: function () {
+//            for (var object, i = 0; object = arguments[i]; i++) {
+//                object.width = this.w;
+//                object.height = this.h;
+//            }
+//        },
+//        fit: function (picture, size, height, force) {
+//            if (size < 0) return this.scale(picture);
+//            var w = picture.width, h = picture.height, r = w / h, w1 = size, h1 = w1 / r, x = 0, y = 0;
 
-            if (w > h && !force) { // long 
-                h1 = size;
-                w1 = h1 * r;
-                if (w1 > size) {
-                    x = (size - w1) / 2;
-                }
-            }
+//            if (w > h && !force) { // long 
+//                h1 = size;
+//                w1 = h1 * r;
+//                if (w1 > size) {
+//                    x = (size - w1) / 2;
+//                }
+//            }
 
-            if (height && height < h1 && w > h) {
-                y = -((h1 - height) / 2);
-            }
+//            if (height && height < h1 && w > h) {
+//                y = -((h1 - height) / 2);
+//            }
 
-            var object = {
-                w: w1,
-                h: h1,
-                x: x,
-                y: y,
-                fit: Sizer.force
-            };
-            return object;
-        },
-        stretch: function (picture, w1, h1) {
+//            var object = {
+//                w: w1,
+//                h: h1,
+//                x: x,
+//                y: y,
+//                fit: Sizer.force
+//            };
+//            return object;
+//        },
+//        stretch: function (picture, w1, h1) {
 
-            var w = picture.width, h = picture.height, r = w / h, H = h1, W = H * r, x = 0, y = 0;
+//            var w = picture.width, h = picture.height, r = w / h, H = h1, W = H * r, x = 0, y = 0;
 
-            if (!h1) {
-                w1 = $(window).width() - 16
-                H = $(window).height() - 116
-                W = H * r
-            }
+//            if (!h1) {
+//                w1 = $(window).width() - 16
+//                H = $(window).height() - 116
+//                W = H * r
+//            }
 
-            while (w1 > W) {
-                W++;
-                H = W / r;
-            }
+//            while (w1 > W) {
+//                W++;
+//                H = W / r;
+//            }
 
-            if (W > w1) {
-                x = -((W - w1) / 2);
-            }
+//            if (W > w1) {
+//                x = -((W - w1) / 2);
+//            }
 
-            if (H > h1) {
-                y = -((H - h1) / 2);
-            }
+//            if (H > h1) {
+//                y = -((H - h1) / 2);
+//            }
 
-            var object = {
-                w: Math.floor(W),
-                h: Math.floor(H),
-                x: Math.floor(x),
-                y: Math.floor(y),
-                fit: Sizer.force
-            };
-            return object;
+//            var object = {
+//                w: Math.floor(W),
+//                h: Math.floor(H),
+//                x: Math.floor(x),
+//                y: Math.floor(y),
+//                fit: Sizer.force
+//            };
+//            return object;
 
-        },
-        scale: function (picture) {
+//        },
+//        scale: function (picture) {
 
-            var w = picture.width, h = picture.height, r = w / h, W = $(window).width() - 16, w1 = W, h1 = w1 / r,
-                                H = $(window).height() - 60, h2 = H, x = 0, y = 0;
+//            var w = picture.width, h = picture.height, r = w / h, W = $(window).width() - 16, w1 = W, h1 = w1 / r,
+//                                H = $(window).height() - 60, h2 = H, x = 0, y = 0;
 
-            if (w > h) { // long  
-            } else {
-                h1 = h2;
-                w1 = h1 * r;
-            }
+//            if (w > h) { // long  
+//            } else {
+//                h1 = h2;
+//                w1 = h1 * r;
+//            }
 
-            while (h1 > H || w1 > W) {
-                w1--;
-                h1 = w1 / r;
-            }
+//            while (h1 > H || w1 > W) {
+//                w1--;
+//                h1 = w1 / r;
+//            }
 
 
 
-            var object = {
-                w: w1,
-                h: h1,
-                x: x,
-                y: y,
-                fit: Sizer.force
-            };
-            return object;
-        }
-    },
+//            var object = {
+//                w: w1,
+//                h: h1,
+//                x: x,
+//                y: y,
+//                fit: Sizer.force
+//            };
+//            return object;
+//        }
+//    },
     Q = {
         queue : [],
         clear : function () { this.queue = []; },
@@ -825,25 +701,4 @@ var
         }
     }
  
-                       /*
-
-{"index":"12",
-"id":"422754",
-"uuid":"08274184-05d5-4049-adbe-ddb6e3737988",
-"group":"fe0acfba-aaab-492f-a853-3902b4e06090",
-"parent":"\n",
-"type":"picture",
-"from":"Siham",
-"date":"21 Feb 2014 10:49:52 GMT"
-,"subject":"<katie idx2>1-52  All OK   [ThOrP]      \"[1\/1]\" - \"56_1adj.jpg\" -   52586  -  yEnc (1\/1)",
-"ref":"Xref|alt.binaries.pictures.sandra|alt.binaries.ella.virginia.model","items":[],"alsoin":"",
-"count":"0","cache":true,
-"serverkey":"647895f4-070c-4b7c-a933-6f8dacf4d5b3",
-"userkey":"64789c93-f109-4592-8bc7-269fc2b665c5",
-"username":"milton",
-"groupname":"alt.binaries.ella.virginia.model",
-"bookmarked":false
-}
-
-
-*/ 
+         

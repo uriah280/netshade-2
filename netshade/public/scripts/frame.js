@@ -31,6 +31,8 @@
 
 window.requestNextAnimationFrame =
    (function () {
+
+
       var originalWebkitRequestAnimationFrame = undefined,
           wrapper = undefined,
           callback = undefined,
