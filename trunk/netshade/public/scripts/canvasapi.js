@@ -177,31 +177,7 @@ var CanvasAPI = {
         doomed.style.display = "none";
         document.documentElement.removeChild(doomed);
     },
-
-
-    append: function (context, X, Y, element) {
-
-        var pos = getPosition(context.canvas), x = X - -pos.x,
-                y = Y - -pos.y; // dependency!
-
-        var tag = document.createElement("DIV");
-        tag.style.position = "absolute";
-        tag.style.left = X + "px";
-        tag.style.top = y + "px";
-        tag.id = "div-dyn-" + Math.random();
-
-        var input = document.createElement(element.name);
-        for (var property in element)
-            if (property != "name")
-                input[property] = element[property]; //.setAttribute (property, element[property]);
-
-        tag.appendChild(input);
-
-        document.documentElement.appendChild(tag);
-        return tag.id;
-    },
-
-
+     
 
 
     // internals
