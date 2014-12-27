@@ -1,9 +1,43 @@
-define(['thumb', 'canvas', 'cache'], function (thumb, canvas, cache) {
+define(['thumb', 'canvas', 'cache', 'drawing', 'range'], function (thumb, canvas, cache, drawing, range) {
     var thumbWorker = thumb;
     var cacheWorker = cache;
     var canvasWorker = canvas;
+    var drawingAPI = drawing;
+    var rangeAPI = range; 
 
     return {
+
+        displayGroupInfo: function () {
+
+            $(".span-of").each(function () {
+                var t = this.id.split('x'), lo = t[0], hi = t[1], mn = t[2], mx = t[3], key = "I" + Math.floor(Math.random() * 1000000), width = 500, w2 = width + 50; ;
+                var img = "<canvas width='" + w2 + "' height='20' id='" + key + "'></canvas>";
+                $(this).html(img);
+                $("#" + key).each(function () {
+                    var that = this, context = that.getContext('2d'), dm = mx - mn, dl = hi - lo, sx = lo - mn,
+                             px = width * (dl / dm), x = width * (sx / dm);
+                    context.fillStyle = '#ffc';
+                    context.fillRect(0, 0, width + 50, 30);
+
+                    context.fillStyle = '#ccf';
+                    context.fillRect(25, 5, width, 10);
+
+                    context.fillStyle = '#009';
+                    context.fillRect(25 + x, 5, px, 10);
+
+                    var mw = context.measureText(mx).width, ml = context.measureText(lo).width,
+                             max_x = (width + 25) - (mw / 2), lo_x = 25 + x - (ml / 2), max_y = 9, lo_y = 19;
+
+                    while ((lo_x + ml) >= (max_x - 10)) lo_x -= 10;
+
+                    drawingAPI.imagestring(context, '300 8pt Lato', 1, 9, mn, '#333');
+                    drawingAPI.imagestring(context, '300 8pt Lato', max_x, max_y, mx, '#333');
+                    drawingAPI.imagestring(context, '300 8pt Lato', lo_x, lo_y, lo, '#333');
+                    drawingAPI.imagestring(context, '300 8pt Lato', max_x, lo_y, hi, '#333');
+                });
+            });
+
+        },
 
         displaySelected: function (thumb_sender, cache_sender, article, dir) {
             var thumbComponent = thumb_sender;
@@ -77,7 +111,7 @@ define(['thumb', 'canvas', 'cache'], function (thumb, canvas, cache) {
 
                 if (bHilo) {
                     $("#article-select").each(function () {
-                        var drp = this, range = Rangefrom(drp.options, drp.selectedIndex), i = tinyIndex - (-SLIDE_OFFSET);
+                        var drp = this, range = rangeAPI.createRange(drp.options, drp.selectedIndex), i = tinyIndex - (-SLIDE_OFFSET);
                         if (i < 0 || i >= range.length || range.length < 1) return;
                         var id = range[i].article, text = range[i].text, index = range[i].index;
                         canvasWorker.create(id, index, canvasComponent);
@@ -177,6 +211,7 @@ define(['thumb', 'canvas', 'cache'], function (thumb, canvas, cache) {
                 Component.text[id] = value;
             });
 
+            $(".article-lookup").css({ display: "none" });
         }
     }
 })

@@ -1,5 +1,6 @@
-define(['picture'], function (picture) {
+define(['picture', 'drawing'], function (picture, drawing) {
     var imageCache = picture;
+    var drawingAPI = drawing;
 
     return {
         create: function (article, index, sender) {
@@ -15,14 +16,14 @@ define(['picture'], function (picture) {
                 sender: sender,
                 caption: "#" + index, // article.substr(0, 4),
                 draw: function (canvas, limit) {
-                    var that = this, thumbnail = new Image(), w = 64, api = CanvasAPI, span = w + 1, y = 1,
+                    var that = this, thumbnail = new Image(), w = 64, span = w + 1, y = 1,
                        context = canvas.getContext('2d'), article = this.article, offset = span * (this.sender.limit - this.sender.object.length),
                        offset_x = this.sender.object.length < this.sender.limit ? offset : 0,
                         margin = 3, position = limit - this.id, x = (this.id * span) + offset_x, caption = this.sender.caption;
 
                     var done = function () {
                         context.clearRect(0, 74, canvas.width, 20);
-                        api.imagestring(context, "700 9pt Lato", 10, 82, caption, "#222");
+                        drawingAPI.imagestring(context, "700 9pt Lato", 10, 82, caption, "#222");
                     };
 
                     if (this.source) {
@@ -30,10 +31,10 @@ define(['picture'], function (picture) {
                         thumbnail.onload = function () {
                             context.globalAlpha = 1;
                             context.clearRect(x, y - 1, span + 1, span + 6);
-                            api.imagecopyresized(context, this, 0, 0, this.width, this.height, x + 1, y, span - 1, span - 1);
+                            drawingAPI.imagecopyresized(context, this, 0, 0, this.width, this.height, x + 1, y, span - 1, span - 1);
                             if (article == thumb_worker.selected) {
                                 var x1 = x + 1, x2 = x1 + span - 1, y1 = y + 68, y2 = y1;
-                                api.imageline(context, x1, y1, x2, y2, "#f00", 2);
+                                drawingAPI.imageline(context, x1, y1, x2, y2, "#f00", 2);
                             }
                             done();
                         }

@@ -59,7 +59,9 @@ define({
 
 
     imagecopyresized: function (context, src, sx, sy, sw, sh, dx, dy, dw, dh, action) {
-        var sourceX = sx, sourceY = sy, sourceWidth = sw, sourceHeight = sh, destX = dx, destY = dy, destWidth = dw, destHeight = dh, command = action, picture = new Image();
+        var sourceX = sx, sourceY = sy, sourceWidth = sw, sourceHeight = sh, 
+            destX = dx, destY = dy, destWidth = dw, destHeight = dh, command = action, picture = new Image(),
+             api = this;
 
         var invoke = function () {
             // confirm([destWidth, destHeight]);
@@ -80,18 +82,19 @@ define({
             return invoke();
         }
 
-        if (CanvasAPI.Icons[src]) {
-            //   picture = CanvasAPI.Icons[src];
+        if (api.Icons[src]) {
+            //   picture = api.Icons[src];
             //   return invoke ();
         }
         picture.onload = invoke;
         picture.src = src;
-        // CanvasAPI.Icons[src] = picture;
+        // api.Icons[src] = picture;
 
     },
 
     imagecopy: function (context, src, x, y, action, cb) {
-        var callback = cb, destX = x, destY = y, command = action, picture = new Image();
+        var callback = cb, destX = x, destY = y, command = action, picture = new Image(),
+             api = this;
 
 
         var invoke = function () {
@@ -102,7 +105,7 @@ define({
             context.drawImage(picture, destX, destY);
 
             if (command) {
-                CanvasAPI.setclick(context, picture.src, destX, destY,
+                api.setclick(context, picture.src, destX, destY,
                                      destX + picture.width, destY + picture.height, command);
             }
             context.restore();
@@ -110,13 +113,13 @@ define({
             return;
         }
 
-        if (CanvasAPI.Icons[src]) {
-            picture = CanvasAPI.Icons[src];
+        if (api.Icons[src]) {
+            picture = api.Icons[src];
             return invoke();
         }
         picture.onload = invoke;
         picture.src = src;
-        CanvasAPI.Icons[src] = picture;
+        api.Icons[src] = picture;
     },
 
     imagecreate: function (x, y, image) {
@@ -292,11 +295,11 @@ define({
     clear: function () { this.Bindings = {} },
     Bind_: function (context) {
 
-        var canvas = context.canvas, id = canvas.id;
+        var canvas = context.canvas, id = canvas.id, api=this;
         if (this.Bindings[id]) return;
         canvas.addEventListener('mousedown', function (evt) {
-            var mousePos = CanvasAPI.posof(canvas, evt);
-            CanvasAPI.invoke(id, mousePos);
+            var mousePos = api.posof(canvas, evt);
+            api.invoke(id, mousePos);
         }, false);
 
         this.Bindings[id] = {
