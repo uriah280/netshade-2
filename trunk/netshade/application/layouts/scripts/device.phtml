@@ -17,7 +17,8 @@ $css = isset ($this->css) ? $this->css : "scroll";
 
      <script src="//code.jquery.com/jquery-1.9.1.js"></script>
      <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script> 
-
+	 
+	<script src="/scripts/require.js"></script>
 	<script src="/scripts/controller.js"></script>
 	<script src="/scripts/bus.js"></script>
 	<script src="/scripts/canvasapi.js"></script>
@@ -83,4 +84,21 @@ $css = isset ($this->css) ? $this->css : "scroll";
 
 
       </body>
+	  
+	  <script language="javascript">
+
+	  requirejs.config({
+			//By default load any module IDs from scripts/worker
+			baseUrl: '/scripts/worker', 
+			//except, if the module ID starts with "app",
+			//load it from the js/app directory. paths
+			//config is relative to the baseUrl, and
+			//never includes a ".js" extension since
+			//the paths config could be for a directory.
+			paths: {
+				app: '../app'
+			}
+		});
+
+	</script>
 </html>
