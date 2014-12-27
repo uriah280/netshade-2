@@ -7,6 +7,24 @@ var
     DIALOG_HILO = true,
     SLIDE_OFFSET = 5,
 
+    $ajax = function (uri, callback) {
+        var onload = callback, params = { uri: uri };
+
+        return $.ajax({
+            type: "GET",
+            url: uri,
+            cache: false,
+            success: callback
+        });
+
+    },
+
+
+     shuffle = function (o) { //v1.0
+         for (var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+         return o;
+     },
+
     Controller = {
 
 
@@ -173,13 +191,9 @@ var
             });
 
             // TO DO: update carousel script to workers
-            var tmp_c = [];
-            $(".carousel").each(function () {
-                tmp_c.push(this.id);
-            })
-            if (tmp_c.length) {
-                Fancy.init(tmp_c);
-            }
+            require(['fancy'], function (fancy) {
+                fancy.load();
+            });  
 
             // ----------------------------------------------------------'
             // TO DO: redo MEDIA actions

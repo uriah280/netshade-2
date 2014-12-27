@@ -1,18 +1,4 @@
-define({
-    format: {
-        command: function (key) {
-            return "/rpc/thumb/article/{0}/user/{1}".format(key, Controller.getUsername());
-        },
-        picture: function (key, fieldname) {
-            return "/rpc/smalltextpicture/id/{0}/field/{1}".format(key, fieldname);
-        },
-        bookmark: function (key) {
-            return "/rpc/bookmark/id/{0}/user/{1}".format(key, Controller.getUsername());
-        },
-        request: function (key) {
-            return "/rpc/receive/id/" + key;
-        }
-    },
+define({ 
     msmq: function (element) {
         var uuid = $(element).html(), url = element.id, tag = element, w = {
             command: request_worker.format.request(uuid),
@@ -81,7 +67,7 @@ define({
                             }
                             that.show();
                         }
-                        return window.requestNextAnimationFrame(function () { that.send() });
+                        return window.setTimeout(function () { that.send() }, 300);
                     }
                 });
 

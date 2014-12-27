@@ -1,5 +1,6 @@
-define(['drawing'], function (drawing) {
+define(['drawing', 'animation'], function (drawing, animation) {
     var drawingAPI = drawing;
+    var animator = animation;
     return {
         create: function (picture, source, dimension, callback, direction, onclick) {
             var object = {
@@ -35,7 +36,7 @@ define(['drawing'], function (drawing) {
                             this.x -= -Math.floor(this.dimension.w / 5);
                             if (this.x > 0)
                                 this.x = 0;
-                            window.requestNextAnimationFrame(function () {
+                            animator.run(function () {
                                 that.animate();
                             });
                             return false;
@@ -45,7 +46,7 @@ define(['drawing'], function (drawing) {
                         this.x -= Math.floor(this.dimension.w / 5);
                         if (this.x < -this.dimension.w)
                             this.x = -this.dimension.w;
-                        window.requestNextAnimationFrame(function () {
+                        animator.run(function () {
                             that.animate();
                         });
                         return false;
