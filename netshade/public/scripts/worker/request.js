@@ -1,33 +1,49 @@
-define({ 
-    msmq: function (element) {
-        var uuid = $(element).html(), url = element.id, tag = element, w = {
-            command: request_worker.format.request(uuid),
-            element: {
-                show: function (response) {
-                    if (response && response.caption)
-                        return $(tag).html(response.caption + "?");
-                    $(tag).html("No response");
-                },
-                done: function () { location.href = url; }
+define(function () {
+
+    return {
+        format: {
+            command: function (key) {
+                return "/rpc/thumb/article/{0}/user/{1}".format(key, getUsername());
+            },
+            picture: function (key, fieldname) {
+                return "/rpc/smalltextpicture/id/{0}/field/{1}".format(key, fieldname);
+            },
+            bookmark: function (key) {
+                return "/rpc/bookmark/id/{0}/user/{1}".format(key, getUsername());
+            },
+            request: function (key) {
+                return "/rpc/receive/id/" + key;
             }
-        }
-        this.create(w.element, w.command);
-    },
-    open: function (worker) {
-        var that = this; 
-        try {
-            $ajax(worker.command, function (uuid) {
-                if (uuid == "-1") return worker.element.done();
-                that.create(worker.element, request_worker.format.request(uuid));
-            });
-        }
-        catch (ex) {
-            confirm(ex.message);
-        }
-    },
-    create: function (element, command) {
-        var object = {
-            element: element
+        },
+        msmq: function (element) {
+            var uuid = $(element).html(), url = element.id, tag = element, w = {
+                command: this.format.request(uuid),
+                element: {
+                    show: function (response) {
+                        if (response && response.caption)
+                            return $(tag).html(response.caption + "...");
+                        $(tag).html("No response");
+                    },
+                    done: function () { location.href = url; }
+                }
+            }
+            this.create(w.element, w.command);
+        },
+        open: function (worker) {
+            var that = this;
+            try {
+                $ajax(worker.command, function (uuid) {
+                    if (uuid == "-1") return worker.element.done();
+                    that.create(worker.element, that.format.request(uuid));
+                });
+            }
+            catch (ex) {
+                confirm(ex.message);
+            }
+        },
+        create: function (element, command) {
+            var object = {
+                element: element
             , command: command
 
             , response: {
@@ -46,7 +62,7 @@ define({
             }
 
             , send: function () {
-                var that = this; 
+                var that = this;
                 $.ajax({
                     type: "GET",
                     url: that.command,
@@ -72,8 +88,9 @@ define({
                 });
 
             }
-        };
-        object.send();
-        return object;
+            };
+            object.send();
+            return object;
+        }
     }
 });

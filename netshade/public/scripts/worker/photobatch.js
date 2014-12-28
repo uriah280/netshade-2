@@ -1,4 +1,4 @@
-define(['drawing', 'sizer'], function (drawing, sizer) {
+define(['lib/drawing', 'lib/sizer'], function (drawing, sizer) {
     var drawingAPI = drawing;
     var photoSizer = sizer;
     return {

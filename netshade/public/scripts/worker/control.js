@@ -1,8 +1,11 @@
-define(['drawing'], function (drawing) {
+define(['lib/drawing', 'request'], function (drawing, request) {
     var drawingAPI = drawing;
+    var requestWorker = request;
 
     return {
         drawing: drawing,
+
+
         control: function (worker, onclick) {
             var object = {
                 worker: worker,
@@ -38,38 +41,76 @@ define(['drawing'], function (drawing) {
             }
             return object;
         },
-        count: function (worker) {
-            var object = this.control(worker);
+
+        text: function (value, font, x, y) {
+            var object = this.control();
+            object.font = font;
+            object.value = value;
+            object.x = x;
+            object.y = y;
             object.render = function () {
-                var params = this.params(), context = this.context;
-                if (this.worker.count != undefined) {
-                    drawingAPI.imagestring(context, "700 9pt Lato", params.loc.x + 24, (params.panel_y / 2) + 4, this.worker.count, "#227");
+                if (this.value != undefined) {
+                    drawingAPI.imagestring(this.context, this.font, this.x + 1, this.y + 1, this.value, "#fff");
+                    drawingAPI.imagestring(this.context, this.font, this.x, this.y, this.value, "#297");
                 }
             }
             return object;
         },
-        play: function (worker, onclick) {
+
+        count: function (worker) {
+            return this.text(worker.count, "700 9pt Lato", THUMB_SIZE - 80, 20);
+        },
+
+        playbutton: function (state, size, x, y, onclick, fill, stroke, worker) {
             var object = this.control(worker, onclick);
+            object.fill = fill;
+            object.stroke = stroke;
+
             object.render = function () {
 
-                var params = this.params(), size = 10, x = params.loc.x + params.offset_width + size, y = params.panel_y / 2,
-                 context = this.context;
+                var context = this.context, half = size / 2;
 
-                this.y1 = 0;
-                this.y2 = params.panel_y;
+                this.y1 = y - size;
+                this.y2 = y + size;
                 this.x1 = x - size;
                 this.x2 = x + size;
 
-                if (this.worker.state) {
-                    drawingAPI.imagefilledrectangle(context, x - size, y - size, size * 2, size * 2, "#222");
-                }
-                else {
-                    drawingAPI.imagetriangle(context, x, y, size);
+                if (state === 0) {
+                    return;
                 }
 
+                context.beginPath();
+                context.arc(x, y, Math.min(size, x - 20, y - 20), 0, 2 * Math.PI, false);
+                context.fillStyle = this.fill; // 'rgba(255,255,255,0.5)';
+                context.fill();
+                context.lineWidth = 1;
+                context.strokeStyle = this.stroke; // "#fff";
+                context.stroke();
+                context.closePath();
+
+                var x1 = x + 1;
+
+                if (state == 2) {
+                    drawingAPI.imagefilledrectangle(context, x1, y - half, 3, size, "#fff");
+                    drawingAPI.imagefilledrectangle(context, x1 - 5, y - half, 3, size, "#fff");
+                } else {
+                    drawingAPI.imagetriangle(context, x + (half * 0.75), y, half, "#666", "#fff");
+                }
             }
             return object;
         },
+
+        canvas_play: function () {
+            return this.playbutton(PLAYER_PLAYING ? 2 : 1, 8, 708, 80, function () {
+                require('element').playpauseCanvas(); 
+            }, '#090', '#900');
+        },
+
+        play: function (worker, onclick) {
+            var x = THUMB_SIZE / 2;
+            return this.playbutton(worker.state ? 0 : 1, 32, x, x, onclick, 'rgba(255,255,255,0.5)', '#fff', worker);
+        },
+
         pause: function (worker, onclick) {
             var object = this.control(worker, onclick);
             object.render = function () {
@@ -81,10 +122,11 @@ define(['drawing'], function (drawing) {
                 this.y2 = y + 6;
                 this.x1 = x - 16;
                 this.x2 = x - 6;
+                return;
 
                 if (this.worker.state) {
 
-
+                    drawingAPI.imagefilledrectangle(context, this.x1, this.y1, this.x2 - this.x1, this.y2 - this.y1, "#ff0");
                     drawingAPI.imagefilledrectangle(context, x - 11, y - 6, 3, 10, "#222");
                     drawingAPI.imagefilledrectangle(context, x - 16, y - 6, 3, 10, "#222");
                 }
@@ -94,17 +136,16 @@ define(['drawing'], function (drawing) {
         star: function (worker) {
             var object = this.control(worker);
             object.render = function (sender) {
-                var params = this.params(), x = params.loc.x + 10, y = params.panel_y / 2,
-                 context = this.context, hue = sender ? "#00f" : "#0f0", size = 24, half = size / 2;
+                var size = 20, x = THUMB_SIZE - size, y = 16,
+                        context = this.context, hue = sender ? "#00f" : "#0f0", half = size / 2;
 
                 this.y1 = 0;
-                this.y2 = params.panel_y;
+                this.y2 = 32;
                 this.x1 = x - half;
                 this.x2 = x + half;
 
-                drawingAPI.imagefilledrectangle(context, this.x1, this.y1, this.x2 - this.x1, this.y2 - this.y1, "#fff");
-
-                drawingAPI.imagestar(context, x, y, params.bookmarked ? "#f00" : null, half);
+                //                drawingAPI.imagefilledrectangle(context, this.x1, this.y1, this.x2 - this.x1, this.y2 - this.y1, "#ff0"); 
+                drawingAPI.imagestar(context, x, y, this.worker.bookmarked ? "#f00" : "#fff", half);
 
                 if (sender) {
                     var ctx = sender.getContext('2d');
@@ -113,10 +154,10 @@ define(['drawing'], function (drawing) {
                 }
             }
             object.onclick = function (sender) {
-                var cstar = this, w = this.worker, address = request_worker.format.bookmark(w.article);
+                var star = this, w = this.worker, address = requestWorker.format.bookmark(w.article);
                 this.worker.bookmarked = this.worker.bookmarked ? null : "yes";
                 $.get(address, function (data) {
-                    cstar.render(sender);
+                    star.render(sender);
                 });
             }
             return object;

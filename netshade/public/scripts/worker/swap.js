@@ -1,8 +1,9 @@
-define(['drawing', 'animation'], function (drawing, animation) {
+define(['lib/drawing', 'lib/animation'], function (drawing, animation) {
     var drawingAPI = drawing;
     var animator = animation;
     return {
-        create: function (picture, source, dimension, callback, direction, onclick) {
+        create: function (picture, source, dimension, callback, direction
+                            , onclick) {
             var object = {
                 image: {
                     left: document.createElement("canvas"), // old image
@@ -13,7 +14,7 @@ define(['drawing', 'animation'], function (drawing, animation) {
                 direction: direction,
                 dimension: dimension,
                 callback: callback,
-                onclick: onclick,
+                onclick: onclick, 
                 canvas: document.createElement("canvas"),
                 animate: function () {
                     var dim = this.dimension, left_ = this.image.left, right_ = this.image.right,
@@ -61,7 +62,7 @@ define(['drawing', 'animation'], function (drawing, animation) {
                     if (this.onclick) {
                         $(this.picture).off("click");
                         $(this.picture).click(this.onclick);
-                    }
+                    } 
                     this.animate();
                 }
             };
