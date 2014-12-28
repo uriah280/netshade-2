@@ -1,10 +1,9 @@
-define(['lib/picture', 'cache', 'request', 'lib/control', 'lib/drawing', 'lib/debug'], function (picture, cache, request, control, drawing, debug) {
+define(['lib/picture', 'cache', 'request', 'lib/drawing', 'lib/debug'], function (picture, cache, request, drawing, debug) {
     var Renderer = picture;
     var imageCache = cache;
     var drawingAPI = drawing;
     var requestWorker = request;
-    var Debugger = debug;
-    var controlGenerator = control;
+    var Debugger = debug; 
 
 
     Debugger.log("Invoking canvas module..");
@@ -18,9 +17,9 @@ define(['lib/picture', 'cache', 'request', 'lib/control', 'lib/drawing', 'lib/de
         caption: "Loading...",
         clear: function () {
             this.object = [];
-            this.complete = 0; 
+            this.complete = 0;
 
-            var play = controlGenerator.canvas_play();
+            var play = require('lib/control').canvas_play();
             this.controls = [play];  
         },
 
