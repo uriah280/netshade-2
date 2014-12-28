@@ -1,5 +1,9 @@
 define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/servicebus', 'lib/debug'],
   function (drawing, photo, sizer, animation, bus, debug) {
+
+
+      debug.log("Invoking animation module..");
+
       var drawingAPI = drawing;
       var photoBatch = photo;
       var photoSizer = sizer;

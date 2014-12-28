@@ -1,4 +1,6 @@
-define(['lib/picture', 'cache', 'request', 'lib/drawing', 'lib/debug'], function (picture, cache, request, drawing, debug) {
+define(['cache', 'request', 'lib/picture', 'lib/drawing', 'lib/debug'], function (cache, request, picture, drawing, debug) {
+
+
     var Renderer = picture;
     var imageCache = cache;
     var drawingAPI = drawing;
