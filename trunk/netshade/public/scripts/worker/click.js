@@ -1,73 +1,56 @@
-define(function () {
-
+define(['lib/debug'], function (debug) { 
+    var Bug = debug;
     return {
         enableClickableElements: function () {
             for (var name in this.events) {
-                var method = this.events[name];
-                $(name).each(function () {
-                    if (this.tagName.toLowerCase() == "a") {
-                        $(this).attr("href", "javascript:void(0)");
-                    }
-                    $(this).click(method);
-                });
-            } 
+                this.enable(name);
+            }
         },
 
-        events: { 
+        enable: function (name) {
+            var method = this.events[name];
+            $(name).each(function () {
+                if (this.tagName.toLowerCase() == "a") {
+                    $(this).attr("href", "javascript:void(0)");
+                }
+                $(this).off("click");
+                $(this).click(method);
+            }); 
+        },
 
-            ".group-join" : function () {
+        events: {
+
+
+
+            ".group-join": function () {
                 var re, name = $("#text-user").val(), tmp = this.className.split(" "),
                      rex = /most\/(\d+)/, most = !(re = rex.exec(location.href)) ? "" : ("/most/" + re[1]),
                        href = "/group/join/user/" + name + "/name/" + this.id +
-                                "/start/" + tmp[1] + "/amount/" + tmp[2] + most;
+                                "/start/" + tmp[1] + "/amount/" + tmp[2] + most; 
                 location.href = href;
             },
-            ".group-renew" : function () {
-                var name = $("#text-user").val(), href = "/group/join/user/" + name + "/name/" + this.id + "/renew/renew"; 
+            ".group-renew": function (sender) {
+                var name = $("#text-user").val(), href = "/group/join/user/" + name + "/name/" + this.id + "/renew/renew";
                 location.href = href;
             },
-            ".group-name" : function () {
-                var t = Controller.getUsername();
-                var name = t || Controller.getUsername(), href = "/group/join/user/" + name + "/name/" + this.id;
+            ".group-name": function (sender) {
+                var name = getUsername(), href = "/group/join/user/" + name + "/name/" + this.id;
                 //  return window.open (href);
                 location.href = href;
             },
-            ".a-group" : function () {
-                var name = Controller.getUsername(), href = "/group/join/user/" + name + "/name/" + this.id;
+            ".a-group": function (sender) {
+                var name = getUsername(), href = "/group/join/user/" + name + "/name/" + this.id;
                 location.href = href;
             },
-            ".li-sortas" : function () {
+            ".li-sortas": function () {
                 var rex = /\/sort\/\d+/, old = location.href.replace(rex, ""), href = rex.exec(location.href) ? old : (old + "/sort/1");
                 location.href = href;
             },
 
-
-
-
-
-            ".article-menu": function () {
-                DIALOG_VISIBLE = !DIALOG_VISIBLE;
-                localStorage["dialog"] = DIALOG_VISIBLE ? "on" : "off";
-                ServiceBus.OnPageResize();
-                Controller.preview();
-            },
-            ".a-ps": function () {
-                var value = localStorage["playing"], on = value && value == "on";
-                localStorage["playing"] = on ? "off" : "on";
-                $(this).html(on ? "Stop" : "Play");
-                $("#article-select").each(function () {
-                    Controller.nextPage($(this).val());
-                });
-            },
-            ".a-hi": function () {
-                DIALOG_HILO = !DIALOG_HILO;
-                $(this).html(DIALOG_HILO ? "Hilo" : "Sort");
-                localStorage["hilo"] = DIALOG_HILO ? "on" : "off";
-                Controller.preview();
-            },
             ".link": function () {
                 location.href = this.id;
             },
+
             ".settings-button": function () {
                 $(".my-menu").css("width", "450px");
                 $(".my-menu").css("display", "block");
@@ -96,13 +79,7 @@ define(function () {
 
                 if (!param) return;
                 var href = location.href.replace("group/list", "rpc/find/param/" + param + most);
-                location.href = href; 
-            },
-            ".a-next": function () {
-                $(this).click(function () {
-                    var tmp = this.className.split(" "), i = tmp[1]
-                    Controller.next(i);
-                });
+                location.href = href;
             }
         }
     };

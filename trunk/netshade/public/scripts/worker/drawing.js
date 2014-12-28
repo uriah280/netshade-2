@@ -16,10 +16,10 @@ define({
 
     },
 
-    
-    imagetriangle : function (ctx, cx, cy, size) {
-        ctx.strokeSyle = "#f00";
-        ctx.fillStyle = "#f00";
+
+    imagetriangle: function (ctx, cx, cy, size, stroke, fill) {
+        ctx.strokeSyle = stroke||"#006";
+        ctx.fillStyle = fill||"#049";
         ctx.beginPath();
         ctx.moveTo(cx, cy);
         ctx.lineTo(cx - size, cy + size);

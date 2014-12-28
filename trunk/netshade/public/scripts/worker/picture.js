@@ -1,6 +1,10 @@
-define(['drawing', 'sizer'], function (drawing, sizer) {
+define(['cache', 'lib/drawing', 'lib/sizer', 'lib/swap', 'lib/debug'], function (cache, drawing, sizer, swap, debug) {
     var drawingAPI = drawing;
     var photoSizer = sizer;
+    var imageCache = cache;
+    var imageSwap = swap;
+    var Debugger = debug;
+    Debugger.log("Invoked Picture Worker");
     return {
 
         canvas: function (worker) {
@@ -19,14 +23,6 @@ define(['drawing', 'sizer'], function (drawing, sizer) {
                     return element.good();
                 }
                 picture.src = src;
-            });
-        },
-
-        cache: function (worker) {
-            var element = worker.element;
-            $ajax(worker.picture, function (base64) {
-                var src = "data:image/jpeg;base64,{0}".format(base64);
-                element.good(src);
             });
         },
 
@@ -53,7 +49,7 @@ define(['drawing', 'sizer'], function (drawing, sizer) {
 
             if (worker.controls && worker.controls.length) {
 
-                drawingAPI.imagefilledrectangle(context, loc.x, 0, panel_width, panel_y, "#fff");
+//                drawingAPI.imagefilledrectangle(context, loc.x, 0, panel_width, panel_y, "#fff");
 
                 for (var c, i = 0; c = worker.controls[i]; i++) {
                     c.draw(context);
@@ -81,7 +77,7 @@ define(['drawing', 'sizer'], function (drawing, sizer) {
         },
         display: function (worker) {
             var source, creator = this;
-            if (source = thumb_worker.remembers(worker)) {
+            if (source = imageCache.remembers(worker)) {
                 return this.display_(source, worker);
             }
             $ajax(worker.picture, function (base64) {
@@ -105,9 +101,9 @@ define(['drawing', 'sizer'], function (drawing, sizer) {
 
                 $(element).children("canvas").each(function () {
                     exist = $(this).data("src");
-                    image_swap.create(this, rendered.canvas, dimension, function () {
+                    imageSwap.create(this, rendered.canvas, dimension, function () {
                         element.good(picture.src);
-                    }, worker.direction, onclick);
+                    }, worker.direction, worker.size > 0 ? onclick : null);
                 })
 
                 if (!exist) {
@@ -116,7 +112,7 @@ define(['drawing', 'sizer'], function (drawing, sizer) {
                     element.good(this.src);
                 }
 
-                if (worker.onclick) {
+                if (worker.onclick && worker.size > 0) {
                     $("#" + element_key).click(onclick);
                 }
             }

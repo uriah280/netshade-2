@@ -33,8 +33,11 @@ var
         },
 
         view: function (id, dir) {
+            require(['debug'], function (debug) {
+                debug.log("Controller.view: " + id);
+            });
             require(['element'], function (element) {
-                element.displaySelected(thumb_worker, cache_worker, id, dir);
+                element.displaySelected(id, dir);
             });
         },
 
@@ -47,10 +50,20 @@ var
             });
         },
 
-        preview: function () {
+        preview: function () { 
             require(['element'], function (element) {
-                element.configurePreviewThumbnails(canvas_worker, cache_worker, DIALOG_VISIBLE, DIALOG_HILO);
+                element.configurePreviewThumbnails(DIALOG_VISIBLE, DIALOG_HILO);
             });
+        },
+
+        next: function (i) {
+            var index = i == undefined ? 1 : i;
+            $("#article-select").each(function () {
+                if (this.selectedIndex == (this.options.length - 1)) this.selectedIndex = 0;
+                else this.selectedIndex -= -index;
+                Controller.view($(this).val());
+            });
+
         },
 
         setNext: function () {
@@ -58,6 +71,7 @@ var
             Controller.setNext_();
 
         },
+
         setNext_: function () {
             Controller.timer++;
 
@@ -67,35 +81,7 @@ var
             }
             setTimeout(Controller.setNext_, 3333);
         },
-        next: function (i) {
-            var index = i == undefined ? 1 : i;
-            $("#article-select").each(function () {
-                if (this.selectedIndex == (this.options.length - 1)) this.selectedIndex = 0;
-                else this.selectedIndex -= -index; 
-                Controller.view($(this).val());
-            });
 
-        },
-
-        orient: function () {
-            return;
-            var degree = Math.abs(window.orientation), big = Math.max(screen.width, screen.height), sm = Math.min(screen.width, screen.height);
-            var screen_x = degree == 90 ? big : sm; //Math.max (screen.width,screen.height);
-            var screen_y = degree != 90 ? big : sm; //Math.min (screen.width,screen.height);
-
-            if (screen_x < DEFAULT_SIZE) {
-                $('#meta-v').each(function () {
-
-                    this.setAttribute('content', 'user-scalable=no, minimal-ui, initial-scale=1.0, width=' + screen_x);
-                    THUMB_SIZE = (screen_x - 52) / 4;
-                    $('.arrow').css('width', THUMB_SIZE + 'px');
-                    $('.arrow').css('height', THUMB_SIZE + 'px');
-                    $('.scroll').css('width', (screen_x - 16) + 'px');
-                    $('.scroll').css('height', (screen_y - 172) + 'px');
-
-                });
-            }
-        },
 
         getUsername: function () {
             var rex = /user\/(\w+)\//, test = rex.exec(location.href);
@@ -103,22 +89,19 @@ var
             var rex2 = /user\/(\w+)/, test2 = rex2.exec(location.href);
             if (test2) return test2[1];
         },
-          
+
         start: function () {
-            var value = localStorage["dialog"], on = value && value == "on", hilo = localStorage["hilo"] && localStorage["hilo"] == "on";
+            var value = localStorage["dialog"], on = value && value == "on", 
+                            hilo = localStorage["hilo"] && localStorage["hilo"] == "on";
             DIALOG_VISIBLE = on;
             DIALOG_HILO = hilo;
             BASE_WIDTH = $(document).width() - 48;
             THUMB_SIZE = (BASE_WIDTH / 4); // - 44;
-            TINY_SIZE = BASE_WIDTH / 16;
-
+            TINY_SIZE = BASE_WIDTH / 16; 
 
             $.browser = {
                 android: navigator.userAgent.indexOf("Android") > 0
             };
-
-            this.orient();
-
 
             if (screen.width < 400) {
                 var w = screen.width - 28, h = (w / (16 / 9)), sm = Math.floor((w - 16) / 5);
@@ -142,46 +125,11 @@ var
 
             $("#article-select").change(function () {
                 Controller.nextPage($(this).val());
-            });
-
-
-            $(".dyn-caption").each(function () {
-                this.invoke = function (sender, e) {
-                    $(this).html(e);
-                }
-                ServiceBus.Subscribe("OnDyntext", this);
-            });
+            }); 
 
             $(".my-menu").mouseleave(function () {
                 $(".my-menu").hide();
-            });
-
-            $(".controller").each(function () {
-                this.invoke = function (sender, e) {
-                    var W = ($(window).width() - this.offsetWidth) / 2;
-
-                    $(this).css({ height: DIALOG_VISIBLE ? "112px" : "24px",
-                        overflow: "hidden",
-                        left: W + "px"
-                    });
-
-                    var H = $(window).height() - this.offsetHeight - 8;
-                    this.style.top = H + "px";
-                }
-                this.style.height = "112px";
-                ServiceBus.Subscribe("OnPageResize", this);
-            });
-            window.onresize = function () { ServiceBus.OnPageResize(); }
-
-            $("#progressbar").each(function () {
-                this.invoke = function (sender, e) {
-                    $(this).progressbar({
-                        value: e
-                    });
-                }
-                ServiceBus.Subscribe("Progress", this);
-            });
-
+            }); 
 
             $(".msmq-id").each(function () {
                 var sender = this;
@@ -189,11 +137,6 @@ var
                     req.msmq(sender);
                 });
             });
-
-            // TO DO: update carousel script to workers
-            require(['fancy'], function (fancy) {
-                fancy.load();
-            });  
 
             // ----------------------------------------------------------'
             // TO DO: redo MEDIA actions
@@ -236,7 +179,7 @@ var
                         });
                         return;
                     }
-                } 
+                }
 
                 if (israrpage) {
                     $(this).click(function () {
@@ -263,36 +206,17 @@ var
             // ----------------------------------------------------------' 
 
             require(['element'], function (element) {
-                element.configureThumbnails(thumb_worker);
-                element.configurePreviewCanvas(canvas_worker, DIALOG_HILO, DIALOG_VISIBLE);
-                element.displayGroupInfo(); 
-            }); 
+                element.configureThumbnails();
+                element.configurePreviewCanvas(DIALOG_HILO, DIALOG_VISIBLE);
+                element.displayGroupInfo();
+                element.enableSlideController(); 
+            });
+
+            // TO DO: update carousel script to workers
+            require(['fancy'], function (fancy) {
+                fancy.load();
+            });
+
         }
     };
- 
   
-
-$(document).ready (function () {
-    Controller.start ();
-});
-
-
- 
-
-$( window ).on( "orientationchange", function( event ) {
-    Fancy.setSizes();
-});
-   
-
-
-String.prototype.truncate=function(y) { try { return this.length>y?(this.substr(0,y/2)+'...'+this.substr(this.length-(y/2))):this } catch (ex) { return ''} }; 
-String.prototype.trim = function() { return this.replace(/^\s+|\s+$/g, ''); }; 
-String.prototype.format = function ()
-{
-    var o=this, r={x:0,r:/\{/g,s:'|+{+|',e:/\|\+\{\+\|/g,t:'{'};
-    for (var i=0;i<arguments.length;i++) 
-        while (o.indexOf ('{'+i+'}')>=0 && r.x++ < 32)
-            try { o=o.replace ('{'+i+'}', arguments[i].toString().replace (r.r,r.s)); }
-            catch (ex) { }
-    return o.replace (r.e,r.t);
-} 

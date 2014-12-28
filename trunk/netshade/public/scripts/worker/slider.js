@@ -1,19 +1,29 @@
-define(['control', 'picture'], function (Generator, Picture) {
+define(['lib/control', 'lib/picture', 'request'], function (Generator, Picture, Request) {
     var controlGenerator = Generator;
     var imageCache = Picture;
+    var requestWorker = Request;
 
     return {
+        object: {},
+        direct: function (article) {
+            if (this.object[article] && this.object[article].state) {
+                this.object[article].direct();
+                return true;
+            }
+            return false;
+        },
         create: function (element, article, worker, sender) {
 
-            if (sender.object[article]) {
-                sender.object[article].pause();
+            if (this.object[article]) {
+                this.object[article].pause();
                 return;
             }
 
-            var object = {
+            var myself = this, object = {
                 command: "/rpc/slide/id/{0}".format(article),
                 item: undefined,
                 items: [],
+                click: worker.click,
                 onclick: worker.onclick,
                 controls: worker.controls,
                 bookmarked: worker.bookmarked,
@@ -30,7 +40,7 @@ define(['control', 'picture'], function (Generator, Picture) {
                 direct: function () {
                     if (!this.directLink) return;
                     var re, rex = /most\/(\d+)/, most = !(re = rex.exec(location.href)) ? "" : ("/most/" + re[1]),
-                         address = this.directLink.format(Controller.getUsername(), this.from, this.article);
+                         address = this.directLink.format(getUsername(), this.from, this.article);
                     location.href = address + most;
                 },
                 load: function () {
@@ -70,21 +80,21 @@ define(['control', 'picture'], function (Generator, Picture) {
                 draw: function () {
                     this.draw_();
                     document.title = this.count;
-                    request_worker.open(this);
+                    requestWorker.open(this);
                 },
                 draw_: function () {
-                    var that = this, invoker = this.sender;
+                    var that = this;
 
                     var play = controlGenerator.play(this, function () {
                         var existing, article = this.worker.from;
-                        if (existing = invoker.object[article]) {
+                        if (existing = myself.object[article]) {
                             return existing.pause(existing.state);
                         }
-                        return invoker.create(this.worker.element, article, this.worker);
+                        return myself.create(this.worker.element, article, this.worker);
                     });
 
                     var pause = controlGenerator.pause(this, function () {
-                        invoker.object[this.worker.from].pause();
+                        myself.object[this.worker.from].pause();
                     });
 
                     var chiron = controlGenerator.count(this);
@@ -92,8 +102,8 @@ define(['control', 'picture'], function (Generator, Picture) {
 
                     this.controls = [star, play, pause, chiron];
 
-                    this.command = request_worker.format.command(this.article);
-                    this.picture = request_worker.format.picture(this.article, this.fieldname);
+                    this.command = requestWorker.format.command(this.article);
+                    this.picture = requestWorker.format.picture(this.article, this.fieldname);
                     this.element.show = function (response) { }
                     this.element.good = function (source) {
                         if (that.state)
@@ -107,7 +117,7 @@ define(['control', 'picture'], function (Generator, Picture) {
                 }
             };
 
-            sender.object[article] = object;
+            this.object[article] = object;
             object.load();
             return object;
         }
