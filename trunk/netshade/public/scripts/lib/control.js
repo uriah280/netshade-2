@@ -154,7 +154,8 @@ define(['lib/drawing', 'request'], function (drawing, request) {
                 }
             }
             object.onclick = function (sender) {
-                var star = this, w = this.worker, address = requestWorker.format.bookmark(w.article);
+                var star = this, w = this.worker, 
+                        address = requestWorker.format.bookmark(w.from || w.article);
                 this.worker.bookmarked = this.worker.bookmarked ? null : "yes";
                 $.get(address, function (data) {
                     star.render(sender);

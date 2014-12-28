@@ -2,6 +2,7 @@ define(['thumb', 'canvas', 'cache', 'slider', 'lib/drawing', 'lib/range', 'lib/s
 
             function (thumb, canvas, cache, slider, drawing, range, bus, bug) {
 
+                bug.log("invoking element module..");
                 var thumbWorker = thumb;
                 var cacheWorker = cache;
                 var canvasWorker = canvas;
@@ -10,7 +11,7 @@ define(['thumb', 'canvas', 'cache', 'slider', 'lib/drawing', 'lib/range', 'lib/s
                 var rangeAPI = range;
                 var Debugger = bug;
                 var Bus = bus;
-
+                bug.log("Starting element module..");
                 return {
 
                     nextPage: function (article) {
@@ -182,8 +183,8 @@ define(['thumb', 'canvas', 'cache', 'slider', 'lib/drawing', 'lib/range', 'lib/s
                         });
 
                         $("#article-select").each(function () {
-                            for (var f, x = this.selectedIndex, 
-                                  m = Math.min(x + 3, this.options.length - 1); 
+                            for (var f, x = this.selectedIndex,
+                                  m = Math.min(x + 3, this.options.length - 1);
                                     (f = this.options[x]) && (x < m); x++) {
                                 cacheWorker.create(f.value);
                             }
