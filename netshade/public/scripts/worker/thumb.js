@@ -71,12 +71,12 @@ define(['lib/picture', 'canvas', 'slider', 'cache', 'request', 'lib/control', 'l
                        SELECTED_PICTURE = this.article;
                        Renderer.display(this);
                        Debugger.log("Checking play status...");
-                       require(['element'], function (e) {
-                           if (PLAYER_PLAYING) {
+                       if (PLAYER_PLAYING) {
+                           require(['lib/element'], function (e) {
                                Debugger.log("Playing...");
                                e.setNext();
-                           }
-                       });
+                           });
+                       }
                    },
                    load: function () {
                        var innerText, that = this;
