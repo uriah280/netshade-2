@@ -1,5 +1,5 @@
-define(['lib/picture', 'canvas', 'slider', 'cache', 'request', 'lib/control', 'lib/debug'],
-   function (Picture, CanvasWorker, ImageSlider, ImageCache, Request, Generator, debug) {
+define(['lib/picture', 'lib/control', 'lib/debug', 'canvas', 'slider', 'cache', 'request'],
+   function (Picture, Generator, debug, CanvasWorker, ImageSlider, ImageCache, Request) {
        var controlGenerator = Generator;
        var Renderer = Picture;
        var canvasWorker = CanvasWorker;

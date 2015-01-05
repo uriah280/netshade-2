@@ -17,19 +17,28 @@ define({
     },
 
 
-    imagetriangle: function (ctx, cx, cy, size, stroke, fill) {
-        ctx.strokeSyle = stroke||"#006";
-        ctx.fillStyle = fill||"#049";
+    imagetriangle: function (ctx, cx, cy, size, stroke, fill, factor) {
+        var dir = factor || 1, sz = dir > 0 ? (size) : (-size), up = Math.abs(dir);
+
+        ctx.strokeSyle = stroke || "#006";
+        ctx.fillStyle = fill || "#049";
         ctx.beginPath();
         ctx.moveTo(cx, cy);
-        ctx.lineTo(cx - size, cy + size);
-        ctx.lineTo(cx - size, cy - size);
+
+        if (up > 1) {
+            ctx.lineTo(cx + sz, cy - sz);
+            ctx.lineTo(cx - sz, cy - sz);
+        } else {
+            ctx.lineTo(cx - sz, cy + sz);
+            ctx.lineTo(cx - sz, cy - sz);
+        }
+
         ctx.fill();
-    }, 
+    },
 
 
-    imagestar : function (ctx, cx, cy, filled, outerRadius) {
-        var spikes = 5, innerRadius = outerRadius/2, rot = Math.PI / 2 * 3;
+    imagestar: function (ctx, cx, cy, filled, outerRadius) {
+        var spikes = 5, innerRadius = outerRadius / 2, rot = Math.PI / 2 * 3;
         var x = cx;
         var y = cy;
         var step = Math.PI / spikes;
@@ -59,7 +68,7 @@ define({
 
 
     imagecopyresized: function (context, src, sx, sy, sw, sh, dx, dy, dw, dh, action) {
-        var sourceX = sx, sourceY = sy, sourceWidth = sw, sourceHeight = sh, 
+        var sourceX = sx, sourceY = sy, sourceWidth = sw, sourceHeight = sh,
             destX = dx, destY = dy, destWidth = dw, destHeight = dh, command = action, picture = new Image(),
              api = this;
 
@@ -295,7 +304,7 @@ define({
     clear: function () { this.Bindings = {} },
     Bind_: function (context) {
 
-        var canvas = context.canvas, id = canvas.id, api=this;
+        var canvas = context.canvas, id = canvas.id, api = this;
         if (this.Bindings[id]) return;
         canvas.addEventListener('mousedown', function (evt) {
             var mousePos = api.posof(canvas, evt);

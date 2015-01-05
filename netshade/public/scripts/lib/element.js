@@ -78,7 +78,7 @@ define(['thumb', 'canvas', 'cache', 'slider', 'lib/drawing', 'lib/range', 'lib/s
                             this.invoke = function (sender, e) {
                                 var W = ($(window).width() - this.offsetWidth) / 2;
 
-                                $(this).css({ height: DIALOG_VISIBLE ? "112px" : "24px",
+                                $(this).css({ height: DIALOG_VISIBLE ? "124px" : "24px",
                                     overflow: "hidden",
                                     left: W + "px"
                                 });
@@ -86,7 +86,7 @@ define(['thumb', 'canvas', 'cache', 'slider', 'lib/drawing', 'lib/range', 'lib/s
                                 var H = $(window).height() - this.offsetHeight - 8;
                                 this.style.top = H + "px";
                             }
-                            this.style.height = "112px";
+                            this.style.height = "124px";
                             Bus.Subscribe("OnPageResize", this);
                         });
 
@@ -107,15 +107,18 @@ define(['thumb', 'canvas', 'cache', 'slider', 'lib/drawing', 'lib/range', 'lib/s
                         });
 
                         $(".a-hi").click(function () {
-                            DIALOG_HILO = !DIALOG_HILO;
-                            $(this).html(DIALOG_HILO ? "Hilo" : "Sort");
-                            localStorage["hilo"] = DIALOG_HILO ? "on" : "off";
-                            elementObject.preview();
+                            elementObject.onoffHilo();
                         });
 
 
                         window.onresize = function () { Bus.OnPageResize(); }
 
+                    },
+
+                    onoffHilo: function () {
+                        DIALOG_HILO = !DIALOG_HILO;
+                        localStorage["hilo"] = DIALOG_HILO ? "on" : "off";
+                        this.preview();
                     },
 
                     playpauseCanvas: function () {
@@ -250,12 +253,8 @@ define(['thumb', 'canvas', 'cache', 'slider', 'lib/drawing', 'lib/range', 'lib/s
                         canvasWorker.clear();
 
                         var selectedIndex = -1;
-                        $(".article-tiny").each(function () {
-
+                        var render = function (tinyIndex) {
                             if (!DIALOG_VISIBLE) return;
-                            var that = this, tinyIndex = this.id;
-                            $(this).empty();
-                            $(this).css("border", "none");
 
                             if (DIALOG_HILO) {
                                 $("#article-select").each(function () {
@@ -274,7 +273,12 @@ define(['thumb', 'canvas', 'cache', 'slider', 'lib/drawing', 'lib/range', 'lib/s
                                     canvasWorker.create(id, articleIndex);
                                 });
                             }
-                        });
+                        }
+
+                        for ($n = -5; $n < 6; $n++) {
+                            render($n);
+                        }
+                        canvasWorker.attach();
 
                         if (selectedIndex > 0) {
                             $("#article-select").each(function () {
