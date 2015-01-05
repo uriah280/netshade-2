@@ -1,11 +1,11 @@
-define(['lib/element', 'fancy', 'lib/click', 'lib/debug'], function (element, fancy, click, debug) {
+define(['fancy', 'lib/element', 'lib/click', 'lib/debug'], function (fancy, element, click, debug) {
     var elmntObject = element;
     var fancyObject = fancy;
     var clickObject = click;
     var debugObject = debug;
 
     debug.log("Starting controller...");
-    var object = { 
+    var object = {
         start: function () {
 
             var controller = this, value = localStorage["dialog"], on = value && value == "on",
@@ -21,6 +21,7 @@ define(['lib/element', 'fancy', 'lib/click', 'lib/debug'], function (element, fa
             TINY_SIZE = BASE_WIDTH / 16;
 
             $("#article-select").change(function () {
+                return require('lib/element').next(0);
                 controller.nextPage($(this).val());
             });
 
@@ -29,10 +30,8 @@ define(['lib/element', 'fancy', 'lib/click', 'lib/debug'], function (element, fa
             });
 
             $(".msmq-id").each(function () {
-                require('request').msmq(this); 
-            });
-
-            this.deprecatedActions();
+                require('request').msmq(this);
+            }); 
 
             // ----------------------------------------------------------'
             // element ONCLICK events
@@ -61,9 +60,6 @@ define(['lib/element', 'fancy', 'lib/click', 'lib/debug'], function (element, fa
                 debugObject.log("MEDIA actions not defined for {0}.{1}".format(this.tagName, this.className));
             };
 
-            $(".article-wmv").each(mediaClick);
-            $(".article-m4v").each(mediaClick);
-
             // TO DO: redo UNRAR actions
             $(".article-unrar").each(function () {
                 debugObject.log("UNRAR actions not defined for {0}.{1}".format(this.tagName, this.className));
@@ -73,6 +69,9 @@ define(['lib/element', 'fancy', 'lib/click', 'lib/debug'], function (element, fa
             $(".article-rar").each(function () {
                 debugObject.log("RAR actions not defined for {0}.{1}".format(this.tagName, this.className));
             });
+
+            $(".article-wmv").each(mediaClick);
+            $(".article-m4v").each(mediaClick);
             // ----------------------------------------------------------' 
 
             $.browser = {

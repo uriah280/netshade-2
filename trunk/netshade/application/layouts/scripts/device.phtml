@@ -4,34 +4,16 @@ $css = isset ($this->css) ? $this->css : "scroll";
 
 <html>
 	<title><?= $this -> title ?></title> 
-<!-- For iOS web apps -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="apple-mobile-web-app-title" content="AMC Walking Dead Story Sync">
 
 <meta id="meta-v" name="viewport" content="width=device-width, user-scalable=no, minimal-ui, initial-scale=1.0">
-	 <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
-     <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-
-     <link rel="stylesheet" href="/style/style-new.css">
-
-     <script src="//code.jquery.com/jquery-1.9.1.js"></script>
-     <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script> 
-	 
-	<script src="/scripts/require.js"></script>
-	<script src="/scripts/controller.js"></script>
-	<script src="/scripts/bus.js"></script>
-	<script src="/scripts/worker.js"></script>
-	
-	<!--
-	<script src="/scripts/frame.js"></script>
-	<script src="/scripts/canvasapi.js"></script>
-	<script src="/scripts/image.js"></script>
-	<script src="/scripts/dyncanvas.js"></script>
-	<script src="/scripts/batchpane.js"></script> -->
 
 
-	 
+	<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css"> 
+	<link rel="stylesheet" href="/style/style-new.css"> 
+
+	<script data-main="/scripts/app/main" src="/scripts/app/require.js"></script>
+  
 	<body>
 	  
 
@@ -89,20 +71,6 @@ $css = isset ($this->css) ? $this->css : "scroll";
 
       </body>
 	  
-	  <script language="javascript">
-
-	  requirejs.config({
-			//By default load any module IDs from scripts/worker
-			baseUrl: '/scripts/worker', 
-			//except, if the module ID starts with "app",
-			//load it from the js/app directory. paths
-			//config is relative to the baseUrl, and
-			//never includes a ".js" extension since
-			//the paths config could be for a directory.
-			paths: {
-				app: '../app'
-			}
-		});
-
-	</script>
+	<script src="//code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>  
 </html>

@@ -11,7 +11,7 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
       var Bus = bus;
       var Bug = debug;
 
-
+      var ANIMATE_SPAN = 42;
       var PANE_SIZE = 752;
       return {
           groupDictionary: [],
@@ -25,12 +25,13 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
           sidePane: {
 
               items: [],
-              create: function (id, canvas, text) {
+              create: function (canvas) {
                   var object = {
-                      id: id,
+                      id: $(canvas).data("key"),
                       pics: { stale: undefined, fresh: undefined },
                       canvas: canvas,
-                      text: text,
+                      panel: undefined,
+                      text: undefined,
                       x: -canvas.width,
                       width: canvas.width,
                       height: canvas.height,
@@ -39,16 +40,18 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
                           var that = this, next = function () { that.animate() }
 
                           var picture = this.pics.fresh, context = this.canvas.getContext('2d');
-                          this.x -= -42;
+                          this.x -= -ANIMATE_SPAN;
                           if (this.x > 0) this.x = 0;
 
-                          var s = photoSizer.fit(picture, this.width, this.height), x = s.x + this.x;
+                          var dimension = photoSizer.fit(picture, this.width, this.height), x = dimension.x + this.x;
 
-                          if (this.e && this.e.batch && this.e.batch.length == 3) {
+                          if (this.panel && this.panel.batch && this.panel.batch.length == 3) {
+                              Bug.log("{1} panel.batch {0}".format(this.x, this.id));
                               drawingAPI.imagecopyresized(context, picture, 0, 0, picture.width, picture.height, this.x, 0, picture.width, picture.height);
                           }
                           else {
-                              drawingAPI.imagecopyresized(context, picture, 0, 0, picture.width, picture.height, x, s.y, s.w, s.h);
+                              Bug.log("{2} panel.picture {0} x {1}".format(x, dimension.y, this.id));
+                              drawingAPI.imagecopyresized(context, picture, 0, 0, picture.width, picture.height, x, dimension.y, dimension.w, dimension.h);
                           }
 
                           drawingAPI.imagestring(context, "700 9pt Lato", 10, 16, this.text, "#fff", null,
@@ -58,25 +61,22 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
 
                           if (this.x >= 0) return;
                           animator.run(next);
-
                       },
 
                       invoke: function (sender, e) {
-                          if (e.id != this.id) return;
+                          if (e.id.toString() != this.id.toString()) return;
 
-
-                          var on = e.href + e.uuid;
+                          var nextpage = e.href + e.uuid;
                           this.x = -this.width;
                           this.pics.stale = this.pics.fresh;
                           this.pics.fresh = sender;
-                          this.e = e; 
-
+                          this.panel = e;
                           this.text = e.text;
 
                           $(this.canvas).off('click');
                           $(this.canvas).on('click', function () {
-                              location.href = on;
-                          }); 
+                              location.href = nextpage;
+                          });
 
                           this.animate();
 
@@ -86,7 +86,6 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
                   Bus.Subscribe("Fancy", object);
                   return object;
               }
-
           },
 
           createImage: function (onload, onerror) {
@@ -96,51 +95,52 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
               return object;
           },
 
-          createThumb: function (id, href, uuid, text, batch) {
+          createPanel: function (id, href, uuid, text, batch) {
               return { href: href, id: id, uuid: uuid, text: text, batch: batch };
           },
 
+          getRandomIndex: function (collection) {
+              return Math.floor(Math.random() * collection.length);
+          },
+
           playSide: function () {
-              var player = this;
-              var group = this.pics.fresh.group, articles = group.list, num = function (i) { return Math.floor(Math.random() * i); },
-                    panels = [], f = this.pics.fresh.article, othergroups = [], ref = f.ref.split('|'), rnd2 = num(articles.length);
+              var otherArticle, player = this, panels = [], othergroups = [],
+                    currentPic = this.pics.fresh, currentGroup = currentPic.group, articleList = currentGroup.list,
+                    currentArticle = currentPic.article, xrefGroups = currentArticle.ref.split('|'),
+                    randomIndex = this.getRandomIndex(articleList);
 
-              while (group.i == rnd2) rnd2 = num(articles.length);
+              while (currentGroup.i == randomIndex)
+                  randomIndex = this.getRandomIndex(articleList);
+              otherArticle = articleList[randomIndex];
 
-              var othergroup = articles[rnd2];
-
-              for (var r = num(articles.length), subitem = [], e = 0; e < 3; e++) {
-
-                  while (subitem.join(',').indexOf(articles[r].uuid) > -1)
-                      r = num(articles.length);
-
-                  subitem.push(articles[r].uuid);
+              for (var r = this.getRandomIndex(articleList), groupPics = [], e = 0; e < 3; e++) {
+                  while (groupPics.join(',').indexOf(articleList[r].uuid) > -1)
+                      r = this.getRandomIndex(articleList); // ensure 3 unique articles 
+                  groupPics.push(articleList[r].uuid);
               }
 
-              for (var e, i = 1; e = ref[i]; i++) if (e != f.groupname) othergroups.push(e);
+              for (var e, i = 1; e = xrefGroups[i]; i++) if (e != currentArticle.groupname) othergroups.push(e);
 
               var also = othergroups.length > 0 ? ("Also in: " + othergroups.join(' ')) : "No other groups",
-                    article_href = "{0}/name/{1}/id/".format(NEXT_PAGE, f.groupname),
-                    group_href = "/group/join/name/{0}/user/{1}/id/".format(f.groupname, f.username);
+                    article_href = "{0}/name/{1}/id/".format(NEXT_PAGE, currentArticle.groupname),
+                        group_href = "/group/join/name/{0}/user/{1}/id/".format(currentArticle.groupname, currentArticle.username);
 
-              panels[0] = this.createThumb(0, group_href, f.uuid, "Open " + f.groupname, subitem);
-              panels[1] = this.createThumb(1, article_href, f.uuid, "See all " + f.count + " items", this.pics.fresh.kids);
-              panels[2] = this.createThumb(2, article_href, othergroup.uuid, also);
+              panels[0] = this.createPanel(0, group_href, currentArticle.uuid, "Open " + currentArticle.groupname, groupPics);
+              panels[1] = this.createPanel(1, article_href, currentArticle.uuid, "See all " + currentArticle.count + " items", currentPic.kids);
+              panels[2] = this.createPanel(2, article_href, otherArticle.uuid, also);
 
               $(".info").each(function () {
-                  var tmp = this.className.split(" "), i = tmp[0], panel = panels[i]
+                  var v = $(this).data("key"), panel = panels[v], src = '/rpc/small/id/' + panel.uuid, loader = player.createImage();
+                  Bug.log("Loading {0} panel {1}..".format(currentGroup.name, v));
                   if (panel.batch && panel.batch.length == 3) {
-
                       photoBatch.create(panel, canvas_w, canvas_h,
                         function () { Bus.Fancy(this.picture, this.source) },
                         function () { alert("An error occured!"); });
-                      return; 
                   }
-
-                  var src = '/rpc/small/id/' + panel.uuid, pc = player.createImage();
-                  pc.onload = function () { Bus.Fancy(this, panel); }
-                  pc.src = src;
-
+                  else {
+                      loader.onload = function () { Bus.Fancy(this, panel); }
+                      loader.src = src;
+                  }
               });
 
               setTimeout(function () { player.beforeNextImage() }, 12000);
@@ -156,28 +156,33 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
                   context.clearRect(0, 0, context.canvas.width, context.canvas.height);
 
                   for (var p in player.pics) {
+
                       if (!player.pics[p]) { z = 0; continue; }
+
                       var fresh = player.pics[p], article = fresh.article, name = fresh.group.name,
                             picture = fresh.picture;
 
                       player.x += player.span;
 
-
-                      var s = photoSizer.fit(picture, PANE_SIZE, PANE_H), x = s.x + player.x + z;
+                      var dimension = photoSizer.fit(picture, PANE_SIZE, PANE_H), x = dimension.x + player.x + z;
                       if (x > z) x = z;
 
-                      for (var f = [], i = 0; i < 3; i++)
-                          f.push(100 + Math.floor(Math.random() * 99))
+                      Bug.log("Drawing {0} panel {1}..".format(fresh.group.name, x));
 
-                      drawingAPI.imagecopyresized(context, picture, 0, 0, picture.width, picture.height, x, s.y, s.w, s.h);
+                      //                      for (var f = [], i = 0; i < 3; i++)
+                      //                          f.push(100 + Math.floor(Math.random() * 99))
 
-                      var imgd = context.getImageData(0, 0, 1, 1), pix = imgd.data, r = 0; // Math.floor (pix.length/4);// (Math.random() * pix.length);
+                      // copy image onto palette here
+                      drawingAPI.imagecopyresized(context, picture, 0, 0, picture.width, picture.height, x, dimension.y, dimension.w, dimension.h);
+
+                      var imageData = context.getImageData(0, 0, 1, 1), pixel = imageData.data;
 
 
-                      var rep = ['alt.', 'binaries.', 'picture.', 'nospam.', 'erotica.', 'erotic.', 'pictures.'], hue = "rgb(" + pix[r] + "," + pix[r + 1] + "," + pix[r + 2] + ")";
-                      for (var f, i = 0; f = rep[i++]; name = name.replace(f, ""));
+                      var replacements = ['alt.', 'binaries.', 'picture.', 'nospam.', 'erotica.', 'erotic.', 'pictures.'], 
+                                    hue = "rgb(" + pixel[0] + "," + pixel[1] + "," + pixel[2] + ")";
+
+                      for (var f, i = 0; f = replacements[i++]; name = name.replace(f, "")); 
                       name = "#" + name.split(".").join("-")
-
 
                       drawingAPI.imagestring(context, "700 44pt Lato", 38, PANE_H - 82, name, hue, null,
                                       600, 18, 5);
@@ -230,7 +235,7 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
 
           drawContainer: function (index) {
               Bug.log("drawContainer panel #" + index);
-              return '<div class="{0} splash info"><canvas width="{1}" height="{2}" class="i-canvas {0}" /></div>'.format(index, canvas_w, canvas_h);
+              return '<div class="{0} splash info" data-key="{0}"><canvas data-key="{0}" width="{1}" height="{2}" class="i-canvas {0}" /></div>'.format(index, canvas_w, canvas_h);
           },
 
           drawContainers: function () {
@@ -240,21 +245,15 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
               var that = this, html = [];
               html.push('<div class="splash main"><canvas id="center-main-canvas" width="{0}" height="{1}"/></div>'.format(PANE_SIZE, PANE_H));
               for (var i = 0; i < 3; i++)
-                  html.push(this.drawContainer(i)); 
+                  html.push(this.drawContainer(i));
               html = html.join("");
 
 
               $(".header").each(function () {
-
                   $(this).html(html);
-
                   that.setSizes();
-
-                  Bug.log("Adding panels...");
                   $(".i-canvas").each(function () {
-                      var tmp = this.className.split(" "), id = tmp[1];
-                      Bug.log("Adding panel #" + id);
-                      that.sidePane.create(id, this);
+                      that.sidePane.create(this);
                   })
               });
 
@@ -269,7 +268,7 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
               thin = false;
 
               if (thin) {
-                  alert([$(document).width(), $(document).height()])
+                  //                  alert([$(document).width(), $(document).height()])
                   BASE_WIDTH = $(document).width() - 4;
                   BASE_WIDTH = BASE_WIDTH - (BASE_WIDTH % 3);
                   BASE_WIDTH += 2;
@@ -341,8 +340,10 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
                   var article = group.peek(), command = "/rpc/randomof/id/" + article.uuid,
                    src = '/rpc/picture/id/' + article.uuid, tiny = '/rpc/small/id/' + article.uuid;
 
+                  Bug.log("Looking up {0}...".format(group.name));
                   $ajax(command, function (uuids) {
                       try {
+                          Bug.log("Found {0}, drawing...".format(group.name));
                           var kids = uuids.split(","), picture = player.createImage(function () {
                               player.pics.stale = player.pics.fresh;
                               player.pics.fresh = { kids: kids, group: group, article: article, picture: this };
