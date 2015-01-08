@@ -116,6 +116,7 @@ define(['lib/picture', 'lib/control', 'lib/debug', 'canvas', 'slider', 'cache', 
                        }
 
                        this.element.good = function (source) {
+// console.log ("GOOD: " + that.caption);
                            if (that.size > 0 && !source) {
                                this.innerHTML = "<div class='warning'>{0} failed to load!</div>".format(that.caption);
                            }
@@ -124,6 +125,7 @@ define(['lib/picture', 'lib/control', 'lib/debug', 'canvas', 'slider', 'cache', 
                        }
 
                        this.element.done = function () {
+// console.log ("DONE: " + that.caption);
                            if (!that) return this.good();
                            if (that.size > 0) this.innerHTML = "Loading {0}...".format(that.caption);
                            that.display();

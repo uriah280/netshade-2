@@ -31,14 +31,17 @@ define(function () {
         },
         open: function (worker) {
             var that = this;
+
+                // console.log("Connecting to: " + worker.command);
             try {
                 $ajax(worker.command, function (uuid) {
+                    // console.log("Response:  " + "[(" + uuid + ")]");
                     if (uuid == "-1") return worker.element.done();
                     that.create(worker.element, that.format.request(uuid));
                 });
             }
             catch (ex) {
-                confirm(ex.message);
+                // // console.log(ex.message);
             }
         },
         create: function (element, command) {
@@ -76,8 +79,11 @@ define(function () {
                             })
                         });
 
+
+                // console.log("ping...");
                         if (!(that.response.state != "PENDING" && response.state == "PENDING")) {
                             that.response = response;
+                // console.log(that.response.state);
                             if (that.response.state == "COMPLETE") {
                                 return that.done();
                             }
