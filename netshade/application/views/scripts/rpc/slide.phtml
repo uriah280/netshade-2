@@ -1,0 +1,9 @@
+
+<articles>
+
+        <? foreach ($this-> article-> items as $article): ?> 
+         <li uuid="<?= $article -> uuid ?>" 
+           ><![CDATA[<?= $article -> subject ?>]]></li>
+        <? endforeach ?> 
+
+</articles>
