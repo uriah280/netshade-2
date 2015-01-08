@@ -41,21 +41,62 @@ define(['cache', 'request', 'lib/picture', 'lib/drawing', 'lib/debug'], function
             this.done();
         },
 
-        button: function (context) {
+        button: function () {
+            if (!this.workspace) return;
+            var canvas = this.workspace, context = canvas.getContext('2d');
             for (var c, i = 0; c = this.controls[i]; i++) {
                 c.draw(context);
                 Debugger.log("Drew button: " + c.x1 + "x" + c.y1);
             }
         },
+        frameIndex : 0,
+        frameEOL   : function () { return !(this.frameIndex < this.object.length) },
+        framePeek  : function () { return this.object[ this.frameIndex ++ ] },
+        nextFrame  : function () {
+            if (this.frameEOL() || !this.workspace) return this.button();
+            var canvas = this.workspace, context = canvas.getContext('2d'), w = canvas.offsetWidth, h = canvas.offsetHeight, 
+                 object = this.framePeek ();  
+            console.log("Drawing: " + this.frameIndex);
+            object.draw (canvas, this.frameIndex); 
+        },
+        fingerprint : {  stale : "", fresh : ""  }, 
 
-        done: function () {
-            var that = this;
-            Debugger.log("Canvas done: " + this.caption);
+
+        fingerPrint : function () {
+            var that = this, objs = this.object, key = [];
+		require (['lib/md5'], function (cryptor) {
+                    for (var o,i=0;o=objs[i];i++) {
+                        if (o.source) {
+                            key.push (cryptor.md5(o.source));
+                        }
+                    }
+                    key = cryptor.md5(key.join(""));
+                    that.done_(key);
+                });
+        },
+
+        done_       : function (key) {
+            if (key == this.fingerprint.stale || key == this.fingerprint.fresh) return Debugger.log("IGNORING: " + key);
+            this.fingerprint.stale = this.fingerprint.fresh;
+            this.fingerprint.fresh = key;
+
+            var that = this; 
+
+            Debugger.log("this.fingerprint.stale: " + this.fingerprint.stale);
+            Debugger.log("this.fingerprint.fresh: " + this.fingerprint.fresh);
             $("#canvas-teeny").each(function () {
-                var context = this.getContext('2d'), w = this.offsetWidth, h = this.offsetHeight;
-                context.clearRect(0, 0, this.width, this.height);
-                for (var t, i = 0; t = that.object[i++]; t.draw(this, i));
+                var context = this.getContext('2d');
+                context.clearRect(0, 0, this.width, this.height); 
+                that.workspace = this;
             });
+            this.frameIndex = 0;
+            this.nextFrame();
+            
+        },
+
+        done       : function () {
+            Debugger.log("Canvas done: " + this.caption);
+            this.fingerPrint();
         },
 
         create: function (article, index) {
@@ -81,7 +122,7 @@ define(['cache', 'request', 'lib/picture', 'lib/drawing', 'lib/debug'], function
                     var done = function () {
                         context.clearRect(0, 84, canvas.width - 110, 20);
                         drawingAPI.imagestring(context, "700 9pt Lato", 10, 92, caption, "#222");
-                        myself.button(context);
+                        myself.nextFrame(); //button(context);
                     };
 
                     drawingAPI.imagefilledrectangle(context, x, y - 1, span + 1, span + 1, "#cfc");
