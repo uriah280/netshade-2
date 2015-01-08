@@ -61,8 +61,7 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
 
                           if (this.x >= 0) return;
                           animator.run(next);
-                      },
-
+                      }, 
                       invoke: function (sender, e) {
                           if (e.id.toString() != this.id.toString()) return;
 
@@ -82,7 +81,7 @@ define(['lib/drawing', 'lib/photobatch', 'lib/sizer', 'lib/animation', 'lib/serv
 
                       }
                   }
-                  this.items[id] = object;
+                  this.items[object.id] = object;
                   Bus.Subscribe("Fancy", object);
                   return object;
               }

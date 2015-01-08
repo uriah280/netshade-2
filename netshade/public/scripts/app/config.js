@@ -2,6 +2,7 @@
 // set up require.js
 requirejs.config({
     baseUrl: '/scripts/worker',
+    urlArgs: "ts=" +  (new Date()).getTime(),
     paths: {
         app: '/scripts/app',
         lib: '/scripts/lib'
