@@ -164,6 +164,7 @@ class RpcController extends Zend_Controller_Action
         $article = Application_Model_Articleset::byId ($id);
         $article -> GetArticles ();
         $this -> view -> article = $article;
+        
     }
 
 
