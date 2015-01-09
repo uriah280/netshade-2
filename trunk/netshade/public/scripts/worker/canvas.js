@@ -86,7 +86,7 @@ define(['cache', 'request', 'lib/picture', 'lib/drawing', 'lib/debug'], function
             Debugger.log("this.fingerprint.fresh: " + this.fingerprint.fresh);
             $("#canvas-teeny").each(function () {
                 var context = this.getContext('2d');
-                context.clearRect(0, 0, this.width, this.height); 
+             //   context.clearRect(0, 0, this.width, this.height); 
                 that.workspace = this;
             });
             this.frameIndex = 0;
@@ -109,26 +109,40 @@ define(['cache', 'request', 'lib/picture', 'lib/drawing', 'lib/debug'], function
                 size: 64,
                 article: article,
                 fieldname: "thumb",
-                caption: "#" + index, // article.substr(0, 4),
+                caption: "#" + index,  
+                key : { pos : -1, index : -1 },
+                check : function (pos, index) {
+                    if (this.id == this.key.pos && this.index == this.key.index) {
+                        return false;
+                    }
+                    return true;            
+                },
+                sync: function () { 
+                    this.key = { pos : this.id, index : this.index };                  
+                },
                 draw: function (canvas, limit) {
-                    var thumbnail = new Image(), w = 64, span = w + 1, y = 1,
+                    var thumbnail = new Image(), w = 64, span = w + 1, y = 1, picture_frame = this,
                        context = canvas.getContext('2d'), article = this.article, offset = span * (myself.limit - myself.object.length),
                        should_offset = myself.object.length < myself.limit && this.index < myself.limit, offset_x = should_offset ? offset : 0,
                         margin = 3, position = limit - this.id, x = (this.id * span) + offset_x, 
                           caption = this.id + "/" + myself.object.length + ") " + myself.caption,
                            sizeof = myself.object.length, stamp = new Date().getMilliseconds(), picture_caption = this.caption,
-                             message = "Canvas index #" + this.index + "/" + this.id + ":" + this.article;  
+                             message = "Canvas index #" + this.index + "/" + this.id + ":" + this.article, picture_source = this.source;  
+                    
+                    if (!this.check()) return myself.nextFrame();
+
 
                     var done = function () {
-                        context.clearRect(0, 84, canvas.width - 110, 20);
+                        context.clearRect(0, 78, canvas.width - 110, 20);
                         drawingAPI.imagestring(context, "700 9pt Lato", 10, 92, caption, "#222");
                         myself.nextFrame(); //button(context);
                     };
 
+                    x += margin;    
                     drawingAPI.imagefilledrectangle(context, x, y - 1, span + 1, span + 1, "#cfc");
                     drawingAPI.imagestring(context, "700 9pt Lato", x + 10, 14, picture_caption, "#922");
-                    if (this.source) {
-                        x += margin;    
+                    if (picture_source) {
+                        drawingAPI.imagefilledrectangle(context, x, y - 1, span + 1, span + 1, "#ccf");
                         thumbnail.onload = function () {
                             context.globalAlpha = 1;
                             context.clearRect(x, y - 1, span + 1, span + 6);
@@ -137,25 +151,36 @@ define(['cache', 'request', 'lib/picture', 'lib/drawing', 'lib/debug'], function
                                 var x1 = x + 1, x2 = x1 + span - 1, y1 = y + 68, y2 = y1;
                                 drawingAPI.imageline(context, x1, y1, x2, y2, "#f00", 2);
                             }
+                            picture_frame.sync ();
+
                             Debugger.log(message);
                             done();
                         }
                         thumbnail.onerror = function () {
                             drawingAPI.imagefilledrectangle(context, x, y - 1, span + 1, span + 1, "#fdd");
                             drawingAPI.imagestring(context, "700 9pt Lato", x + 10, 14, picture_caption, "#922");
-                            Debugger.log("!FAIL :: " + message); done();
+                            Debugger.log("!FAIL :: " + message); 
+                            if (picture_frame.fieldname == "thumb") {
+                                picture_frame.fieldname = "data";
+                                return picture_frame.load();
+                            }
+                            done();
                         }
-                        thumbnail.src = this.source;
+                        thumbnail.src = picture_source;
                         return;
+                    }
+                    if (picture_frame.fieldname == "thumb") {
+                        picture_frame.fieldname = "data";
+                        return picture_frame.load();
                     }
                     done();
                 },
                 load: function () {
                     var source, that = this;
-
+ 
                     myself.index[this.article] = this.index;
                     this.command = requestWorker.format.command(this.article);
-                    this.picture = requestWorker.format.picture(this.article, "thumb");
+                    this.picture = requestWorker.format.picture(this.article, this.fieldname);
 
                     this.element = {
                         show: function (response) {
@@ -165,7 +190,8 @@ define(['cache', 'request', 'lib/picture', 'lib/drawing', 'lib/debug'], function
                         },
                         good: function (source) {
                             that.source = source;
-                            imageCache.remember(that, source);
+                            if (that.fieldname == "thumb")
+                                imageCache.remember(that, source);
                             myself.complete++;
                             if (myself.complete >= myself.object.length && myself.done) {
                                 myself.done();
